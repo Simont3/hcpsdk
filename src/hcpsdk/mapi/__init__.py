@@ -26,10 +26,20 @@ import xml.etree.ElementTree as ET
 import logging
 import hcpsdk
 
-__all__ = ['replication']
+__all__ = ['ReplicationSettingsError', 'replication']
 
 logging.getLogger('hcpsdk.mapi').addHandler(logging.NullHandler())
 
+
+class ReplicationSettingsError(Exception):
+    """
+    Indicate an invalid action for the given link type (R_BEGINRECOVERY or
+    R_COMPLETERECOVERY on a R_ACTIVE_ACTIVE link, R_FAILBACK on an
+    R_OUTBOUND or R_INBOUND link).
+    """
+    def __init__(self, reason):
+        self.args = reason,
+        self.reason = reason
 
 
 class replication(object):
@@ -181,24 +191,23 @@ class replication(object):
                             R_FAILBACK, R_BEGINRECOVERY, R_COMPLETERECOVERY]``
         :raises: HcpsdkError
         '''
-        if linktype.upper() not in [replication.R_ACTIVE_ACTIVE,
-                                    replication.R_OUTBOUND,
+        # make sure that only valid linktypes and actions are accepted
+        if linktype not in [replication.R_ACTIVE_ACTIVE, replication.R_OUTBOUND,
                                     replication.R_INBOUND, None] or \
             action not in [replication.R_SUSPEND, replication.R_RESUME,
                             replication.R_RESTORE, replication.R_BEGINRECOVERY,
                             replication.R_COMPLETERECOVERY,
                             replication.R_FAILBACK, replication.R_FAILOVER]:
             raise ValueError
-
-        # TODO: test suspending a link!
-        # depending on the action we got, build a list of actions...
-        if action == replication.R_FAILBACK:
-            if linktype in [replication.R_OUTBOUND, replication.R_INBOUND]:
-                actions = [replication.R_BEGINRECOVERY, replication.R_COMPLETERECOVERY]
-            else:
-                actions = [replication.R_FAILBACK]
-        else:
-            actions = [action]
+        # make sure that no invalid action is called
+        if (action == replication.R_FAILBACK and \
+            linktype in [replication.R_OUTBOUND, replication.R_INBOUND]) or \
+           (action in [replication.R_BEGINRECOVERY, replication.R_COMPLETERECOVERY] and \
+            linktype == replication.R_ACTIVE_ACTIVE) or \
+           (action in [replication.R_FAILOVER, replication.R_FAILBACK,
+                       replication.R_BEGINRECOVERY, replication.R_COMPLETERECOVERY] and \
+            not linktype):
+            raise ReplicationSettingsError('{} not allowed on {} link'.format(action, linktype))
 
         # let's do it!
         try:
@@ -206,21 +215,17 @@ class replication(object):
         except Exception as e:
             raise hcpsdk.HcpsdkError(str(e))
         else:
-            self.connect_time = con.connect_time
-            for act in actions:
-                try:
-                    r = con.request('POST', '/mapi/services/replication/links/{}?{}'
-                                            .format(linkname, act))
-                except Exception as e:
-                    raise hcpsdk.HcpsdkError(str(e))
+            try:
+                r = con.request('POST', '/mapi/services/replication/links/{}?{}'
+                                        .format(linkname, action))
+            except Exception as e:
+                raise hcpsdk.HcpsdkError(str(e))
+            else:
+                if r.status != 200:
+                    err = r.getheader('X-HCP-ErrorMessage', 'no message')
+                    raise(hcpsdk.HcpsdkError('{} - {} ({})'.format(r.status, r.reason, err)))
                 else:
-                    if r.status != 200:
-                        err = r.getheader('X-HCP-ErrorMessage', 'no message')
-                        raise(hcpsdk.HcpsdkError('{} - {} ({})'.format(r.status, r.reason, err)))
-                    else:
-                        r.read()
-                if action == replication.R_BEGINRECOVERY:
-                    time.sleep(10)
+                    r.read()
         finally:
             con.close()
 

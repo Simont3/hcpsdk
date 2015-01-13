@@ -121,6 +121,17 @@ Classes
 
    .. automethod:: setReplicationLinkState
 
+
+Exceptions
+^^^^^^^^^^
+
+.. autoexception:: ReplicationSettingsError
+
+   .. attribute:: reason
+
+      An error description.
+
+
 Example
 ^^^^^^^
 
