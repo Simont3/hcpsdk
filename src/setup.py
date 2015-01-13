@@ -20,7 +20,7 @@ setup(
     long_description=long_description,
 
     # The project's main homepage.
-    url='https://pypi.python.org/pypi/HCPsdk',
+    url='http://simont3.github.io/hcpsdk',
 
     # Author details
     author='Thorsten Simons',
@@ -35,7 +35,7 @@ setup(
                  # 3 - Alpha
                  # 4 - Beta
                  # 5 - Production/Stable
-                 'Development Status :: 3 - Alpha',
+                 'Development Status :: 4 - Beta',
 
                  # Indicate who your project is intended for
                  'Intended Audience :: Developers',
@@ -53,7 +53,7 @@ setup(
                 ],
 
     # What does your project relate to?
-    keywords='hcp sdk development',
+    keywords='hcp sdk',
 
     # You can just specify the packages manually here if your project is
     # simple. Or you can use find_packages().
@@ -63,7 +63,7 @@ setup(
     # project is installed. For an analysis of "install_requires" vs pip's
     # requirements files see:
     # https://packaging.python.org/en/latest/technical.html#install-requires-vs-requirements-files
-    install_requires=[],
+    install_requires=['dnspython3'],
 
     # List additional groups of dependencies here (e.g. development dependencies).
     # You can install these using the following syntax, for example:
