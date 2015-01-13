@@ -1,0 +1,68 @@
+Preface
+=======
+
+About HCP
+^^^^^^^^^
+
+.. figure:: _static/HCP_environment_small.png
+   :alt: HCP environment overview
+
+   A simple HCP environment
+
+**Hitachi Content Platform (HCP)** is a distributed storage system designed to
+support large, growing repositories of fixed-content data. An HCP system
+consists of both hardware (physical or virtual) and software.
+
+HCP stores objects that include both data and metadata that describes
+that data. HCP distributes these objects across the storage space. HCP
+represents objects either as URLs or as files in a standard file system.
+An HCP repository is partitioned into namespaces. Each namespace consists
+of a distinct logical grouping of objects with its own directory structure.
+Namespaces are owned and managed by tenants.
+
+HCP provides access to objects through a variety of industry-standard
+protocols, as well as through various HCP-specific interfaces.
+
+
+Coding for HCP
+^^^^^^^^^^^^^^
+
+Even as HCP might behave like a web server at first glance, it has some
+very different characteristics when it comes to coding against it, using
+one of the http/REST based interfaces (native http/REST, HS3 and HSwift).
+This isn't really relevant for an application doing a single request
+from time to time, but it is critical for an application designated for
+high load / high performance HCP access.
+
+To create an application optimized for optimal HCP access for the latter case:
+
+    1)  Use threading or multiprocessing to access HCP using multiple
+        connections in parallel
+
+    2)  Use all available nodes, in conjunction with (1.)
+
+    3)  Keep connections persistent, as connection setup is an expensive
+        operation, especially when using https. Nevertheless, release connection
+        if unused for some time, as one should not block an HCP connection slot
+        permanently without using it.
+
+    4)  If there's no urgent need for an human-readable structure, use a
+        structure optimized for HCP, as demonstrated with the :doc:`35_pathbuilder`
+        subpackage
+
+There are some additional suggestions not aiming at performance,
+but for reliability:
+
+    5)  If there is no load balancer in the data path to HCP, cache HCPs
+        IP addresses in the application and use them to access all nodes
+        in a round-robin fashion. Refresh the cached address pool from time
+        to time and on a failed connection, too.
+        *Depending on how HCP has been integrated with the corporate DNS,
+        this can lower network traffic overhead significantly.*
+
+    6)  If there is a replication target HCP, make the application replica-aware -
+        at least, allow the application to read from the replica.
+
+    7)  As a last resort, make sure the application can survive some time of
+        not being able to connect to HCP by caching content locally to a
+        certain degree (this is not covered by this SDK).
