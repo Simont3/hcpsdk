@@ -27,7 +27,7 @@ import dns
 import dns.resolver
 
 
-__all__ = ['IpsError', 'Circle', 'query']
+__all__ = ['IpsError', '_request', '_response', 'Circle', 'query']
 
 logging.getLogger('hcpsdk.ips').addHandler(logging.NullHandler())
 
@@ -123,6 +123,16 @@ class Circle(object):
         return(self.answer.qname)
 
 
+class request(object):
+    '''
+    A DNS query request object
+    '''
+    def __init__(self, fqdn, cache):
+        self.fqdn = fqdn
+        self.cache = cache
+        self.sub = None
+
+
 class response(object):
     '''
     DNS query response object, returned by the **query()** function.
@@ -144,44 +154,47 @@ def query(fqdn, cache=False):
     Submit a DNS query, using *socket.getaddrinfo()* if cache=True, or
     *dns.resolver.query()* if cache=False.
 
-    :param fqdn:    a FQDN to query DNS
+    :param fqdn:    a FQDN to query DNS -or- a *request* object
     :param cache:   if True, use the system resolver (which might do local caching),
                     else use an internal resolver, bypassing any cache available
     :return:        an **hcpsdk.ips.response** object
     :raises:        should never raise, as Exceptions are signaled through
                     the **response.raised** attribute
     '''
-    _response = response(fqdn, cache) # to collect the resolved IP addresses
+    if isinstance(fqdn, request):
+        _response = response(fqdn.fqdn, fqdn.cache) # to collect the resolved IP addresses
+    else:
+        _response = response(fqdn, cache)           # to collect the resolved IP addresses
 
-    if cache:
+    if _response.cache:
         try:
-            ips = socket.getaddrinfo(fqdn, 443, family=socket.AF_INET, type=socket.SOCK_DGRAM)
+            ips = socket.getaddrinfo(_response.fqdn, 443, family=socket.AF_INET, type=socket.SOCK_DGRAM)
         except Exception as e:
-            _response.raised = str(e)
+            _response.raised = 'Err: ' + str(e)
         else:
             for a in ips:
                 _response.ips.append(a[4][0])
     else:
         try:
-            ips = dns.resolver.query(fqdn, raise_on_no_answer=True)
+            ips = dns.resolver.query(_response.fqdn, raise_on_no_answer=True)
         except dns.resolver.NXDOMAIN:
-            _response.raised = 'NXDOMAIN - The query name does not exist.'
+            _response.raised = 'Err: NXDOMAIN - The query name does not exist.'
         except dns.resolver.YXDOMAIN:
-            _response.raised = 'The query name is too long after DNAME substitution.'
+            _response.raised = 'Err: The query name is too long after DNAME substitution.'
         except dns.resolver.Timeout:
-            _response.raised = 'The operation timed out.'
+            _response.raised = 'Err: The operation timed out.'
         except dns.resolver.NoAnswer:
-            _response.raised = 'The response did not contain an answer to the question.'
+            _response.raised = 'Err: The response did not contain an answer to the question.'
         except dns.resolver.NoNameservers:
-            _response.raised = 'NoNameservers - No non-broken nameservers are available to answer the query.'
+            _response.raised = 'Err: NoNameservers - No non-broken nameservers are available to answer the query.'
         except dns.resolver.NotAbsolute:
-            _response.raised = 'Raised if an absolute domain name is required but a relative name was provided.'
+            _response.raised = 'Err: Raised if an absolute domain name is required but a relative name was provided.'
         except dns.resolver.NoRootSOA:
-            _response.raised = 'Raised if for some reason there is no SOA at the root name. This should never happen!'
+            _response.raised = 'Err: Raised if for some reason there is no SOA at the root name. This should never happen!'
         except dns.resolver.NoMetaqueries:
-            _response.raised = 'Metaqueries are not allowed.'
+            _response.raised = 'Err: Metaqueries are not allowed.'
         except Exception as e:
-            _response.raised = str(e)
+            _response.raised = 'Err: ' + str(e)
         else:
             for i in ips.rrset:
                 ip = str(i)
@@ -191,7 +204,7 @@ def query(fqdn, cache=False):
                                             int(hx[4:6],16), int(hx[6:],16))
                 _response.ips.append(str(ip))
             if not len(_response.ips):
-                _response.raised = 'no response'
+                _response.raised = 'Err: no response'
 
-    return(_response)
+    return _response
 

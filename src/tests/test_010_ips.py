@@ -33,6 +33,19 @@ class TestHCPsdk_10_1_ips(unittest.TestCase):
         self.T_NS_BAD = "this_wont_work.at-all"
         self.T_PORT = 443
 
+    def test_1_05_query_good_fqdn(self):
+        """
+        Make sure we get a hcpsdk.target object
+        """
+        print('test_1_05_query_good_fqdn')
+        r = ips.query(self.T_NS_GOOD)
+        print(r)
+        self.assertTrue(type(r) == ips.response)
+        self.assertTrue(type(r.ips) == list)
+        print('fqdn: {} - cache = {}'.format(r.fqdn, r.cache))
+        print(r.ips)
+
+
     def test_1_10_good_fqdn(self):
         """
         Make sure we get a hcpsdk.target object
