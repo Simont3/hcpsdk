@@ -15,7 +15,7 @@ setup(
     # the version across setup.py and the project code, see
     # http://packaging.python.org/en/latest/tutorial.html#version
 
-    version='1.0.0',
+    version='0.9.0',
     description='A simple SDK for the Hitachi Content Platform (HCP)',
     long_description=long_description,
 
