@@ -45,6 +45,7 @@ class TestHCPsdk_30_1_namespaceinfo_NS_GOOD(unittest.TestCase):
     def tearDown(self):
         del self.hcptarget
 
+#    @unittest.skip("demonstrating skipping")
     def test_1_10_good_NSstatistics(self):
         """
         Make sure we get a dict w/ length 9
@@ -55,6 +56,7 @@ class TestHCPsdk_30_1_namespaceinfo_NS_GOOD(unittest.TestCase):
         self.assertTrue(type(r) == dict)
         self.assertTrue(len(r) == 9)
 
+#    @unittest.skip("demonstrating skipping")
     def test_1_20_good_listAccessibleNS(self):
         """
         Make sure we get a dict holding dicts
@@ -75,6 +77,7 @@ class TestHCPsdk_30_1_namespaceinfo_NS_GOOD(unittest.TestCase):
         for ns in r:
             self.assertTrue(type(r[ns]) == dict)
 
+#    @unittest.skip("demonstrating skipping")
     def test_1_40_good_listRetentionClasses(self):
         r = self.nso.listRetentionClasses()
         pprint(r)
@@ -82,6 +85,7 @@ class TestHCPsdk_30_1_namespaceinfo_NS_GOOD(unittest.TestCase):
         for ns in r:
             self.assertTrue(type(r[ns]) == dict)
 
+#    @unittest.skip("demonstrating skipping")
     def test_1_50_good_listPermissions(self):
         print('test_1_50_good_listPermissions')
         r = self.nso.listPermissions()

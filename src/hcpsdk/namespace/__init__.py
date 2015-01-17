@@ -62,7 +62,7 @@ class info(object):
         else:
             self.connect_time = con.connect_time
             try:
-                r = con.request('GET', '/proc/statistics')
+                r = con.GET('/proc/statistics')
             except Exception as e:
                 raise hcpsdk.HcpsdkError(str(e))
             else:
@@ -84,7 +84,8 @@ class info(object):
                     raise(hcpsdk.HcpsdkError('{} - {}'.format(r.status, r.reason)))
         finally:
             con.close()
-            return d
+
+        return d
 
 
     def listAccessibleNS(self, all=False):
@@ -95,10 +96,14 @@ class info(object):
                         actual one, only.
         :return:        a dict holding a dict per namespace
         '''
+
+        # setup target URL and apply parameters
+        url = '/proc'
         if not all:
-            path = '/proc'
+            params = None
         else:
-            path = '/proc/?single=true'
+            params = {'single': 'true'}
+
         try:
             con = hcpsdk.connection(self.target, debuglevel=self.debuglevel)
         except Exception as e:
@@ -107,7 +112,7 @@ class info(object):
             self.connect_time = con.connect_time
 
             try:
-                r = con.request('GET', path)
+                r = con.GET(url, params=params)
             except Exception as e:
                 raise hcpsdk.HcpsdkError(str(e))
             else:
@@ -128,7 +133,8 @@ class info(object):
                     raise(hcpsdk.HcpsdkError('{} - {}'.format(r.status, r.reason)))
         finally:
             con.close()
-            return d
+
+        return d
 
     def listRetentionClasses(self):
         '''
@@ -143,7 +149,7 @@ class info(object):
         else:
             self.connect_time = con.connect_time
 
-            r = con.request('GET', '/proc/retentionClasses')
+            r = con.GET('/proc/retentionClasses')
             if r.status == 200:
                 # Good status, get and parse the response
                 x = r.read()
@@ -161,7 +167,8 @@ class info(object):
                 raise(hcpsdk.HcpsdkError('{} - {}'.format(r.status, r.reason)))
         finally:
             con.close()
-            return d
+
+        return d
 
 
     def listPermissions(self):
@@ -177,7 +184,7 @@ class info(object):
         else:
             self.connect_time = con.connect_time
 
-            r = con.request('GET', '/proc/permissions')
+            r = con.GET('/proc/permissions')
             if r.status == 200:
                 # Good status, get and parse the response
                 x = r.read()
@@ -192,7 +199,8 @@ class info(object):
                 raise(hcpsdk.HcpsdkError('{} - {}'.format(r.status, r.reason)))
         finally:
             con.close()
-            return d
+
+        return d
 
 
     def _castVar(self, var):

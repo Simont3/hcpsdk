@@ -106,7 +106,7 @@ class TestHCPsdk_2_access(unittest.TestCase):
         """
         Delete a file
         """
-        r = self.con.POST(self.T_HCPFILE, ['index=true'])
+        r = self.con.POST(self.T_HCPFILE, {'index': 'true'})
         self.assertEqual(r.status, 200)
 
     def test_2_90_delete(self):

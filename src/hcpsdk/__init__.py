@@ -23,6 +23,7 @@
 from base64 import b64encode
 from hashlib import md5
 import http.client
+from urllib.parse import urlencode, quote, quote_plus
 import logging
 import time
 from threading import Timer
@@ -266,15 +267,22 @@ class connection(object):
         catch any exception that might happen plus to be able to trigger
         hcpsdk.target to do a new DNS query.
 
+        *Url* and *params* will be urlencoded, by default.
+
         **Beside of *method*, all arguments are valid for the convenience methods, too.**
 
         :param method:  any valid http method (GET,HEAD,PUT,POST,DELETE)
         :param url:     the url to access w/o the server part (i.e: /rest/path/object)
         :param body:    the payload to send (see *http.client* documentation
                         for details)
-        :param params:  a dictionary with parameters to be added to the request
+        :param params:  a dictionary with parameters to be added to the request:
 
-                        ``{'verbose': None, 'retention': 'A+10y', ...}``
+                        ``{'verbose': 'true', 'retention': 'A+10y', ...}``
+
+                        or a list of 2-tuples:
+
+                        ``[('verbose', 'true'), ('retention', 'A+10y'), ...]``
+
         :param headers: a dictionary holding additional key/value pairs to add to the
                         auto-prepared header
         :return:        the original response object received from
@@ -285,6 +293,12 @@ class connection(object):
             headers = self.__target.headers
         else:
             headers.update(self.__target.headers)
+
+        # make sure that the URL and params are proper encoded
+        url = quote_plus(url, safe='/')
+        if params:
+            url = url + '?' + urlencode(params)
+        self.logger.log(logging.DEBUG, 'URL = {}'.format(url))
 
         retry = False
         while True:

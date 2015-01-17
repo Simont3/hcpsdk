@@ -87,7 +87,7 @@ class replication(object):
         else:
             self.connect_time = con.connect_time
             try:
-                r = con.request('GET', '/mapi/services/replication')
+                r = con.GET('/mapi/services/replication')
             except Exception as e:
                 raise hcpsdk.HcpsdkError(str(e))
             else:
@@ -118,7 +118,7 @@ class replication(object):
         else:
             self.connect_time = con.connect_time
             try:
-                r = con.request('GET', '/mapi/services/replication/links')
+                r = con.GET('/mapi/services/replication/links')
             except Exception as e:
                 d.append('Error: {}'.format(str(e)))
             else:
@@ -153,7 +153,8 @@ class replication(object):
         else:
             self.connect_time = con.connect_time
             try:
-                r = con.request('GET', '/mapi/services/replication/links/{}?verbose=true'.format(link))
+                r = con.GET('/mapi/services/replication/links/{}'.format(link),
+                            params={'verbose': 'true'})
             except Exception as e:
                 raise hcpsdk.HcpsdkError(str(e))
             else:
@@ -209,6 +210,8 @@ class replication(object):
             not linktype):
             raise ReplicationSettingsError('{} not allowed on {} link'.format(action, linktype))
 
+        # build params
+        action = {action: ''}
         # let's do it!
         try:
             con = hcpsdk.connection(self.target, debuglevel=self.debuglevel)
@@ -216,8 +219,8 @@ class replication(object):
             raise hcpsdk.HcpsdkError(str(e))
         else:
             try:
-                r = con.request('POST', '/mapi/services/replication/links/{}?{}'
-                                        .format(linkname, action))
+                r = con.POST('/mapi/services/replication/links/{}'
+                             .format(linkname), params=action)
             except Exception as e:
                 raise hcpsdk.HcpsdkError(str(e))
             else:
