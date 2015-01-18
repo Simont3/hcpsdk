@@ -23,17 +23,22 @@
 from base64 import b64encode
 from hashlib import md5
 import http.client
-from urllib.parse import urlencode, quote, quote_plus
+from urllib.parse import urlencode, quote_plus
 import logging
 import time
 from threading import Timer
+
+from .version import _version
 from . import ips
 from . import namespace
 from . import mapi
 
+
 __all__ = ['target', 'connection', 'HcpsdkError', 'HcpsdkTimeoutError']
 
 logging.getLogger('hcpsdk').addHandler(logging.NullHandler())
+
+version = _version()
 
 
 class HcpsdkError(Exception):
@@ -43,10 +48,12 @@ class HcpsdkError(Exception):
         self.args = reason,
         self.reason = reason
 
+
 class HcpsdkTimeoutError(HcpsdkError):
     def __init__(self, reason):
         self.args = reason,
         self.reason = reason
+
 
 class HcpsdkReplicaInitError(HcpsdkError):
     def __init__(self, reason):
@@ -59,10 +66,10 @@ I_HS3 = 'hs3'
 I_HSWIFT = 'hswift'
 
 # Replication strategie constants
-RS_READ_ALLOWED      = 1    # allow to read from replica (always)
-RS_READ_ON_FAILOVER  = 2    # automatically read from replica when failed over
-RS_WRITE_ALLOWED     = 4    # allow to write to replica (always, A/A links only)
-RS_WRITE_ON_FAILOVER = 8    # allow to write to replica when failed over
+RS_READ_ALLOWED = 1  # allow to read from replica (always)
+RS_READ_ON_FAILOVER = 2  # automatically read from replica when failed over
+RS_WRITE_ALLOWED = 4  # allow to write to replica (always, A/A links only)
+RS_WRITE_ON_FAILOVER = 8  # allow to write to replica when failed over
 
 
 class target(object):
@@ -76,7 +83,7 @@ class target(object):
     """
 
     # private identifiers
-    __SSL_PORTS      = [443, 8000, 9090]
+    __SSL_PORTS = [443, 8000, 9090]
 
     def __init__(self, fqdn, user, password, port=443, interface=I_NATIVE,
                  replica_fqdn=None, replica_strategy=None):
@@ -91,7 +98,7 @@ class target(object):
         :param replica_strategy:    or'd combination of the RS_* modes
         :raises:                    HcpsdkError
         """
-        self.logger = logging.getLogger(__name__+'.target')
+        self.logger = logging.getLogger(__name__ + '.target')
         self.__fqdn = fqdn
         self.__port = port
         if self.__port in target.__SSL_PORTS:
@@ -99,7 +106,7 @@ class target(object):
         else:
             self.__ssl = False
         self.interface = interface
-        self.replica = None         # placeholder for a replica's *target* object
+        self.replica = None  # placeholder for a replica's *target* object
         self.replica_strategy = replica_strategy
 
         # instantiate an IP address circler for this target
@@ -109,16 +116,15 @@ class target(object):
             self.logger.error(e, exc_info=True)
             raise HcpsdkError(e)
 
+        # noinspection PyProtectedMember
         self.logger.debug('target initialized: {}:{} - SSL = {} - IPs = {}'
-                        .format(self.__fqdn, self.__port, self.__ssl, self.ipaddrqry._addresses))
+                          .format(self.__fqdn, self.__port, self.__ssl, self.ipaddrqry._addresses))
 
         # create the authentication header(s) needed for HCP access,
         # both flavor (pre-HCP 6 and HCP 6+ are provided)
-        token = b64encode(user.encode()).decode() \
-            + ":" + md5(password.encode()).hexdigest()
-        self.__headers = {"Authorization": 'HCP {}'.format(token),
-                          "Cookie": "hcp-ns-auth={0}".format(token)}
-        del(token)
+        token = b64encode(user.encode()).decode() + ":" + md5(password.encode()).hexdigest()
+        self.__headers = {"Authorization": 'HCP {}'.format(token), "Cookie": "hcp-ns-auth={0}".format(token)}
+        del token
 
         self.__headers['Host'] = self.__fqdn
 
@@ -126,20 +132,19 @@ class target(object):
         if replica_fqdn:
             try:
                 self.replica = target(replica_fqdn, user, password,
-                                               self.__port, interface=self.interface)
+                                      self.__port, interface=self.interface)
             except HcpsdkError as e:
                 raise HcpsdkReplicaInitError(e)
 
-        del(password)
-
-
+        del password
 
     def getaddr(self):
-        '''
+        """
         Convenience method to get an IP address out of the pool.
 
         :return:    an IP address (as string)
-        '''
+        """
+        # noinspection PyProtectedMember
         return self.ipaddrqry._addr()
 
     # Attributes:
@@ -154,6 +159,7 @@ class target(object):
         elif item == 'ssl':
             return self.__ssl
         elif item == 'addresses':
+            # noinspection PyProtectedMember
             return self.ipaddrqry._addresses
         elif item == 'headers':
             return self.__headers
@@ -163,7 +169,7 @@ class target(object):
             raise AttributeError
 
     def __str__(self):
-        return("<{} class initialized for {}>".format(target.__name__, self.__fqdn))
+        return "<{} class initialized for {}>".format(target.__name__, self.__fqdn)
 
 
 class connection(object):
@@ -172,66 +178,69 @@ class connection(object):
     caching the related parameters.
     """
 
+    # noinspection PyShadowingNames
     def __init__(self, target, timeout=30, idletime=30, debuglevel=0, retries=3):
-        '''
+        """
         :param target:      an initialized target object
         :param timeout:     the timeout for this connection (secs)
         :param idletime:    the time the connection shall stay persistence when idle (secs)
         :param debuglevel:  0..9 -see-> http.client.HTTP[S]connetion
         :param retries:     the number of retries until giving up on a request
                             **-not yet implemented-**
-        '''
-        self.logger = logging.getLogger(__name__+'.connection')
+        """
+        self.logger = logging.getLogger(__name__ + '.connection')
 
-        self.__target = target            # an initialized target object
-        self.__address = None             # the assigned IP address to use
-        self.__timeout = timeout          # the timeout for this connection (secs)
-        self.__idletime = float(idletime) # the time the connection shall stay open since last usage (secs)
-        self.__debuglevel = debuglevel    # 0..9 -see-> http.client.HTTP[S]connetion
-        self.__retries = retries          # the number of retries until giving up on a request
+        self.__target = target  # an initialized target object
+        self.__address = None  # the assigned IP address to use
+        self.__timeout = timeout  # the timeout for this connection (secs)
+        self.__idletime = float(idletime)  # the time the connection shall stay open since last usage (secs)
+        self.__debuglevel = debuglevel  # 0..9 -see-> http.client.HTTP[S]connetion
+        self.__retries = retries  # the number of retries until giving up on a request
 
-        self.__con = None                 # http.client.HTTP[S]Connection object
+        self.__con = None  # http.client.HTTP[S]Connection object
         self._response = None
 
-        self.__connect_time = 0.0         # record the time the connect() call took
-        self.__service_time1 = 0.0        # the time a single step took (connect, 1st read, ...)
-        self.__service_time2 = 0.0        # the time a request took incl. all reads, but w/o connect
+        self.__connect_time = 0.0  # record the time the connect() call took
+        self.__service_time1 = 0.0  # the time a single step took (connect, 1st read, ...)
+        self.__service_time2 = 0.0  # the time a request took incl. all reads, but w/o connect
 
-        self.idletimer = None             # used to hold a threading.Timer() object
+        self.idletimer = None  # used to hold a threading.Timer() object
 
         # try:
-        #     self.__con = self._connect()
+        # self.__con = self._connect()
         # except Exception as e:
-        #     raise e
+        # raise e
         # else:
-        self.logger.log(logging.DEBUG, 'connection object initialized: IP {} ({}) - timeout: {} - idletime: {} - retries: {}'
+        self.logger.log(logging.DEBUG,
+                        'connection object initialized: IP {} ({}) - timeout: {} - idletime: {} - retries: {}'
                         .format(self.__address, self.__target.fqdn, self.__timeout, self.__idletime, self.__retries))
         # self.set_idletimer()
 
     def _set_idletimer(self):
-        '''
+        """
         Create and start a timer
-        '''
-        self._cancel_idletimer()         # as a prevention, cancel a running timer
+        """
+        self._cancel_idletimer()  # as a prevention, cancel a running timer
         self.idletimer = Timer(self.__idletime, self.__cancel_idletimer)
         self.idletimer.start()
         self.logger.log(logging.DEBUG, 'idletimer started: {}'.format(self.idletimer))
 
     def _cancel_idletimer(self):
-        '''
+        """
         Cancel an active connection keep-alive timer - manually called
-        '''
+        """
         if self.idletimer:
             self.idletimer.cancel()
             self.logger.log(logging.DEBUG, 'idletimer canceled: {}'.format(self.idletimer))
             self.idletimer = None
         else:
-            self.logger.log(logging.DEBUG, 'tried to cancel a non-existing idletimer (pretty OK)'.format(self.idletimer))
+            self.logger.log(logging.DEBUG,
+                            'tried to cancel a non-existing idletimer (pretty OK)'.format(self.idletimer))
 
     def __cancel_idletimer(self):
-        '''
+        """
         Cancel an active connection keep-alive timer - called if timer has passed
-        '''
+        """
         if self.idletimer:
             self.idletimer.cancel()
             self.logger.log(logging.DEBUG, 'idletimer timed out: {}'.format(self.idletimer))
@@ -260,7 +269,6 @@ class connection(object):
             con.set_debuglevel(self.__debuglevel)
         return con
 
-
     def request(self, method, url, body=None, params=None, headers=None):
         """
         Wraps the *http.client.HTTP[s]connection.request()* method to be able to
@@ -288,7 +296,7 @@ class connection(object):
         :return:        the original response object received from
                         *http.client.HTTP[s]connection.requests()*.
         """
-        self._cancel_idletimer()                      # 1st, cancel the idletimer
+        self._cancel_idletimer()  # 1st, cancel the idletimer
         if not headers:
             headers = self.__target.headers
         else:
@@ -339,30 +347,28 @@ class connection(object):
             self._set_idletimer()
             return self._response
 
-
     def getheader(self, *args, **kwargs):
-        '''
+        """
         Used to get a single response header. Wraps *http.client.response.getheader()*.
         Arguments are simply passed through.
-        '''
+        """
         return self._response.getheader(*args, **kwargs)
 
-
     def getheaders(self):
-        '''
+        """
         Used to get a the response headers. Wraps *http.client.response.getheaders()*.
-        '''
+        """
         return self._response.getheaders()
 
-
+    # noinspection PyUnusedLocal
     def PUT(self, url, body=None, params=None, headers=None):
-        '''
+        """
         Convenience method for request() - PUT an object.
         Cleans up and leaves the connection ready for the next request.
         For parameter description see *request()*.
-        '''
+        """
         r = self.request('PUT', url, body, headers)
-        r.read()                                    # clean up
+        r.read()  # clean up
         return r
 
     def GET(self, url, params=None, headers=None):
@@ -381,9 +387,8 @@ class connection(object):
         For parameter description see *request()*.
         """
         r = self.request('HEAD', url, params=params, headers=headers)
-        r.read()                                    # clean up
+        r.read()  # clean up
         return r
-
 
     def POST(self, url, params=None, headers=None):
         """
@@ -392,9 +397,8 @@ class connection(object):
         For parameter description see *request()*.
         """
         r = self.request('POST', url, params=params, headers=headers)
-        r.read()                                    # clean up
+        r.read()  # clean up
         return r
-
 
     def DELETE(self, url, params=None, headers=None):
         """
@@ -403,19 +407,18 @@ class connection(object):
         For parameter description see *request()*.
         """
         r = self.request('DELETE', url, params=params, headers=headers)
-        r.read()                                    # clean up
+        r.read()  # clean up
         return r
 
-
     def read(self, amt=None):
-        '''
+        """
         Read amt # of bytes (or all, if amt isn't given) from a response.
 
         :param amt: number of bytes to read
         :return:    the requested number of bytes; fewer (or zero) bytes signal
                     end of transfer, which means that the connection is ready
                     for another request.
-        '''
+        """
         s_t = time.time()
         buf = self._response.read(amt)
         self.__service_time1 = time.time() - s_t
@@ -423,7 +426,6 @@ class connection(object):
                         .format(self.__service_time1))
         self.__service_time2 += self.__service_time1
         return buf
-
 
     def __getattr__(self, item):
         """
@@ -458,13 +460,14 @@ class connection(object):
             raise AttributeError
 
     def close(self):
-        '''
+        """
         Close the connection. **It is essential to close the connection**,
         as open connections might keep the program from terminating for at
         max *timeout* seconds, due to the fact that the timer used to keep
         the connection persistent runs in a separate thread, which will
         be canceled on *close()*.
-        '''
+        """
+        # noinspection PyBroadException
         try:
             self._cancel_idletimer()
             self.__con.close()
@@ -474,7 +477,7 @@ class connection(object):
                         .format(self.__address, self.__target.fqdn))
 
     def __str__(self):
-        return("<{} class initialized for fqdn {} @ {}>".format(connection.__name__,
-                                                                self.__target.authority,
-                                                                self.__address))
+        return ("<{} class initialized for fqdn {} @ {}>".format(connection.__name__,
+                                                                 self.__target.authority,
+                                                                 self.__address))
 

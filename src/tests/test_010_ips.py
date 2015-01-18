@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-'''
+"""
 The MIT License (MIT)
 
 Copyright (c) 2014 Thorsten Simons (sw@snomis.de)
@@ -20,16 +20,15 @@ FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR
 COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER
 IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
 CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-'''
+"""
 
 import unittest
 from hcpsdk import ips
 
 
 class TestHCPsdk_10_1_ips(unittest.TestCase):
-
     def setUp(self):
-        self.T_NS_GOOD ="n1.m.hcp1.snomis.local"
+        self.T_NS_GOOD = "n1.m.hcp1.snomis.local"
         self.T_NS_BAD = "this_wont_work.at-all"
         self.T_PORT = 443
 
@@ -44,7 +43,6 @@ class TestHCPsdk_10_1_ips(unittest.TestCase):
         self.assertTrue(type(r.ips) == list)
         print('fqdn: {} - cache = {}'.format(r.fqdn, r.cache))
         print(r.ips)
-
 
     def test_1_10_good_fqdn(self):
         """

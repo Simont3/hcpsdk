@@ -29,7 +29,7 @@ import hcpsdk
 
 # HCP connection details - you'll need to adopt this!
 # -- primary HCP
-P_FQDN = 'n1.m.hcp.snomis.local'
+P_FQDN = 'n1.m.hcp1.snomis.local'
 P_USER = 'n'
 P_PASS = 'n01'
 P_PORT = 443
@@ -46,6 +46,7 @@ if __name__ == '__main__':
         logging.basicConfig(level=logging.DEBUG, style='{', format='{levelname:>5s} {msg}')
         print = pprint = logging.info
     # end sample block 15
+    # noinspection PyUnboundLocalVariable
     print('running *simple_primary_only.py*')
 
     # start sample block 20
@@ -158,5 +159,6 @@ if __name__ == '__main__':
     # start sample block 70
     # close the connection:
     finally:
+        # noinspection PyUnboundLocalVariable
         c.close()
         # end sample block 70

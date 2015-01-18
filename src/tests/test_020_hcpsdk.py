@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-'''
+"""
 The MIT License (MIT)
 
 Copyright (c) 2014 Thorsten Simons (sw@snomis.de)
@@ -20,7 +20,7 @@ FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR
 COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER
 IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
 CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-'''
+"""
 
 import unittest
 import hcpsdk
@@ -28,9 +28,8 @@ import http.client
 
 
 class TestHCPsdk_1_target(unittest.TestCase):
-
     def setUp(self):
-        self.T_NS_GOOD ="n1.m.hcp2.snomis.local"
+        self.T_NS_GOOD = "n1.m.hcp2.snomis.local"
         self.T_NS_BAD = "this_wont_work.at-all"
         self.T_USER = "n"
         self.T_PASSWORD = "n01"
@@ -49,6 +48,7 @@ class TestHCPsdk_1_target(unittest.TestCase):
         Make sure we can get a single IP address from target object's pool
         """
         with self.assertRaises(hcpsdk.HcpsdkError):
+            # noinspection PyUnusedLocal
             hcptarget = hcpsdk.target(self.T_NS_BAD,
                                       self.T_USER, self.T_PASSWORD, self.T_PORT)
 
@@ -66,14 +66,15 @@ class TestHCPsdk_1_target(unittest.TestCase):
         (which means, we can't resolve an IP address for it)
         """
         with self.assertRaises(hcpsdk.HcpsdkError):
+            # noinspection PyUnusedLocal
             hcptarget = hcpsdk.target(self.T_NS_BAD,
                                       self.T_USER, self.T_PASSWORD, self.T_PORT)
 
+
 # @unittest.skip("demonstrating skipping")
 class TestHCPsdk_2_access(unittest.TestCase):
-
     def setUp(self):
-        self.T_NS_GOOD ="n1.m.hcp2.snomis.local"
+        self.T_NS_GOOD = "n1.m.hcp2.snomis.local"
         self.T_NS_BAD = "this_wont_work.at-all"
         self.T_USER = "n"
         self.T_PASSWORD = "n01"
@@ -119,9 +120,8 @@ class TestHCPsdk_2_access(unittest.TestCase):
 
 # @unittest.skip("demonstrating skipping")
 class TestHCPsdk_3_access_fail(unittest.TestCase):
-
     def setUp(self):
-        self.T_NS_GOOD ="n1.m.hcp2.snomis.local"
+        self.T_NS_GOOD = "n1.m.hcp2.snomis.local"
         self.T_NS_BAD = "this_wont_work.at-all"
         self.T_USER = "n"
         self.T_PASSWORD = "n01"
@@ -143,12 +143,12 @@ class TestHCPsdk_3_access_fail(unittest.TestCase):
         Ingest a file
         """
         T_BUF = '0123456789ABCDEF' * 64
-        self.r  = self.con.PUT(self.T_HCPFILE, T_BUF)
+        self.r = self.con.PUT(self.T_HCPFILE, T_BUF)
         self.r.read()
         self.assertEqual(self.r.status, 201)
 
         self.r = self.con.GET(self.T_HCPFILE)
-        #self.r.read()
+        # self.r.read()
         self.assertEqual(self.r.status, 200)
 
         with self.assertRaises(http.client.ResponseNotReady):

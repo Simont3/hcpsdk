@@ -31,29 +31,29 @@ logging.getLogger('hcpsdk.namespace').addHandler(logging.NullHandler())
 
 
 class info(object):
-    '''
+    """
     Class to access namespaces metadata information
-    '''
+    """
 
     def __init__(self, target, debuglevel=0):
-        '''
+        """
         :param target:      an **hcpsdk.target** object
         :param debuglevel:  0..9 (propagated to *http.client*)
-        '''
+        """
         self.target = target
         self.debuglevel = debuglevel
         self.connect_time = 0.0
         self.service_time = 0.0
         self.logger = logging.getLogger('hcpsdk.namespace.info')
 
-
     def NSstatistics(self):
-        '''
+        """
         Query for namespace statistic information
 
         :return:  a dict holding the stats
         :raises: hcpsdk.HcpsdkError()
-        '''
+        """
+        # noinspection PyUnusedLocal
         d = None
         try:
             con = hcpsdk.connection(self.target, debuglevel=self.debuglevel)
@@ -81,21 +81,22 @@ class info(object):
                     if tobedel:
                         del d[tobedel]
                 else:
-                    raise(hcpsdk.HcpsdkError('{} - {}'.format(r.status, r.reason)))
+                    raise (hcpsdk.HcpsdkError('{} - {}'.format(r.status, r.reason)))
         finally:
+            # noinspection PyUnboundLocalVariable
             con.close()
 
         return d
 
-
+    # noinspection PyShadowingBuiltins
     def listAccessibleNS(self, all=False):
-        '''
+        """
         List the settings of the actual (or all accessible namespace(s).
 
         :param all:     list all accessible namespaces if True, else list the
                         actual one, only.
         :return:        a dict holding a dict per namespace
-        '''
+        """
 
         # setup target URL and apply parameters
         url = '/proc'
@@ -125,23 +126,24 @@ class info(object):
                     for n in root:
                         d[n.attrib.get('name')] = n.attrib
                         for i in d[n.attrib.get('name')].keys():
-                            d[n.attrib.get('name')][i] =\
+                            d[n.attrib.get('name')][i] = \
                                 self._castVar(d[n.attrib.get('name')][i])
                         for n1 in n:
                             d[n.attrib['name']]['description'] = n1.text.strip().split('°')
                 else:
-                    raise(hcpsdk.HcpsdkError('{} - {}'.format(r.status, r.reason)))
+                    raise (hcpsdk.HcpsdkError('{} - {}'.format(r.status, r.reason)))
         finally:
+            # noinspection PyUnboundLocalVariable
             con.close()
 
         return d
 
     def listRetentionClasses(self):
-        '''
+        """
         List the Retention Classes available for the actual namespace.
 
         :return: a dict holding a dict per Retention Class
-        '''
+        """
         try:
             con = hcpsdk.connection(self.target, debuglevel=self.debuglevel)
         except Exception as e:
@@ -159,24 +161,24 @@ class info(object):
                 for n in root:
                     d[n.attrib.get('name')] = n.attrib
                     for i in d[n.attrib.get('name')].keys():
-                        d[n.attrib.get('name')][i] =\
+                        d[n.attrib.get('name')][i] = \
                             self._castVar(d[n.attrib.get('name')][i])
                     for n1 in n:
                         d[n.attrib.get('name')]['description'] = n1.text.strip()
             else:
-                raise(hcpsdk.HcpsdkError('{} - {}'.format(r.status, r.reason)))
+                raise (hcpsdk.HcpsdkError('{} - {}'.format(r.status, r.reason)))
         finally:
+            # noinspection PyUnboundLocalVariable
             con.close()
 
         return d
 
-
     def listPermissions(self):
-        '''
+        """
         List the namespace and user permissions for the actual namespace.
 
         :return: a dict holding a dict per permission domain
-        '''
+        """
         try:
             con = hcpsdk.connection(self.target, debuglevel=self.debuglevel)
         except Exception as e:
@@ -196,19 +198,20 @@ class info(object):
                     for i in d[n.tag].keys():
                         d[n.tag][i] = self._castVar(d[n.tag][i])
             else:
-                raise(hcpsdk.HcpsdkError('{} - {}'.format(r.status, r.reason)))
+                raise (hcpsdk.HcpsdkError('{} - {}'.format(r.status, r.reason)))
         finally:
+            # noinspection PyUnboundLocalVariable
             con.close()
 
         return d
 
-
+    # noinspection PyMethodMayBeStatic
     def _castVar(self, var):
-        '''
+        """
         Cast a value to the right type.
         :param var: a string
         :return: the casted value
-        '''
+        """
         if var == 'true':
             return True
         elif var == 'false':

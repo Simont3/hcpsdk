@@ -8,6 +8,13 @@
 as a central object per HCP target (and its replica, eventually) and
 *connection()* provides methods for REST access.
 
+Methods
+^^^^^^^
+
+.. py:method:: version()
+
+   Returns the full version of the HCPsdk (|release|).
+
 Classes
 ^^^^^^^
 
@@ -149,36 +156,74 @@ Example
 
 ::
 
-   >>> import hcpsdk
-   >>> t = hcpsdk.target('n1.m.hcp1.snomis.local', 'n', 'n01')
-   >>> c = hcpsdk.connection(t)
-   >>> '{:0.12f}'.format(c.connect_time)
-   '0.000000000010'
-   >>>
-   >>> r = c.PUT('/rest/hcpsdk/test1.txt', body='This is an example')
-   >>> c.response_status, c.response_reason
-   (201, 'Created')
-   >>> c.getheaders()
-   [('Date', 'Wed, 07 Jan 2015 12:55:43 GMT'),
-    ('Server', 'HCP V7.0.1.17'),
-    ('X-HCP-ServicedBySystem', 'hcp1.snomis.local'),
-    ('Location', '/rest/hcpsdk/test1.txt'),
-    ('X-HCP-VersionId', '90920662012865'),
-    ('X-HCP-Hash',
-     'SHA-256 47FB563CC8F86DC37C86D08BC542968F7986ACD81C97BF76DB7AD744407FE117'),
+    >>> import hcpsdk
+    >>> hcpsdk.version()
+    '0.9.0-1'
+    >>> t = hcpsdk.target('n1.m.hcp1.snomis.local', 'n', 'n01')
+    >>> c = hcpsdk.connection(t)
+    >>> c.connect_time
+    0.000000000010
+    >>>
+    >>> r = c.PUT('/rest/hcpsdk/test1.txt', body='This is an example', params={'index': 'true'})
+    >>> c.response_status, c.response_reason
+    (201, 'Created')
+    >>>
+    >>> r = c.HEAD('/rest/hcpsdk/test1.txt')
+    >>> c.response_status, c.response_reason
+    (200, 'OK')
+    >>> c.getheaders()
+    [('Date', 'Sun, 18 Jan 2015 14:22:23 GMT'),
+     ('Server', 'HCP V7.0.1.17'),
+     ('X-RequestId', 'AA6FF1E05A49375'),
+     ('X-HCP-ServicedBySystem', 'hcp1.snomis.local'),
+     ('X-HCP-Time', '1421590943'),
+     ('X-HCP-SoftwareVersion', '7.0.1.17'),
      ('ETag', '"68791e1b03badd5e4eb9287660f67745"'),
-     ('X-RequestId', 'BA44338AD9E4EB48'),
-     ('X-HCP-Time', '1420635343'),
-     ('Content-Length', '0')
-   ]
-   >>>
-   >>> r = c.GET('/rest/hcpsdk/test1.txt')
-   >>> c.response_status, c.response_reason
-   (200, 'OK')
-   >>> c.read()
-   b'This is an example'
-   >>> '{:0.12f}'.format(c.service_time2)
-   '0.015625000000'
-   >>>
-   >>> c.close()
-   >>>
+     ('Cache-Control', 'no-cache,no-store'),
+     ('Pragma', 'no-cache'),
+     ('Expires', 'Thu, 01 Jan 1970 00:00:00 GMT'),
+     ('Content-Type', 'text/plain'),
+     ('Content-Length', '18'),
+     ('X-HCP-Type', 'object'),
+     ('X-HCP-Size', '18'),
+     ('X-HCP-Hash', 'SHA-256 47FB563CC8F86DC37C86D08BC542968F7986ACD81C97BF76DB7AD744407FE117'),
+     ('X-HCP-VersionId', '90981819023489'),
+     ('X-HCP-IngestTime', '1421590922'),
+     ('X-HCP-RetentionClass', ''),
+     ('X-HCP-RetentionString', 'Deletion Allowed'),
+     ('X-HCP-Retention', '0'),
+     ('X-HCP-IngestProtocol', 'HTTP'),
+     ('X-HCP-RetentionHold', 'false'),
+     ('X-HCP-Shred', 'false'),
+     ('X-HCP-DPL', '2'),
+     ('X-HCP-Index', 'true'),
+     ('X-HCP-Custom-Metadata', 'false'),
+     ('X-HCP-ACL', 'false'),
+     ('X-HCP-Owner', 'n'),
+     ('X-HCP-Domain', ''),
+     ('X-HCP-UID', ''),
+     ('X-HCP-GID', ''),
+     ('X-HCP-CustomMetadataAnnotations', ''),
+     ('X-HCP-Replicated', 'false'),
+     ('X-HCP-ReplicationCollision', 'false'),
+     ('X-HCP-ChangeTimeMilliseconds', '1421590922263.00'),
+     ('X-HCP-ChangeTimeString', '2015-01-18T15:22:02+0100'),
+     ('Last-Modified', 'Sun, 18 Jan 2015 14:22:02 GMT')]
+    >>>
+    >>> r = c.GET('/rest/hcpsdk/test1.txt')
+    >>> c.response_status, c.response_reason
+    (200, 'OK')
+    >>> c.read()
+    b'This is an example'
+    >>> c.service_time2
+    0.0004937648773193359
+    >>>
+    >>> r = c.DELETE('/rest/hcpsdk/test1.txt')
+    >>> c.response_status, c.response_reason
+    (200, 'OK')
+    >>> c.service_time2
+    0.00019121170043945312
+    >>>
+    >>> c.close()
+    >>>
+

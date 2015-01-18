@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-'''
+"""
 The MIT License (MIT)
 
 Copyright (c) 2014 Thorsten Simons (sw@snomis.de)
@@ -20,7 +20,7 @@ FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR
 COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER
 IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
 CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-'''
+"""
 
 import unittest
 from collections import OrderedDict
@@ -28,13 +28,13 @@ from pprint import pprint
 import hcpsdk
 
 import logging
-logging.basicConfig(filename='_example.log',level=logging.DEBUG)
+
+logging.basicConfig(filename='_example.log', level=logging.DEBUG)
 
 
 class TestHCPsdk_30_1_namespaceinfo_NS_GOOD(unittest.TestCase):
-
     def setUp(self):
-        self.T_NS_GOOD ="n1.m.hcp1.snomis.local"
+        self.T_NS_GOOD = "n1.m.hcp1.snomis.local"
         self.T_USER = "n"
         self.T_PASSWORD = "n01"
         self.T_PORT = 443
@@ -45,7 +45,7 @@ class TestHCPsdk_30_1_namespaceinfo_NS_GOOD(unittest.TestCase):
     def tearDown(self):
         del self.hcptarget
 
-#    @unittest.skip("demonstrating skipping")
+    # @unittest.skip("demonstrating skipping")
     def test_1_10_good_NSstatistics(self):
         """
         Make sure we get a dict w/ length 9
@@ -56,7 +56,7 @@ class TestHCPsdk_30_1_namespaceinfo_NS_GOOD(unittest.TestCase):
         self.assertTrue(type(r) == dict)
         self.assertTrue(len(r) == 9)
 
-#    @unittest.skip("demonstrating skipping")
+    # @unittest.skip("demonstrating skipping")
     def test_1_20_good_listAccessibleNS(self):
         """
         Make sure we get a dict holding dicts
@@ -77,7 +77,8 @@ class TestHCPsdk_30_1_namespaceinfo_NS_GOOD(unittest.TestCase):
         for ns in r:
             self.assertTrue(type(r[ns]) == dict)
 
-#    @unittest.skip("demonstrating skipping")
+        #    @unittest.skip("demonstrating skipping")
+
     def test_1_40_good_listRetentionClasses(self):
         r = self.nso.listRetentionClasses()
         pprint(r)
@@ -85,7 +86,8 @@ class TestHCPsdk_30_1_namespaceinfo_NS_GOOD(unittest.TestCase):
         for ns in r:
             self.assertTrue(type(r[ns]) == dict)
 
-#    @unittest.skip("demonstrating skipping")
+        #    @unittest.skip("demonstrating skipping")
+
     def test_1_50_good_listPermissions(self):
         print('test_1_50_good_listPermissions')
         r = self.nso.listPermissions()

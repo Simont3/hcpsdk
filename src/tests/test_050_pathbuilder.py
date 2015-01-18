@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-'''
+"""
 The MIT License (MIT)
 
 Copyright (c) 2014 Thorsten Simons (sw@snomis.de)
@@ -20,13 +20,14 @@ FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR
 COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER
 IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
 CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-'''
+"""
 
 import unittest
-from hcpsdk.pathbuilder import pathbuilder, pathbuilderError
+
+from hcpsdk.pathbuilder import pathbuilder
+
 
 class TestHCPsdk_50_1_pathbuilder(unittest.TestCase):
-
     def setUp(self):
         pass
 
@@ -56,8 +57,6 @@ class TestHCPsdk_50_1_pathbuilder(unittest.TestCase):
             print(i)
         self.assertTrue(type(t) == tuple)
         self.assertTrue(len(t) == 3)
-
-
 
 
 if __name__ == '__main__':

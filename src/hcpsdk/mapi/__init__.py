@@ -20,11 +20,11 @@
 # IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
 # CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-import sys
-import time
 import xml.etree.ElementTree as ET
 import logging
+
 import hcpsdk
+
 
 __all__ = ['ReplicationSettingsError', 'replication']
 
@@ -37,48 +37,47 @@ class ReplicationSettingsError(Exception):
     R_COMPLETERECOVERY on a R_ACTIVE_ACTIVE link, R_FAILBACK on an
     R_OUTBOUND or R_INBOUND link).
     """
+
     def __init__(self, reason):
         self.args = reason,
         self.reason = reason
 
 
 class replication(object):
-    '''
+    """
     Access replication link information, modify the replication link state.
-    '''
+    """
     # link types
     R_ACTIVE_ACTIVE = 'ACTIVE_ACTIVE'
     R_OUTBOUND = 'OUTBOUND'
     R_INBOUND = 'INBOUND'
     # link activity
-    R_SUSPEND = 'suspend'                   # suspend a link
-    R_RESUME = 'resume'                     # resume a link
-    R_RESTORE = 'restore'                   # restore a link
-    R_FAILOVER = 'failOver'                 # for all link types
-    R_FAILBACK = 'failBack'                 # for active/active links
-    R_BEGINRECOVERY = 'beginRecovery'       # for active/passive links
-    R_COMPLETERECOVERY = 'completeRecovery' # dito
+    R_SUSPEND = 'suspend'  # suspend a link
+    R_RESUME = 'resume'  # resume a link
+    R_RESTORE = 'restore'  # restore a link
+    R_FAILOVER = 'failOver'  # for all link types
+    R_FAILBACK = 'failBack'  # for active/active links
+    R_BEGINRECOVERY = 'beginRecovery'  # for active/passive links
+    R_COMPLETERECOVERY = 'completeRecovery'  # dito
 
     def __init__(self, target, debuglevel=0):
-        '''
+        """
         :param target:      an hcpsdk.target object
         :param debuglevel:  0..9 (used in *http.client*)
-        '''
+        """
         self.target = target
         self.debuglevel = debuglevel
         self.connect_time = 0.0
         self.service_time = 0.0
         self.logger = logging.getLogger('hcpsdk.ips.Circle')
 
-
-
     def getReplicationSettings(self):
-        '''
+        """
         Query MAPI for the general settings of the replication service.
 
         :return: a dict containing the settings
         :raises: HcpsdkError
-        '''
+        """
         d = {}
         try:
             con = hcpsdk.connection(self.target, debuglevel=self.debuglevel)
@@ -98,18 +97,20 @@ class replication(object):
                     for child in ET.fromstring(x):
                         d[child.tag] = child.text
                 else:
-                    raise(hcpsdk.HcpsdkError('{} - {}'.format(r.status, r.reason)))
+                    raise (hcpsdk.HcpsdkError('{} - {}'.format(r.status, r.reason)))
         finally:
+            # noinspection PyUnboundLocalVariable
             con.close()
-            return d
+
+        return d
 
     def getLinkList(self):
-        '''
+        """
         Query MAPI for a list of replication links.
 
         :return:  a list with the names of replication links
         :raises: HcpsdkError
-        '''
+        """
         d = []
         try:
             con = hcpsdk.connection(self.target, debuglevel=self.debuglevel)
@@ -131,20 +132,21 @@ class replication(object):
                         if child.tag == 'name':
                             d.append(child.text)
                 else:
-                    raise(hcpsdk.HcpsdkError('{} - {}'.format(r.status, r.reason)))
+                    raise (hcpsdk.HcpsdkError('{} - {}'.format(r.status, r.reason)))
         finally:
+            # noinspection PyUnboundLocalVariable
             con.close()
 
         return d
 
     def getLinkDetails(self, link):
-        '''
+        """
         Query MAPI for the details of a replication link.
 
         :param link:    the name of the link as retrieved by **getLinkList()**
         :return:        a dict holding the details
         :raises:        HcpsdkError
-        '''
+        """
         d = {}
         try:
             con = hcpsdk.connection(self.target, debuglevel=self.debuglevel)
@@ -175,14 +177,15 @@ class replication(object):
                                     for j in i:
                                         d[child.tag][i.tag][j.tag] = j.text
                 else:
-                    raise(hcpsdk.HcpsdkError('{} - {}'.format(r.status, r.reason)))
+                    raise (hcpsdk.HcpsdkError('{} - {}'.format(r.status, r.reason)))
         finally:
+            # noinspection PyUnboundLocalVariable
             con.close()
-            return d
 
+        return d
 
     def setReplicationLinkState(self, linkname, action, linktype=None):
-        '''
+        """
         Failover and  failback a replication link.
 
         :param linkname:    name of the link to change the state
@@ -191,23 +194,20 @@ class replication(object):
         :param action:     one of ``[R_SUSPEND, R_RESUME, R_RESTORE, R_FAILOVER,
                             R_FAILBACK, R_BEGINRECOVERY, R_COMPLETERECOVERY]``
         :raises: HcpsdkError
-        '''
+        """
         # make sure that only valid linktypes and actions are accepted
-        if linktype not in [replication.R_ACTIVE_ACTIVE, replication.R_OUTBOUND,
-                                    replication.R_INBOUND, None] or \
-            action not in [replication.R_SUSPEND, replication.R_RESUME,
-                            replication.R_RESTORE, replication.R_BEGINRECOVERY,
-                            replication.R_COMPLETERECOVERY,
-                            replication.R_FAILBACK, replication.R_FAILOVER]:
+        if linktype not in [replication.R_ACTIVE_ACTIVE, replication.R_OUTBOUND, replication.R_INBOUND, None] or  \
+                       action not in [replication.R_SUSPEND, replication.R_RESUME,
+                                       replication.R_RESTORE, replication.R_BEGINRECOVERY,
+                                       replication.R_COMPLETERECOVERY,
+                                       replication.R_FAILBACK, replication.R_FAILOVER]:
             raise ValueError
         # make sure that no invalid action is called
-        if (action == replication.R_FAILBACK and \
-            linktype in [replication.R_OUTBOUND, replication.R_INBOUND]) or \
-           (action in [replication.R_BEGINRECOVERY, replication.R_COMPLETERECOVERY] and \
-            linktype == replication.R_ACTIVE_ACTIVE) or \
-           (action in [replication.R_FAILOVER, replication.R_FAILBACK,
-                       replication.R_BEGINRECOVERY, replication.R_COMPLETERECOVERY] and \
-            not linktype):
+        if (action == replication.R_FAILBACK and linktype in [replication.R_OUTBOUND, replication.R_INBOUND]) or \
+                (action in [replication.R_BEGINRECOVERY, replication.R_COMPLETERECOVERY] and
+                         linktype == replication.R_ACTIVE_ACTIVE) or \
+                (action in [replication.R_FAILOVER, replication.R_FAILBACK,
+                            replication.R_BEGINRECOVERY, replication.R_COMPLETERECOVERY] and not linktype):
             raise ReplicationSettingsError('{} not allowed on {} link'.format(action, linktype))
 
         # build params
@@ -226,10 +226,11 @@ class replication(object):
             else:
                 if r.status != 200:
                     err = r.getheader('X-HCP-ErrorMessage', 'no message')
-                    raise(hcpsdk.HcpsdkError('{} - {} ({})'.format(r.status, r.reason, err)))
+                    raise (hcpsdk.HcpsdkError('{} - {} ({})'.format(r.status, r.reason, err)))
                 else:
                     r.read()
         finally:
+            # noinspection PyUnboundLocalVariable
             con.close()
 
 

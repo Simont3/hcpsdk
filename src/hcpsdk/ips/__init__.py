@@ -23,7 +23,9 @@
 import threading
 import socket
 import logging
+# noinspection PyPackageRequirements
 import dns
+# noinspection PyPackageRequirements
 import dns.resolver
 
 
@@ -36,6 +38,7 @@ class IpsError(Exception):
     """
     Signal an error in 'ips' - typically a name resolution problem.
     """
+
     def __init__(self, reason):
         self.args = reason,
         self.reason = reason
@@ -50,17 +53,16 @@ class Circle(object):
     __EMPTY_ADDRLIST = []
 
     def __init__(self, fqdn, port=443):
-        '''
+        """
         :param fqdn: the FQDN to be resolved
         :param port: the port to be used by the **hcpsdk.target** object
-        '''
+        """
         self.__authority = fqdn
         self.__port = port
         self._cLock = threading.Lock()
         self.__generator = None
         self._addresses = Circle.__EMPTY_ADDRLIST.copy()
         self.logger = logging.getLogger('hcpsdk.ips.Circle')
-
 
         # initial lookup, build the address cache
         self._addr(fqdn=self.__authority)
@@ -79,12 +81,13 @@ class Circle(object):
         :param fqdn:    the FQDN
         :return:        an IP address (as string)
         """
+
         def __addr(dnsname):
-            '''
+            """
             resolve HCPs IP addresses and build a list with all IPs gathered
-            '''
+            """
             self._addresses = Circle.__EMPTY_ADDRLIST.copy()
-            answer = Circle.__EMPTY_ADDRLIST.copy()
+            # answer = Circle.__EMPTY_ADDRLIST.copy()
             result = query(dnsname, cache=True)
             if result.raised:
                 raise IpsError(result.raised)
@@ -102,13 +105,11 @@ class Circle(object):
         self._cLock.release()
         return myaddr
 
-
     def refresh(self):
         """
         Force a fresh DNS query and rebuild the cached list of IP addresses
         """
         self._addr(fqdn=self.__authority)
-
 
     def __getattr__(self, item):
         """
@@ -120,13 +121,14 @@ class Circle(object):
             raise AttributeError
 
     def __str__(self):
-        return(self.answer.qname)
+        return self.answer.qname
 
 
 class request(object):
-    '''
+    """
     A DNS query request object
-    '''
+    """
+
     def __init__(self, fqdn, cache):
         self.fqdn = fqdn
         self.cache = cache
@@ -134,15 +136,16 @@ class request(object):
 
 
 class response(object):
-    '''
+    """
     DNS query response object, returned by the **query()** function.
-    '''
+    """
+
     def __init__(self, fqdn, cache):
-        '''
+        """
         :param fqdn:    the FQDN for the response
         :param cache:   response from a query by-passing the local DNS cache (False)
                         or using the system resolver (True)
-        '''
+        """
         self.fqdn = fqdn
         self.cache = cache
         self.ips = []
@@ -150,7 +153,7 @@ class response(object):
 
 
 def query(fqdn, cache=False):
-    '''
+    """
     Submit a DNS query, using *socket.getaddrinfo()* if cache=True, or
     *dns.resolver.query()* if cache=False.
 
@@ -160,11 +163,11 @@ def query(fqdn, cache=False):
     :return:        an **hcpsdk.ips.response** object
     :raises:        should never raise, as Exceptions are signaled through
                     the **response.raised** attribute
-    '''
+    """
     if isinstance(fqdn, request):
-        _response = response(fqdn.fqdn, fqdn.cache) # to collect the resolved IP addresses
+        _response = response(fqdn.fqdn, fqdn.cache)  # to collect the resolved IP addresses
     else:
-        _response = response(fqdn, cache)           # to collect the resolved IP addresses
+        _response = response(fqdn, cache)  # to collect the resolved IP addresses
 
     if _response.cache:
         try:
@@ -190,7 +193,8 @@ def query(fqdn, cache=False):
         except dns.resolver.NotAbsolute:
             _response.raised = 'Err: Raised if an absolute domain name is required but a relative name was provided.'
         except dns.resolver.NoRootSOA:
-            _response.raised = 'Err: Raised if for some reason there is no SOA at the root name. This should never happen!'
+            _response.raised = 'Err: Raised if for some reason there is no SOA at the root name. ' \
+                               'This should never happen!'
         except dns.resolver.NoMetaqueries:
             _response.raised = 'Err: Metaqueries are not allowed.'
         except Exception as e:
@@ -200,8 +204,8 @@ def query(fqdn, cache=False):
                 ip = str(i)
                 if ip[1] == '#':
                     hx = ip[-8:]
-                    ip='{}.{}.{}.{}'.format(int(hx[:2],16),  int(hx[2:4],16),
-                                            int(hx[4:6],16), int(hx[6:],16))
+                    ip = '{}.{}.{}.{}'.format(int(hx[:2], 16), int(hx[2:4], 16),
+                                              int(hx[4:6], 16), int(hx[6:], 16))
                 _response.ips.append(str(ip))
             if not len(_response.ips):
                 _response.raised = 'Err: no response'
