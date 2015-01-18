@@ -1,51 +1,51 @@
  INFO running *simple_primary_only.py*
-DEBUG target initialized: n1.m.hcp1.snomis.local:443 - SSL = True - IPs = ['192.168.0.54', '192.168.0.55', '192.168.0.52', '192.168.0.53']
- INFO target *t* was initialized with IP addresses: ['192.168.0.54', '192.168.0.55', '192.168.0.52', '192.168.0.53']
-DEBUG connection object initialized: IP None (n1.m.hcp1.snomis.local) - timeout: 30 - idletime: 30.0 - retries: 3
- INFO connection *c* uses IP address: None
+DEBUG Target initialized: n1.m.hcp1.snomis.local:443 - SSL = True - IPs = ['192.168.0.54', '192.168.0.55', '192.168.0.52', '192.168.0.53']
+ INFO Target *t* was initialized with IP addresses: ['192.168.0.54', '192.168.0.55', '192.168.0.52', '192.168.0.53']
+DEBUG Connection object initialized: IP None (n1.m.hcp1.snomis.local) - timeout: 30 - idletime: 30.0 - retries: 3
+ INFO Connection *c* uses IP address: None
  INFO
 DEBUG tried to cancel a non-existing idletimer (pretty OK)
 DEBUG URL = /rest/hcpsdk/sample_primary_only.txt
-DEBUG connection needs to be opened
-DEBUG connection open: IP 192.168.0.55 (n1.m.hcp1.snomis.local) - connect_time: 0.0014798641204833984
-DEBUG PUT request for /rest/hcpsdk/sample_primary_only.txt - service_time1 = 0.03249621391296387
+DEBUG Connection needs to be opened
+DEBUG Connection open: IP 192.168.0.55 (n1.m.hcp1.snomis.local) - connect_time: 0.0014798641204833984
+DEBUG PUT Request for /rest/hcpsdk/sample_primary_only.txt - service_time1 = 0.03249621391296387
 DEBUG tried to cancel a non-existing idletimer (pretty OK)
 DEBUG idletimer started: <Timer(Thread-1, started 4350545920)>
- INFO PUT request was successful
+ INFO PUT Request was successful
  INFO used IP address: 192.168.0.55
  INFO hash = SHA-256 A2706A20394E48179A86C71E82C360C2960D3652340F9B9FDB355A42E3AC7691
  INFO connect time:     0.001479864120 seconds
- INFO request duration: 0.032496213913 seconds
+ INFO Request duration: 0.032496213913 seconds
  INFO
 DEBUG idletimer canceled: <Timer(Thread-1, started 4350545920)>
 DEBUG URL = /rest/hcpsdk/sample_primary_only.txt
-DEBUG HEAD request for /rest/hcpsdk/sample_primary_only.txt - service_time1 = 0.00020003318786621094
+DEBUG HEAD Request for /rest/hcpsdk/sample_primary_only.txt - service_time1 = 0.00020003318786621094
 DEBUG tried to cancel a non-existing idletimer (pretty OK)
 DEBUG idletimer started: <Timer(Thread-2, started 4350545920)>
- INFO HEAD request was successful - headers:
+ INFO HEAD Request was successful - headers:
  INFO [('Date', 'Sun, 18 Jan 2015 14:38:22 GMT'), ('Server', 'HCP V7.0.1.17'), ('X-RequestId', 'B3DFD8694312FA08'), ('X-HCP-ServicedBySystem', 'hcp1.snomis.local'), ('X-HCP-Time', '1421591902'), ('X-HCP-SoftwareVersion', '7.0.1.17'), ('ETag', '"ced877c812a6b561fa8c28b99fda69f2"'), ('Cache-Control', 'no-cache,no-store'), ('Pragma', 'no-cache'), ('Expires', 'Thu, 01 Jan 1970 00:00:00 GMT'), ('Content-Type', 'text/plain'), ('Content-Length', '131072'), ('X-HCP-Type', 'object'), ('X-HCP-Size', '131072'), ('X-HCP-Hash', 'SHA-256 A2706A20394E48179A86C71E82C360C2960D3652340F9B9FDB355A42E3AC7691'), ('X-HCP-VersionId', '90981881745921'), ('X-HCP-IngestTime', '1421591902'), ('X-HCP-RetentionClass', ''), ('X-HCP-RetentionString', 'Deletion Allowed'), ('X-HCP-Retention', '0'), ('X-HCP-IngestProtocol', 'HTTP'), ('X-HCP-RetentionHold', 'false'), ('X-HCP-Shred', 'false'), ('X-HCP-DPL', '2'), ('X-HCP-Index', 'true'), ('X-HCP-Custom-Metadata', 'false'), ('X-HCP-ACL', 'false'), ('X-HCP-Owner', 'n'), ('X-HCP-Domain', ''), ('X-HCP-UID', ''), ('X-HCP-GID', ''), ('X-HCP-CustomMetadataAnnotations', ''), ('X-HCP-Replicated', 'false'), ('X-HCP-ReplicationCollision', 'false'), ('X-HCP-ChangeTimeMilliseconds', '1421591902336.00'), ('X-HCP-ChangeTimeString', '2015-01-18T15:38:22+0100'), ('Last-Modified', 'Sun, 18 Jan 2015 14:38:22 GMT')]
  INFO used IP address: 192.168.0.55
- INFO request duration: 0.000200033188 seconds
+ INFO Request duration: 0.000200033188 seconds
  INFO
 DEBUG idletimer canceled: <Timer(Thread-2, started 4350545920)>
 DEBUG URL = /rest/hcpsdk/sample_primary_only.txt
-DEBUG GET request for /rest/hcpsdk/sample_primary_only.txt - service_time1 = 0.00020503997802734375
+DEBUG GET Request for /rest/hcpsdk/sample_primary_only.txt - service_time1 = 0.00020503997802734375
 DEBUG tried to cancel a non-existing idletimer (pretty OK)
 DEBUG idletimer started: <Timer(Thread-3, started 4350545920)>
- INFO GET request was successful - here's the content:
+ INFO GET Request was successful - here's the content:
 DEBUG (partial?) read: service_time1 = 0.026958942413330078 secs
  INFO b'0123456789abcdef0123456789abcdef01234567'...
  INFO used IP address: 192.168.0.55
- INFO request duration: 0.027163982391 seconds
+ INFO Request duration: 0.027163982391 seconds
  INFO
 DEBUG idletimer canceled: <Timer(Thread-3, started 4350545920)>
 DEBUG URL = /rest/hcpsdk/sample_primary_only.txt
-DEBUG DELETE request for /rest/hcpsdk/sample_primary_only.txt - service_time1 = 0.00015997886657714844
+DEBUG DELETE Request for /rest/hcpsdk/sample_primary_only.txt - service_time1 = 0.00015997886657714844
 DEBUG tried to cancel a non-existing idletimer (pretty OK)
 DEBUG idletimer started: <Timer(Thread-4, started 4350545920)>
- INFO DELETE request was successful
+ INFO DELETE Request was successful
  INFO used IP address: 192.168.0.55
- INFO request duration: 0.000159978867 seconds
+ INFO Request duration: 0.000159978867 seconds
  INFO
 DEBUG idletimer canceled: <Timer(Thread-4, started 4350545920)>
-DEBUG connection object closed: IP 192.168.0.55 (n1.m.hcp1.snomis.local)
+DEBUG Connection object closed: IP 192.168.0.55 (n1.m.hcp1.snomis.local)

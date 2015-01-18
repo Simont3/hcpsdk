@@ -32,15 +32,15 @@ import logging
 logging.basicConfig(filename='_example.log', level=logging.DEBUG)
 
 
-class TestHCPsdk_30_1_namespaceinfo_NS_GOOD(unittest.TestCase):
+class TestHcpsdk_30_1_NamespaceInfo_NS_GOOD(unittest.TestCase):
     def setUp(self):
         self.T_NS_GOOD = "n1.m.hcp1.snomis.local"
         self.T_USER = "n"
         self.T_PASSWORD = "n01"
         self.T_PORT = 443
-        self.hcptarget = hcpsdk.target(self.T_NS_GOOD, self.T_USER,
+        self.hcptarget = hcpsdk.Target(self.T_NS_GOOD, self.T_USER,
                                        self.T_PASSWORD, self.T_PORT)
-        self.nso = hcpsdk.namespace.info(self.hcptarget)
+        self.nso = hcpsdk.namespace.Info(self.hcptarget)
 
     def tearDown(self):
         del self.hcptarget
@@ -51,7 +51,7 @@ class TestHCPsdk_30_1_namespaceinfo_NS_GOOD(unittest.TestCase):
         Make sure we get a dict w/ length 9
         """
         print('test_1_10_good_NSstatistics')
-        r = self.nso.NSstatistics()
+        r = self.nso.nsstatistics()
         pprint(r)
         self.assertTrue(type(r) == dict)
         self.assertTrue(len(r) == 9)
@@ -62,7 +62,7 @@ class TestHCPsdk_30_1_namespaceinfo_NS_GOOD(unittest.TestCase):
         Make sure we get a dict holding dicts
         """
         print('test_1_20_good_listAccessibleNS')
-        r = self.nso.listAccessibleNS()
+        r = self.nso.listaccessiblens()
         pprint(r)
         self.assertTrue(type(r) == OrderedDict)
         for ns in r:
@@ -70,7 +70,7 @@ class TestHCPsdk_30_1_namespaceinfo_NS_GOOD(unittest.TestCase):
 
     def test_1_30_good_listThisNSonly(self):
         print('test_1_30_good_listThisNSonly')
-        r = self.nso.listAccessibleNS(all=True)
+        r = self.nso.listaccessiblens(all=True)
         pprint(r)
         self.assertTrue(type(r) == OrderedDict)
         self.assertTrue(len(r) == 1)
@@ -80,7 +80,7 @@ class TestHCPsdk_30_1_namespaceinfo_NS_GOOD(unittest.TestCase):
         #    @unittest.skip("demonstrating skipping")
 
     def test_1_40_good_listRetentionClasses(self):
-        r = self.nso.listRetentionClasses()
+        r = self.nso.listretentionclasses()
         pprint(r)
         self.assertTrue(type(r) == OrderedDict)
         for ns in r:
@@ -90,7 +90,7 @@ class TestHCPsdk_30_1_namespaceinfo_NS_GOOD(unittest.TestCase):
 
     def test_1_50_good_listPermissions(self):
         print('test_1_50_good_listPermissions')
-        r = self.nso.listPermissions()
+        r = self.nso.listpermissions()
         pprint(r)
         self.assertTrue(type(r) == OrderedDict)
         for ns in r:

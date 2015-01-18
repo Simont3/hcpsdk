@@ -55,6 +55,7 @@ master_doc = 'index'
 
 # General information about the project.
 project = 'HCPsdk'
+# noinspection PyShadowingBuiltins
 copyright = '2014-2015, Thorsten Simons'
 
 # The version info for the project you're documenting, acts as replacement for
@@ -227,7 +228,7 @@ latex_elements = {
 }
 
 # Grouping the document tree into LaTeX files. List of tuples
-# (source start file, target name, title, author, documentclass [howto/manual]).
+# (source start file, Target name, title, author, documentclass [howto/manual]).
 latex_documents = [
     ('index', 'HCPsdk.tex', 'HCP SDK Documentation',
      'Thorsten Simons', 'manual', True),
@@ -272,7 +273,7 @@ man_pages = [
 # -- Options for Texinfo output -------------------------------------------
 
 # Grouping the document tree into Texinfo files. List of tuples
-# (source start file, target name, title, author,
+# (source start file, Target name, title, author,
 #  dir menu entry, description, category)
 texinfo_documents = [
     ('index', 'HCPsdk', 'HCPsdk Documentation',

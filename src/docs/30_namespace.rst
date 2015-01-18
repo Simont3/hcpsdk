@@ -5,15 +5,15 @@
    :synopsis: Namespace information
 
 **hcpsdk.namespace** provides access to the actual Namespace's parameters and
-statistics. The **hcpsdk.target** object must have been instantiated with a
+statistics. The **hcpsdk.Target** object must have been instantiated with a
 **Namespace FQDN**.
 
 Classes
 ^^^^^^^
 
-.. autoclass:: info
+.. autoclass:: Info
 
-   .. automethod:: NSstatistics
+   .. automethod:: nsstatistics
 
       .. attribute:: returned dictionary (example):
 
@@ -29,7 +29,7 @@ Classes
              'totalCapacityBytes': 53687091200,
              'usedCapacityBytes': 13792362496}
 
-   .. automethod:: listAccessibleNS
+   .. automethod:: listaccessiblens
 
       .. attribute:: returned dictionary (example):
 
@@ -59,7 +59,7 @@ Classes
                     'versioningEnabled': False}}
 
 
-   .. automethod:: listRetentionClasses
+   .. automethod:: listretentionclasses
 
       .. attribute:: returned dictionary (example):
 
@@ -81,7 +81,7 @@ Classes
 
 
 
-   .. automethod:: listPermissions
+   .. automethod:: listpermissions
 
       .. attribute:: returned dictionary (example):
 
@@ -136,8 +136,8 @@ Example
     >>> import hcpsdk.namespace
     >>> from pprint import pprint
 
-    >>> t = hcpsdk.target('n1.m.hcp1.snomis.local', 'n', 'n01')
-    >>> n = hcpsdk.namespace.info(t)
+    >>> t = hcpsdk.Target('n1.m.hcp1.snomis.local', 'n', 'n01')
+    >>> n = hcpsdk.namespace.Info(t)
     >>> pprint(n.NSstatistics())
     {'customMetadataObjectBytes': 13542405,
      'customMetadataObjectCount': 380107,

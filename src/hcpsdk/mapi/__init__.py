@@ -20,13 +20,13 @@
 # IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
 # CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-import xml.etree.ElementTree as ET
+import xml.etree.ElementTree as Et
 import logging
 
 import hcpsdk
 
 
-__all__ = ['ReplicationSettingsError', 'replication']
+__all__ = ['ReplicationSettingsError', 'Replication']
 
 logging.getLogger('hcpsdk.mapi').addHandler(logging.NullHandler())
 
@@ -43,7 +43,7 @@ class ReplicationSettingsError(Exception):
         self.reason = reason
 
 
-class replication(object):
+class Replication(object):
     """
     Access replication link information, modify the replication link state.
     """
@@ -62,7 +62,7 @@ class replication(object):
 
     def __init__(self, target, debuglevel=0):
         """
-        :param target:      an hcpsdk.target object
+        :param target:      an hcpsdk.Target object
         :param debuglevel:  0..9 (used in *http.client*)
         """
         self.target = target
@@ -71,7 +71,7 @@ class replication(object):
         self.service_time = 0.0
         self.logger = logging.getLogger('hcpsdk.ips.Circle')
 
-    def getReplicationSettings(self):
+    def getreplicationsettings(self):
         """
         Query MAPI for the general settings of the replication service.
 
@@ -80,7 +80,7 @@ class replication(object):
         """
         d = {}
         try:
-            con = hcpsdk.connection(self.target, debuglevel=self.debuglevel)
+            con = hcpsdk.Connection(self.target, debuglevel=self.debuglevel)
         except Exception as e:
             raise hcpsdk.HcpsdkError(str(e))
         else:
@@ -91,10 +91,10 @@ class replication(object):
                 raise hcpsdk.HcpsdkError(str(e))
             else:
                 if r.status == 200:
-                    # Good status, get and parse the response
+                    # Good status, get and parse the Response
                     x = r.read()
                     self.service_time = con.service_time2
-                    for child in ET.fromstring(x):
+                    for child in Et.fromstring(x):
                         d[child.tag] = child.text
                 else:
                     raise (hcpsdk.HcpsdkError('{} - {}'.format(r.status, r.reason)))
@@ -104,7 +104,7 @@ class replication(object):
 
         return d
 
-    def getLinkList(self):
+    def getlinklist(self):
         """
         Query MAPI for a list of replication links.
 
@@ -113,7 +113,7 @@ class replication(object):
         """
         d = []
         try:
-            con = hcpsdk.connection(self.target, debuglevel=self.debuglevel)
+            con = hcpsdk.Connection(self.target, debuglevel=self.debuglevel)
         except Exception as e:
             raise hcpsdk.HcpsdkError(str(e))
         else:
@@ -124,10 +124,10 @@ class replication(object):
                 d.append('Error: {}'.format(str(e)))
             else:
                 if r.status == 200:
-                    # Good status, get and parse the response
+                    # Good status, get and parse the Response
                     x = r.read()
                     self.service_time = con.service_time2
-                    root = ET.fromstring(x)
+                    root = Et.fromstring(x)
                     for child in root:
                         if child.tag == 'name':
                             d.append(child.text)
@@ -139,17 +139,17 @@ class replication(object):
 
         return d
 
-    def getLinkDetails(self, link):
+    def getlinkdetails(self, link):
         """
         Query MAPI for the details of a replication link.
 
-        :param link:    the name of the link as retrieved by **getLinkList()**
+        :param link:    the name of the link as retrieved by **getlinklist()**
         :return:        a dict holding the details
         :raises:        HcpsdkError
         """
         d = {}
         try:
-            con = hcpsdk.connection(self.target, debuglevel=self.debuglevel)
+            con = hcpsdk.Connection(self.target, debuglevel=self.debuglevel)
         except Exception as e:
             raise hcpsdk.HcpsdkError(str(e))
         else:
@@ -161,10 +161,10 @@ class replication(object):
                 raise hcpsdk.HcpsdkError(str(e))
             else:
                 if r.status == 200:
-                    # Good status, get and parse the response
+                    # Good status, get and parse the Response
                     x = r.read()
                     self.service_time = con.service_time2
-                    for child in ET.fromstring(x):
+                    for child in Et.fromstring(x):
                         if child.text:
                             d[child.tag] = child.text
                         else:
@@ -184,7 +184,7 @@ class replication(object):
 
         return d
 
-    def setReplicationLinkState(self, linkname, action, linktype=None):
+    def setreplicationlinkstate(self, linkname, action, linktype=None):
         """
         Failover and  failback a replication link.
 
@@ -196,25 +196,25 @@ class replication(object):
         :raises: HcpsdkError
         """
         # make sure that only valid linktypes and actions are accepted
-        if linktype not in [replication.R_ACTIVE_ACTIVE, replication.R_OUTBOUND, replication.R_INBOUND, None] or  \
-                       action not in [replication.R_SUSPEND, replication.R_RESUME,
-                                       replication.R_RESTORE, replication.R_BEGINRECOVERY,
-                                       replication.R_COMPLETERECOVERY,
-                                       replication.R_FAILBACK, replication.R_FAILOVER]:
+        if linktype not in [Replication.R_ACTIVE_ACTIVE, Replication.R_OUTBOUND, Replication.R_INBOUND, None] or \
+                        action not in [Replication.R_SUSPEND, Replication.R_RESUME,
+                                       Replication.R_RESTORE, Replication.R_BEGINRECOVERY,
+                                       Replication.R_COMPLETERECOVERY,
+                                       Replication.R_FAILBACK, Replication.R_FAILOVER]:
             raise ValueError
         # make sure that no invalid action is called
-        if (action == replication.R_FAILBACK and linktype in [replication.R_OUTBOUND, replication.R_INBOUND]) or \
-                (action in [replication.R_BEGINRECOVERY, replication.R_COMPLETERECOVERY] and
-                         linktype == replication.R_ACTIVE_ACTIVE) or \
-                (action in [replication.R_FAILOVER, replication.R_FAILBACK,
-                            replication.R_BEGINRECOVERY, replication.R_COMPLETERECOVERY] and not linktype):
+        if (action == Replication.R_FAILBACK and linktype in [Replication.R_OUTBOUND, Replication.R_INBOUND]) or \
+                (action in [Replication.R_BEGINRECOVERY, Replication.R_COMPLETERECOVERY] and
+                         linktype == Replication.R_ACTIVE_ACTIVE) or \
+                (action in [Replication.R_FAILOVER, Replication.R_FAILBACK,
+                            Replication.R_BEGINRECOVERY, Replication.R_COMPLETERECOVERY] and not linktype):
             raise ReplicationSettingsError('{} not allowed on {} link'.format(action, linktype))
 
         # build params
         action = {action: ''}
         # let's do it!
         try:
-            con = hcpsdk.connection(self.target, debuglevel=self.debuglevel)
+            con = hcpsdk.Connection(self.target, debuglevel=self.debuglevel)
         except Exception as e:
             raise hcpsdk.HcpsdkError(str(e))
         else:

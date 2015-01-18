@@ -27,7 +27,7 @@ import hcpsdk
 import http.client
 
 
-class TestHCPsdk_1_target(unittest.TestCase):
+class TestHcpsdk_1_Target(unittest.TestCase):
     def setUp(self):
         self.T_NS_GOOD = "n1.m.hcp2.snomis.local"
         self.T_NS_BAD = "this_wont_work.at-all"
@@ -37,28 +37,28 @@ class TestHCPsdk_1_target(unittest.TestCase):
 
     def test_1_10_ip_address_available(self):
         """
-        Make sure we can get a single IP address from target object's pool
+        Make sure we can get a single IP address from Target object's pool
         """
-        hcptarget = hcpsdk.target(self.T_NS_GOOD,
+        hcptarget = hcpsdk.Target(self.T_NS_GOOD,
                                   self.T_USER, self.T_PASSWORD, self.T_PORT)
         self.assertTrue(hcptarget.getaddr() in hcptarget.addresses)
 
     def test_1_20_ip_address_not_available(self):
         """
-        Make sure we can get a single IP address from target object's pool
+        Make sure we can get a single IP address from Target object's pool
         """
         with self.assertRaises(hcpsdk.HcpsdkError):
             # noinspection PyUnusedLocal
-            hcptarget = hcpsdk.target(self.T_NS_BAD,
+            hcptarget = hcpsdk.Target(self.T_NS_BAD,
                                       self.T_USER, self.T_PASSWORD, self.T_PORT)
 
     def test_1_30_good_target_authority(self):
         """
-        Make sure we get a hcpsdk.target object
+        Make sure we get a hcpsdk.Target object
         """
-        hcptarget = hcpsdk.target(self.T_NS_GOOD,
+        hcptarget = hcpsdk.Target(self.T_NS_GOOD,
                                   self.T_USER, self.T_PASSWORD, self.T_PORT)
-        self.assertIs(type(hcptarget), hcpsdk.target)
+        self.assertIs(type(hcptarget), hcpsdk.Target)
 
     def test_1_40_bad_target_authority(self):
         """
@@ -67,12 +67,12 @@ class TestHCPsdk_1_target(unittest.TestCase):
         """
         with self.assertRaises(hcpsdk.HcpsdkError):
             # noinspection PyUnusedLocal
-            hcptarget = hcpsdk.target(self.T_NS_BAD,
+            hcptarget = hcpsdk.Target(self.T_NS_BAD,
                                       self.T_USER, self.T_PASSWORD, self.T_PORT)
 
 
 # @unittest.skip("demonstrating skipping")
-class TestHCPsdk_2_access(unittest.TestCase):
+class TestHcpsdk_2_Access(unittest.TestCase):
     def setUp(self):
         self.T_NS_GOOD = "n1.m.hcp2.snomis.local"
         self.T_NS_BAD = "this_wont_work.at-all"
@@ -80,9 +80,9 @@ class TestHCPsdk_2_access(unittest.TestCase):
         self.T_PASSWORD = "n01"
         self.T_PORT = 443
         self.T_HCPFILE = '/rest/hcpsdk/TestHCPsdk_20_access'
-        self.hcptarget = hcpsdk.target(self.T_NS_GOOD, self.T_USER,
+        self.hcptarget = hcpsdk.Target(self.T_NS_GOOD, self.T_USER,
                                        self.T_PASSWORD, self.T_PORT)
-        self.con = hcpsdk.connection(self.hcptarget)
+        self.con = hcpsdk.Connection(self.hcptarget)
 
     def tearDown(self):
         self.con.close()
@@ -92,6 +92,7 @@ class TestHCPsdk_2_access(unittest.TestCase):
         """
         Ingest a file
         """
+        # noinspection PyPep8Naming
         T_BUF = '0123456789ABCDEF' * 64
         r = self.con.PUT(self.T_HCPFILE, T_BUF)
         self.assertEqual(r.status, 201)
@@ -119,7 +120,7 @@ class TestHCPsdk_2_access(unittest.TestCase):
 
 
 # @unittest.skip("demonstrating skipping")
-class TestHCPsdk_3_access_fail(unittest.TestCase):
+class TestHcpsdk_3_Access_Fail(unittest.TestCase):
     def setUp(self):
         self.T_NS_GOOD = "n1.m.hcp2.snomis.local"
         self.T_NS_BAD = "this_wont_work.at-all"
@@ -127,13 +128,13 @@ class TestHCPsdk_3_access_fail(unittest.TestCase):
         self.T_PASSWORD = "n01"
         self.T_PORT = 443
         self.T_HCPFILE = '/rest/hcpsdk/TestHCPsdk_20_access'
-        self.hcptarget = hcpsdk.target(self.T_NS_GOOD, self.T_USER,
+        self.hcptarget = hcpsdk.Target(self.T_NS_GOOD, self.T_USER,
                                        self.T_PASSWORD, self.T_PORT)
-        self.con = hcpsdk.connection(self.hcptarget)
+        self.con = hcpsdk.Connection(self.hcptarget)
 
     def tearDown(self):
         self.con.close()
-        self.con = hcpsdk.connection(self.hcptarget)
+        self.con = hcpsdk.Connection(self.hcptarget)
         self.con.DELETE(self.T_HCPFILE)
         self.con.close()
         del self.hcptarget
@@ -142,6 +143,7 @@ class TestHCPsdk_3_access_fail(unittest.TestCase):
         """
         Ingest a file
         """
+        # noinspection PyPep8Naming
         T_BUF = '0123456789ABCDEF' * 64
         self.r = self.con.PUT(self.T_HCPFILE, T_BUF)
         self.r.read()

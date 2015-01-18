@@ -20,7 +20,8 @@
 # IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
 # CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-class _version(object):
+
+class _Version(object):
     """
     Defines version and build for the HCPsdk.
     """
@@ -31,10 +32,11 @@ class _version(object):
 
     fullversion = '{}.{}.{}-{}'.format(release, major, minor, build)
 
+    # noinspection PyUnusedLocal
     def __call__(self, *args, **kwargs):
         return self.__str__()
 
     def __str__(self):
-        return _version.fullversion
+        return _Version.fullversion
 
 

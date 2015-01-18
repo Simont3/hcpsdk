@@ -1,5 +1,5 @@
-Simple object ingest / retrieval without replica
-================================================
+Simple object I/O without replica
+=================================
 
 Code sample
 -----------
@@ -17,7 +17,7 @@ runs if called as such:
        :start-after: # start sample block 10
        :end-before:  # end sample block 10
 
-Now, we initialize a **target** object with the parameters setup before.
+Now, we initialize a **Target** object with the parameters setup before.
 Notice that we do this within a try/except clause, as we need to be able
 to react on errors that might happen during initialization.
 
@@ -26,17 +26,17 @@ to react on errors that might happen during initialization.
        :start-after: # start sample block 20
        :end-before:  # end sample block 20
 
-At next, we initialize a **connection** object, using the **target**
+At next, we initialize a **Connection** object, using the **Target**
 created before. Notice that there is no IP address assigned to the
-connection at this time! This is because a connection will acquire an
-IP address not before needed.
+Connection at this time! This is because a connection will acquire an
+IP address not earlier than needed.
 
     .. include:: code/simple_primary_only.py
        :literal:
        :start-after: # start sample block 30
        :end-before:  # end sample block 30
 
-Now that we have a **connection** and its corresponding **target**, let's
+Now that we have a **Connection** and its corresponding **Target**, let's
 write an object (the 128kb file); we'll also set some policies for it,
 using the *params* argument. Again, notice the exception
 handling! Now, we have an IP address assigned. If all's well, print the
@@ -48,7 +48,7 @@ hash value HCP calculated for our object:
        :end-before:  # end sample block 40
 
 OK, as all was well so far, let's see if our object is really there -
-we'll do an *HEAD* request and if successful, print the returned
+we'll do an *HEAD* Request and if successful, print the returned
 headers, as they contain the objects metadata:
 
     .. include:: code/simple_primary_only.py
@@ -71,10 +71,10 @@ Clean up by deleting the object again:
        :start-after: # start sample block 65
        :end-before:  # end sample block 65
 
-And finally, don't forget to close the **connection**!
-This will cleanly cancel the timer thread that keeps a idle
+And finally, don't forget to close the **Connection**!
+This will cleanly cancel the timer thread that keeps an idle
 connection open (persistent). Not doing so will lead to the
-programm not finishing until the times expired!
+program not finishing until the timer expires!
 
     .. include:: code/simple_primary_only.py
        :literal:

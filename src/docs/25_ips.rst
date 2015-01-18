@@ -21,7 +21,7 @@ Classes
 
    **Class methods:**
 
-.. autoclass:: response
+.. autoclass:: Response
    :members:
 
    **Read-only class attributes:**

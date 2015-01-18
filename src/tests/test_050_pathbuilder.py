@@ -24,10 +24,10 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 import unittest
 
-from hcpsdk.pathbuilder import pathbuilder
+from hcpsdk.pathbuilder import PathBuilder
 
 
-class TestHCPsdk_50_1_pathbuilder(unittest.TestCase):
+class TestHcpsdk_50_1_PathBuilder(unittest.TestCase):
     def setUp(self):
         pass
 
@@ -39,7 +39,7 @@ class TestHCPsdk_50_1_pathbuilder(unittest.TestCase):
         Make sure we get a tuple containing a path and a UUID as string
         """
         print('test_1_10_buildpath:')
-        b = pathbuilder()
+        b = PathBuilder()
         t = b.getunique('testfile.txt')
         print(t)
         self.assertTrue(type(t) == tuple)
@@ -50,7 +50,7 @@ class TestHCPsdk_50_1_pathbuilder(unittest.TestCase):
         Make sure we get a tuple containing a path and a UUID as string
         """
         print('test_1_20_buildpath_annotation:')
-        b = pathbuilder(annotation=True)
+        b = PathBuilder(annotation=True)
         t = b.getunique('testfile.txt')
         print(t[0:2])
         for i in t[2].split(sep='\n'):

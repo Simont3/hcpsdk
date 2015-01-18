@@ -1,14 +1,14 @@
 running *simple_primary_only.py*
-target *t* was initialized with IP addresses: ['192.168.0.54', '192.168.0.55', '192.168.0.52', '192.168.0.53']
-connection *c* uses IP address: None
+Target *t* was initialized with IP addresses: ['192.168.0.54', '192.168.0.55', '192.168.0.52', '192.168.0.53']
+Connection *c* uses IP address: None
 
-PUT request was successful
+PUT Request was successful
 used IP address: 192.168.0.55
 hash = SHA-256 A2706A20394E48179A86C71E82C360C2960D3652340F9B9FDB355A42E3AC7691
 connect time:     0.001235961914 seconds
-request duration: 0.034072875977 seconds
+Request duration: 0.034072875977 seconds
 
-HEAD request was successful - headers:
+HEAD Request was successful - headers:
 [('Date', 'Sun, 18 Jan 2015 14:37:20 GMT'),
  ('Server', 'HCP V7.0.1.17'),
  ('X-RequestId', 'B3DFD8694312F955'),
@@ -48,13 +48,13 @@ HEAD request was successful - headers:
  ('X-HCP-ChangeTimeString', '2015-01-18T15:37:20+0100'),
  ('Last-Modified', 'Sun, 18 Jan 2015 14:37:20 GMT')]
 used IP address: 192.168.0.55
-request duration: 0.000210046768 seconds
+Request duration: 0.000210046768 seconds
 
-GET request was successful - here's the content:
+GET Request was successful - here's the content:
 b'0123456789abcdef0123456789abcdef01234567'...
 used IP address: 192.168.0.55
-request duration: 0.030097961426 seconds
+Request duration: 0.030097961426 seconds
 
-DELETE request was successful
+DELETE Request was successful
 used IP address: 192.168.0.55
-request duration: 0.000185012817 seconds
+Request duration: 0.000185012817 seconds

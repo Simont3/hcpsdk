@@ -13,15 +13,15 @@ Usage:
 
     import hcpsdk
 
-    # initialize a ``target`` object
-    hcptarget = hcpsdk.target("n1.m.hcp2.snomis.local",
+    # initialize a ``Target`` object
+    hcptarget = hcpsdk.Target("n1.m.hcp2.snomis.local",
                               "n", "n01", port=443,
-                              header_mode=hcpsdk.target.HEADER_6UP)
+                              header_mode=hcpsdk.Target.HEADER_6UP)
 
     cons = []
     for i in range(0,4):
-        # initialize a connection to the `target``
-        cons.append(hcpsdk.connection(hcptarget))
+        # initialize a Connection to the `Target``
+        cons.append(hcpsdk.Connection(hcptarget))
 
     # do something with the connections...
 

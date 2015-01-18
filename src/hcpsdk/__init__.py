@@ -28,17 +28,18 @@ import logging
 import time
 from threading import Timer
 
-from .version import _version
+# noinspection PyProtectedMember
+from .version import _Version
 from . import ips
 from . import namespace
 from . import mapi
 
 
-__all__ = ['target', 'connection', 'HcpsdkError', 'HcpsdkTimeoutError']
+__all__ = ['Target', 'Connection', 'HcpsdkError', 'HcpsdkTimeoutError']
 
 logging.getLogger('hcpsdk').addHandler(logging.NullHandler())
 
-version = _version()
+version = _Version()
 
 
 class HcpsdkError(Exception):
@@ -72,9 +73,9 @@ RS_WRITE_ALLOWED = 4  # allow to write to replica (always, A/A links only)
 RS_WRITE_ON_FAILOVER = 8  # allow to write to replica when failed over
 
 
-class target(object):
+class Target(object):
     """
-    This is the a central access point to an HCP target (and its replica,
+    This is the a central access point to an HCP Target (and its replica,
     evntually). It caches the FQDN, the port, the authentication header
     (both variants - the legacy one for HCP up to version 5 and the new
     style header for HCP version 6 and better.
@@ -98,18 +99,18 @@ class target(object):
         :param replica_strategy:    or'd combination of the RS_* modes
         :raises:                    HcpsdkError
         """
-        self.logger = logging.getLogger(__name__ + '.target')
+        self.logger = logging.getLogger(__name__ + '.Target')
         self.__fqdn = fqdn
         self.__port = port
-        if self.__port in target.__SSL_PORTS:
+        if self.__port in Target.__SSL_PORTS:
             self.__ssl = True
         else:
             self.__ssl = False
         self.interface = interface
-        self.replica = None  # placeholder for a replica's *target* object
+        self.replica = None  # placeholder for a replica's *Target* object
         self.replica_strategy = replica_strategy
 
-        # instantiate an IP address circler for this target
+        # instantiate an IP address circler for this Target
         try:
             self.ipaddrqry = ips.Circle(self.__fqdn, port=self.__port)
         except ips.IpsError as e:
@@ -117,7 +118,7 @@ class target(object):
             raise HcpsdkError(e)
 
         # noinspection PyProtectedMember
-        self.logger.debug('target initialized: {}:{} - SSL = {} - IPs = {}'
+        self.logger.debug('Target initialized: {}:{} - SSL = {} - IPs = {}'
                           .format(self.__fqdn, self.__port, self.__ssl, self.ipaddrqry._addresses))
 
         # create the authentication header(s) needed for HCP access,
@@ -128,10 +129,10 @@ class target(object):
 
         self.__headers['Host'] = self.__fqdn
 
-        # If we have *replica_fqdn*, try to init its *target* object
+        # If we have *replica_fqdn*, try to init its *Target* object
         if replica_fqdn:
             try:
-                self.replica = target(replica_fqdn, user, password,
+                self.replica = Target(replica_fqdn, user, password,
                                       self.__port, interface=self.interface)
             except HcpsdkError as e:
                 raise HcpsdkReplicaInitError(e)
@@ -169,40 +170,40 @@ class target(object):
             raise AttributeError
 
     def __str__(self):
-        return "<{} class initialized for {}>".format(target.__name__, self.__fqdn)
+        return "<{} class initialized for {}>".format(Target.__name__, self.__fqdn)
 
 
-class connection(object):
+class Connection(object):
     """
-    This class represents a connection to HCP,
+    This class represents a Connection to HCP,
     caching the related parameters.
     """
 
     # noinspection PyShadowingNames
     def __init__(self, target, timeout=30, idletime=30, debuglevel=0, retries=3):
         """
-        :param target:      an initialized target object
-        :param timeout:     the timeout for this connection (secs)
-        :param idletime:    the time the connection shall stay persistence when idle (secs)
+        :param target:      an initialized Target object
+        :param timeout:     the timeout for this Connection (secs)
+        :param idletime:    the time the Connection shall stay persistence when idle (secs)
         :param debuglevel:  0..9 -see-> http.client.HTTP[S]connetion
-        :param retries:     the number of retries until giving up on a request
+        :param retries:     the number of retries until giving up on a Request
                             **-not yet implemented-**
         """
-        self.logger = logging.getLogger(__name__ + '.connection')
+        self.logger = logging.getLogger(__name__ + '.Connection')
 
-        self.__target = target  # an initialized target object
+        self.__target = target  # an initialized Target object
         self.__address = None  # the assigned IP address to use
-        self.__timeout = timeout  # the timeout for this connection (secs)
-        self.__idletime = float(idletime)  # the time the connection shall stay open since last usage (secs)
+        self.__timeout = timeout  # the timeout for this Connection (secs)
+        self.__idletime = float(idletime)  # the time the Connection shall stay open since last usage (secs)
         self.__debuglevel = debuglevel  # 0..9 -see-> http.client.HTTP[S]connetion
-        self.__retries = retries  # the number of retries until giving up on a request
+        self.__retries = retries  # the number of retries until giving up on a Request
 
         self.__con = None  # http.client.HTTP[S]Connection object
         self._response = None
 
         self.__connect_time = 0.0  # record the time the connect() call took
         self.__service_time1 = 0.0  # the time a single step took (connect, 1st read, ...)
-        self.__service_time2 = 0.0  # the time a request took incl. all reads, but w/o connect
+        self.__service_time2 = 0.0  # the time a Request took incl. all reads, but w/o connect
 
         self.idletimer = None  # used to hold a threading.Timer() object
 
@@ -212,7 +213,7 @@ class connection(object):
         # raise e
         # else:
         self.logger.log(logging.DEBUG,
-                        'connection object initialized: IP {} ({}) - timeout: {} - idletime: {} - retries: {}'
+                        'Connection object initialized: IP {} ({}) - timeout: {} - idletime: {} - retries: {}'
                         .format(self.__address, self.__target.fqdn, self.__timeout, self.__idletime, self.__retries))
         # self.set_idletimer()
 
@@ -227,7 +228,7 @@ class connection(object):
 
     def _cancel_idletimer(self):
         """
-        Cancel an active connection keep-alive timer - manually called
+        Cancel an active Connection keep-alive timer - manually called
         """
         if self.idletimer:
             self.idletimer.cancel()
@@ -239,7 +240,7 @@ class connection(object):
 
     def __cancel_idletimer(self):
         """
-        Cancel an active connection keep-alive timer - called if timer has passed
+        Cancel an active Connection keep-alive timer - called if timer has passed
         """
         if self.idletimer:
             self.idletimer.cancel()
@@ -248,7 +249,7 @@ class connection(object):
 
     def _connect(self):
         """
-        Open a new connection and return the connection object
+        Open a new Connection and return the Connection object
         """
         self.__address = self.__target.getaddr()
 
@@ -262,7 +263,7 @@ class connection(object):
             con = http.client.HTTPConnection(self.__address, port=self.__target.port,
                                              timeout=self.__timeout)
             self.__connect_time = time.time() - c_t
-        self.logger.log(logging.DEBUG, 'connection open: IP {} ({}) - connect_time: {}'
+        self.logger.log(logging.DEBUG, 'Connection open: IP {} ({}) - connect_time: {}'
                         .format(self.__address, self.__target.fqdn, self.__connect_time))
 
         if self.__debuglevel:
@@ -271,9 +272,9 @@ class connection(object):
 
     def request(self, method, url, body=None, params=None, headers=None):
         """
-        Wraps the *http.client.HTTP[s]connection.request()* method to be able to
+        Wraps the *http.client.HTTP[s]Connection.Request()* method to be able to
         catch any exception that might happen plus to be able to trigger
-        hcpsdk.target to do a new DNS query.
+        hcpsdk.Target to do a new DNS query.
 
         *Url* and *params* will be urlencoded, by default.
 
@@ -283,7 +284,7 @@ class connection(object):
         :param url:     the url to access w/o the server part (i.e: /rest/path/object)
         :param body:    the payload to send (see *http.client* documentation
                         for details)
-        :param params:  a dictionary with parameters to be added to the request:
+        :param params:  a dictionary with parameters to be added to the Request:
 
                         ``{'verbose': 'true', 'retention': 'A+10y', ...}``
 
@@ -293,8 +294,8 @@ class connection(object):
 
         :param headers: a dictionary holding additional key/value pairs to add to the
                         auto-prepared header
-        :return:        the original response object received from
-                        *http.client.HTTP[s]connection.requests()*.
+        :return:        the original Response object received from
+                        *http.client.HTTP[s]Connection.requests()*.
         """
         self._cancel_idletimer()  # 1st, cancel the idletimer
         if not headers:
@@ -316,30 +317,30 @@ class connection(object):
                 s_t = time.time()
                 self.__con.request(method, url, body=body, headers=headers)
                 self.__service_time1 = self.__service_time2 = time.time() - s_t
-                self.logger.log(logging.DEBUG, '{} request for {} - service_time1 = {}'
+                self.logger.log(logging.DEBUG, '{} Request for {} - service_time1 = {}'
                                 .format(method, url, self.__service_time1))
             except (http.client.NotConnected, AttributeError) as e:
                 """
-                This is a trigger for the case the connection is not open
+                This is a trigger for the case the Connection is not open
                 (not yet opened or has been closed by being not used for some
-                time). So, we open up a new connection and start over by calling
+                time). So, we open up a new Connection and start over by calling
                 our self again...
                 """
                 if not retry:
-                    self.logger.log(logging.DEBUG, 'connection needs to be opened')
+                    self.logger.log(logging.DEBUG, 'Connection needs to be opened')
                     retry = True
                     continue
                 else:
                     raise HcpsdkError('Not connected, retry failed ({})'.format(str(e)))
             except TimeoutError:
-                self.logger.log(logging.DEBUG, 'connection closed after timeout')
+                self.logger.log(logging.DEBUG, 'Connection closed after timeout')
                 self.close()
                 raise HcpsdkTimeoutError('Timeout - {}'.format(url))
             except http.client.HTTPException as e:
-                self.logger.log(logging.DEBUG, 'request raised exception: {}'.format(str(e)))
+                self.logger.log(logging.DEBUG, 'Request raised exception: {}'.format(str(e)))
                 raise e
             except Exception as e:
-                self.logger.log(logging.DEBUG, 'request raised exception: {}'.format(str(e)))
+                self.logger.log(logging.DEBUG, 'Request raised exception: {}'.format(str(e)))
                 raise HcpsdkError(str(e))
             else:
                 self._response = self.__con.getresponse()
@@ -349,42 +350,43 @@ class connection(object):
 
     def getheader(self, *args, **kwargs):
         """
-        Used to get a single response header. Wraps *http.client.response.getheader()*.
+        Used to get a single Response header. Wraps *http.client.Response.getheader()*.
         Arguments are simply passed through.
         """
         return self._response.getheader(*args, **kwargs)
 
     def getheaders(self):
         """
-        Used to get a the response headers. Wraps *http.client.response.getheaders()*.
+        Used to get a the Response headers. Wraps *http.client.Response.getheaders()*.
         """
         return self._response.getheaders()
 
-    # noinspection PyUnusedLocal
+    # noinspection PyUnusedLocal,PyPep8Naming
     def PUT(self, url, body=None, params=None, headers=None):
         """
-        Convenience method for request() - PUT an object.
-        Cleans up and leaves the connection ready for the next request.
-        For parameter description see *request()*.
+        Convenience method for Request() - PUT an object.
+        Cleans up and leaves the Connection ready for the next Request.
+        For parameter description see *Request()*.
         """
         r = self.request('PUT', url, body, headers)
         r.read()  # clean up
         return r
 
+    # noinspection PyPep8Naming
     def GET(self, url, params=None, headers=None):
         """
-        Convenience method for request() - GET an object.
-        You need to fully *.read()* the requested content from the connection before
-        it can be used for another request.
-        For parameter description see *request()*.
+        Convenience method for Request() - GET an object.
+        You need to fully *.read()* the requested content from the Connection before
+        it can be used for another Request.
+        For parameter description see *Request()*.
         """
         return self.request('GET', url, params=params, headers=headers)
 
     def HEAD(self, url, params=None, headers=None):
         """
-        Convenience method for request() - HEAD - get metadata of an object.
-        Cleans up and leaves the connection ready for the next request.
-        For parameter description see *request()*.
+        Convenience method for Request() - HEAD - get metadata of an object.
+        Cleans up and leaves the Connection ready for the next Request.
+        For parameter description see *Request()*.
         """
         r = self.request('HEAD', url, params=params, headers=headers)
         r.read()  # clean up
@@ -392,9 +394,9 @@ class connection(object):
 
     def POST(self, url, params=None, headers=None):
         """
-        Convenience method for request() - POST metadata.
-        Cleans up and leaves the connection ready for the next request.
-        For parameter description see *request()*.
+        Convenience method for Request() - POST metadata.
+        Cleans up and leaves the Connection ready for the next Request.
+        For parameter description see *Request()*.
         """
         r = self.request('POST', url, params=params, headers=headers)
         r.read()  # clean up
@@ -402,9 +404,9 @@ class connection(object):
 
     def DELETE(self, url, params=None, headers=None):
         """
-        Convenience method for request() - DELETE an object.
-        Cleans up and leaves the connection ready for the next request.
-        For parameter description see *request()*.
+        Convenience method for Request() - DELETE an object.
+        Cleans up and leaves the Connection ready for the next Request.
+        For parameter description see *Request()*.
         """
         r = self.request('DELETE', url, params=params, headers=headers)
         r.read()  # clean up
@@ -412,12 +414,12 @@ class connection(object):
 
     def read(self, amt=None):
         """
-        Read amt # of bytes (or all, if amt isn't given) from a response.
+        Read amt # of bytes (or all, if amt isn't given) from a Response.
 
         :param amt: number of bytes to read
         :return:    the requested number of bytes; fewer (or zero) bytes signal
-                    end of transfer, which means that the connection is ready
-                    for another request.
+                    end of transfer, which means that the Connection is ready
+                    for another Request.
         """
         s_t = time.time()
         buf = self._response.read(amt)
@@ -435,7 +437,7 @@ class connection(object):
             return self.__address
         if item == 'con':
             return self.__con
-        if item == 'response':
+        if item == 'Response':
             return self._response
         if item == 'response_status':
             return None or self._response.status
@@ -461,10 +463,10 @@ class connection(object):
 
     def close(self):
         """
-        Close the connection. **It is essential to close the connection**,
+        Close the Connection. **It is essential to close the Connection**,
         as open connections might keep the program from terminating for at
         max *timeout* seconds, due to the fact that the timer used to keep
-        the connection persistent runs in a separate thread, which will
+        the Connection persistent runs in a separate thread, which will
         be canceled on *close()*.
         """
         # noinspection PyBroadException
@@ -473,11 +475,11 @@ class connection(object):
             self.__con.close()
         except:
             pass
-        self.logger.log(logging.DEBUG, 'connection object closed: IP {} ({})'
+        self.logger.log(logging.DEBUG, 'Connection object closed: IP {} ({})'
                         .format(self.__address, self.__target.fqdn))
 
     def __str__(self):
-        return ("<{} class initialized for fqdn {} @ {}>".format(connection.__name__,
+        return ("<{} class initialized for fqdn {} @ {}>".format(Connection.__name__,
                                                                  self.__target.authority,
                                                                  self.__address))
 

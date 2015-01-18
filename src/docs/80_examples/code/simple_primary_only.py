@@ -27,7 +27,7 @@ from os.path import normpath
 from pprint import pprint
 import hcpsdk
 
-# HCP connection details - you'll need to adopt this!
+# HCP Connection details - you'll need to adopt this!
 # -- primary HCP
 P_FQDN = 'n1.m.hcp1.snomis.local'
 P_USER = 'n'
@@ -44,29 +44,30 @@ if __name__ == '__main__':
     if P_DEBUG:
         import logging
         logging.basicConfig(level=logging.DEBUG, style='{', format='{levelname:>5s} {msg}')
+        # noinspection PyShadowingBuiltins
         print = pprint = logging.info
     # end sample block 15
     # noinspection PyUnboundLocalVariable
     print('running *simple_primary_only.py*')
 
     # start sample block 20
-    # Setup the target HCP objects:
+    # Setup the Target HCP objects:
     try:
-        t = hcpsdk.target(P_FQDN, P_USER, P_PASS, port=P_PORT)
+        t = hcpsdk.Target(P_FQDN, P_USER, P_PASS, port=P_PORT)
     except hcpsdk.HcpsdkError as e:
-        sys.exit('init of *target* failed - {}'.format(e))
+        sys.exit('init of *Target* failed - {}'.format(e))
     else:
-        print('target *t* was initialized with IP addresses: {}'.format(t.addresses))
+        print('Target *t* was initialized with IP addresses: {}'.format(t.addresses))
     # end sample block 20
 
     # start sample block 30
-    # setup a connection object:
+    # setup a Connection object:
     try:
-        c = hcpsdk.connection(t)
+        c = hcpsdk.Connection(t)
     except hcpsdk.HcpsdkError as e:
-        sys.exit('init of *target* failed - {}'.format(e))
+        sys.exit('init of *Target* failed - {}'.format(e))
     else:
-        print('connection *c* uses IP address: {}'.format(c.address))
+        print('Connection *c* uses IP address: {}'.format(c.address))
         print('')
         # end sample block 30
 
@@ -85,11 +86,11 @@ if __name__ == '__main__':
             sys.exit('failure on {} - {}'.format(P_FILE, e))
         else:
             if c.response_status == 201:
-                print('PUT request was successful')
+                print('PUT Request was successful')
                 print('used IP address: {}'.format(c.address))
                 print('hash = {}'.format(c.getheader('X-HCP-Hash')))
                 print('connect time:     {:0.12f} seconds'.format(c.connect_time))
-                print('request duration: {:0.12f} seconds'.format(c.service_time2))
+                print('Request duration: {:0.12f} seconds'.format(c.service_time2))
                 print('')
             else:
                 sys.exit('PUT failed - {}-{}'.format(c.response_status,
@@ -106,10 +107,10 @@ if __name__ == '__main__':
             sys.exit('HEAD failed - {}'.format(e))
         else:
             if c.response_status == 200:
-                print('HEAD request was successful - headers:')
+                print('HEAD Request was successful - headers:')
                 pprint(c.getheaders())
                 print('used IP address: {}'.format(c.address))
-                print('request duration: {:0.12f} seconds'.format(c.service_time2))
+                print('Request duration: {:0.12f} seconds'.format(c.service_time2))
                 print('')
             else:
                 sys.exit('HEAD failed - {}-{}'.format(c.response_status,
@@ -127,10 +128,10 @@ if __name__ == '__main__':
         else:
             if c.response_status == 200:
 
-                print('GET request was successful - here\'s the content:')
+                print('GET Request was successful - here\'s the content:')
                 print('{}...'.format(c.read()[:40]))
                 print('used IP address: {}'.format(c.address))
-                print('request duration: {:0.12f} seconds'.format(c.service_time2))
+                print('Request duration: {:0.12f} seconds'.format(c.service_time2))
                 print('')
             else:
                 sys.exit('GET failed - {}-{}'.format(c.response_status,
@@ -147,9 +148,9 @@ if __name__ == '__main__':
             sys.exit('DELETE failed - {}'.format(e))
         else:
             if c.response_status == 200:
-                print('DELETE request was successful')
+                print('DELETE Request was successful')
                 print('used IP address: {}'.format(c.address))
-                print('request duration: {:0.12f} seconds'.format(c.service_time2))
+                print('Request duration: {:0.12f} seconds'.format(c.service_time2))
                 print('')
             else:
                 sys.exit('DELETE failed - {}-{}'.format(c.response_status,
@@ -157,7 +158,7 @@ if __name__ == '__main__':
                 # end sample block 65
 
     # start sample block 70
-    # close the connection:
+    # close the Connection:
     finally:
         # noinspection PyUnboundLocalVariable
         c.close()

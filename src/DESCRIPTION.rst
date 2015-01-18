@@ -1,0 +1,1 @@
+HCPsdk provides a simple SDK to access an Hitachi Content Platform (HCP) from Python3. It handles nameresolution, multiple sessions spread across all available HCP nodes, persistent connections and recovery from failing connections.

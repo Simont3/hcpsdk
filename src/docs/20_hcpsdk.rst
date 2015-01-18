@@ -4,9 +4,9 @@
 .. automodule:: hcpsdk
    :synopsis: Framework for HCP access.
 
-**hcpsdk** provides functionality for access to HCP, where *target()*  acts
-as a central object per HCP target (and its replica, eventually) and
-*connection()* provides methods for REST access.
+**hcpsdk** provides functionality for access to HCP, where *Target()*  acts
+as a central object per HCP Target (and its replica, eventually) and
+*Connection()* provides methods for REST access.
 
 Methods
 ^^^^^^^
@@ -18,7 +18,7 @@ Methods
 Classes
 ^^^^^^^
 
-.. autoclass:: target
+.. autoclass:: Target
    :members:
 
    **Class constants:**
@@ -57,11 +57,11 @@ Classes
 
    .. attribute:: fqdn
 
-      The FQDN for which the target was initialized (string).
+      The FQDN for which the Target was initialized (string).
 
    .. attribute:: port
 
-      The port used by the target (int).
+      The port used by the Target (int).
 
    .. attribute:: ssl
 
@@ -69,34 +69,34 @@ Classes
 
    .. attribute:: addresses
 
-      The IP addresses used by this target (list).
+      The IP addresses used by this Target (list).
 
    .. attribute:: headers
 
-      The http headers prepared for this target (dictionary).
+      The http headers prepared for this Target (dictionary).
 
    .. attribute:: replica
 
-      The replica target, if available (an *hcpsdk.target* object or None).
+      The replica Target, if available (an *hcpsdk.Target* object or None).
 
    **Class methods:**
 
-.. autoclass:: connection
+.. autoclass:: Connection
    :members:
 
    **Read-only class attributes:**
 
    .. attribute:: address
 
-      The IP address used for this connection.
+      The IP address used for this Connection.
 
-   .. attribute:: response
+   .. attribute:: Response
 
-      Exposition of the http.client.response object for the last request.
+      Exposition of the http.client.Response object for the last Request.
 
    .. attribute:: response_status
 
-      The HTTP status code of the last request.
+      The HTTP status code of the last Request.
 
    .. attribute:: response_reason
 
@@ -108,14 +108,14 @@ Classes
 
    .. attribute:: service_time1
 
-      The time the last action on a request took. This can be the initial part
+      The time the last action on a Request took. This can be the initial part
       of PUT/GET/etc. or a single (possibly incomplete) read from
-      a response.
+      a Response.
 
    .. attribute:: service_time2
 
-      Duration of the complete request up to now. Sum of all ``service_time1``
-      during handling a request.
+      Duration of the complete Request up to now. Sum of all ``service_time1``
+      during handling a Request.
 
    **Class methods:**
 
@@ -133,7 +133,7 @@ Exceptions
 
 .. autoexception:: HcpsdkTimeoutError
 
-   Used to signal a connection timeout.
+   Used to signal a Connection timeout.
 
    .. attribute:: reason
 
@@ -141,9 +141,9 @@ Exceptions
 
 .. autoexception:: HcpsdkReplicaInitError
 
-   Used to signal that the target for a replica HCP couldn't be
+   Used to signal that the Target for a replica HCP couldn't be
    initialized (typically, this is a name resolution problem). **If
-   this exception is raised, the primary target's init failed, too.**
+   this exception is raised, the primary Target's init failed, too.**
    You'll need to retry!
 
    .. attribute:: reason
@@ -159,8 +159,8 @@ Example
     >>> import hcpsdk
     >>> hcpsdk.version()
     '0.9.0-1'
-    >>> t = hcpsdk.target('n1.m.hcp1.snomis.local', 'n', 'n01')
-    >>> c = hcpsdk.connection(t)
+    >>> t = hcpsdk.Target('n1.m.hcp1.snomis.local', 'n', 'n01')
+    >>> c = hcpsdk.Connection(t)
     >>> c.connect_time
     0.000000000010
     >>>

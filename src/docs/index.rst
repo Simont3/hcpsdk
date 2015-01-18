@@ -1,5 +1,5 @@
-HCP SDK documentation
-=====================
+HCP SDK documentation (|release|)
+=================================
 
 HCP SDK provides a rather simple environment to access an Hitachi Content
 Platform (HCP) from Python3. It's intended to be an exemplary implementation

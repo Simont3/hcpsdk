@@ -26,7 +26,7 @@ import unittest
 from hcpsdk import ips
 
 
-class TestHCPsdk_10_1_ips(unittest.TestCase):
+class TestHcpsdk_10_1_Ips(unittest.TestCase):
     def setUp(self):
         self.T_NS_GOOD = "n1.m.hcp1.snomis.local"
         self.T_NS_BAD = "this_wont_work.at-all"
@@ -34,19 +34,19 @@ class TestHCPsdk_10_1_ips(unittest.TestCase):
 
     def test_1_05_query_good_fqdn(self):
         """
-        Make sure we get a hcpsdk.target object
+        Make sure we get a hcpsdk.Target object
         """
         print('test_1_05_query_good_fqdn')
         r = ips.query(self.T_NS_GOOD)
         print(r)
-        self.assertTrue(type(r) == ips.response)
+        self.assertTrue(type(r) == ips.Response)
         self.assertTrue(type(r.ips) == list)
         print('fqdn: {} - cache = {}'.format(r.fqdn, r.cache))
         print(r.ips)
 
     def test_1_10_good_fqdn(self):
         """
-        Make sure we get a hcpsdk.target object
+        Make sure we get a hcpsdk.Target object
         """
         ipaddrqry = ips.Circle(fqdn=self.T_NS_GOOD, port=self.T_PORT)
         self.assertTrue(ipaddrqry._addr() in ipaddrqry._addresses)

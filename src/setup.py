@@ -3,6 +3,7 @@
 from setuptools import setup, find_packages  # Always prefer setuptools over distutils
 from codecs import open  # To use a consistent encoding
 from os import path
+from hcpsdk.version import _Version
 
 here = path.abspath(path.dirname(__file__))
 
@@ -16,7 +17,7 @@ setup(
     # the version across setup.py and the project code, see
     # http://packaging.python.org/en/latest/tutorial.html#version
 
-    version='0.9.0',
+    version=str(_Version()),
     description='A simple SDK for the Hitachi Content Platform (HCP)',
     long_description=long_description,
 
@@ -89,7 +90,7 @@ setup(
 
     # To provide executable scripts, use entry points in preference to the
     # "scripts" keyword. Entry points provide cross-platform support and allow
-    # pip to create the appropriate form of executable for the target platform.
+    # pip to create the appropriate form of executable for the Target platform.
     # entry_points={
     #               'console_scripts': ['sample=sample:main',],
     #               },

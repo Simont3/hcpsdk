@@ -27,12 +27,12 @@ from xml.etree.ElementTree import ElementTree
 from xml.etree.ElementTree import Element
 import logging
 
-__all__ = ['pathbuilderError', 'pathbuilder']
+__all__ = ['PathBuilderError', 'PathBuilder']
 
 logging.getLogger('hcpsdk.pathbuilder').addHandler(logging.NullHandler())
 
 
-class pathbuilderError(Exception):
+class PathBuilderError(Exception):
     # Subclasses that define an __init__ must call Exception.__init__
     # or define self.args.  Otherwise, str() will fail.
     def __init__(self, reason):
@@ -40,7 +40,7 @@ class pathbuilderError(Exception):
         self.reason = reason
 
 
-class pathbuilder(object):
+class PathBuilder(object):
     """
     Conversion of a filename into a unique object name and a proper path for HCPs
     needs. Re-conversion of a unique object name to the path where the object can
@@ -78,8 +78,8 @@ class pathbuilder(object):
 
         ::
 
-            >>> from hcpsdk.pathbuilder import pathbuilder
-            >>> p = pathbuilder(initialpath='/rest/mypath', annotation=True)
+            >>> from hcpsdk.pathbuilder import PathBuilder
+            >>> p = PathBuilder(initialpath='/rest/mypath', annotation=True)
             >>> o = p.getunique('testfile.txt')
             >>> o
             ('/rest/mypath/b4/ec', '8ac8ecb4-9f1e-11e4-a524-98fe94437d8c',
@@ -105,7 +105,7 @@ class pathbuilder(object):
                     xml.write(xmlstring, encoding="utf-8", method="xml", xml_declaration=True)
                     annotation = xmlstring.getvalue().decode()
         except Exception as e:
-            raise pathbuilderError(str(e))
+            raise PathBuilderError(str(e))
 
         if self.annotation:
             # noinspection PyUnboundLocalVariable
@@ -132,6 +132,6 @@ class pathbuilder(object):
         try:
             path = join(self.leadingpath, objectname[6:8], objectname[4:6], objectname)
         except Exception as e:
-            raise pathbuilderError(str(e))
+            raise PathBuilderError(str(e))
 
         return path

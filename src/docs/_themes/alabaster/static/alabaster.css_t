@@ -253,7 +253,7 @@ div.highlight {
     background-color: white;
 }
 
-dt:target, .highlight {
+dt:Target, .highlight {
     background: #FAF3E8;
 }
 

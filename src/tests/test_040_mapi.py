@@ -28,19 +28,19 @@ from pprint import pprint
 import hcpsdk
 
 
-class ltvars(object):
+class LtVars(object):
     linkname = ''
 
 
-class TestHCPsdk_40_1_mapi_replication(unittest.TestCase):
+class TestHcpsdk_40_1_Mapi_Replication(unittest.TestCase):
     def setUp(self):
         self.T_NS_GOOD = "admin.hcp1.snomis.local"
         self.T_USER = "service"
         self.T_PASSWORD = "service01"
         self.T_PORT = 9090
-        self.hcptarget = hcpsdk.target(self.T_NS_GOOD, self.T_USER,
+        self.hcptarget = hcpsdk.Target(self.T_NS_GOOD, self.T_USER,
                                        self.T_PASSWORD, self.T_PORT)
-        self.mapi = hcpsdk.mapi.replication(self.hcptarget)
+        self.mapi = hcpsdk.mapi.Replication(self.hcptarget)
 
     def tearDown(self):
         del self.hcptarget
@@ -50,7 +50,7 @@ class TestHCPsdk_40_1_mapi_replication(unittest.TestCase):
         Make sure we get a list with at least one entry
         """
         print('test_1_10_good_getReplicationSettings:')
-        r = self.mapi.getReplicationSettings()
+        r = self.mapi.getreplicationsettings()
         pprint(r)
         self.assertTrue(type(r) == dict)
         self.assertTrue(len(r) == 4)
@@ -60,18 +60,18 @@ class TestHCPsdk_40_1_mapi_replication(unittest.TestCase):
         Make sure we get a list with at least one entry
         """
         print('test_1_20_good_getLinkList:')
-        r = self.mapi.getLinkList()
+        r = self.mapi.getlinklist()
         print(r)
         self.assertTrue(type(r) == list)
         self.assertTrue(len(r) >= 1)
-        ltvars.linkname = r[0]
+        LtVars.linkname = r[0]
 
     def test_1_30_good_getLinkDetails(self):
         """
         Make sure we get a list with at least one entry
         """
-        print('test_1_30_good_getLinkDetails({}):'.format(ltvars.linkname))
-        r = self.mapi.getLinkDetails(link=ltvars.linkname)
+        print('test_1_30_good_getLinkDetails({}):'.format(LtVars.linkname))
+        r = self.mapi.getlinkdetails(link=LtVars.linkname)
         pprint(r)
         self.assertTrue(True)
 

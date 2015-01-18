@@ -10,7 +10,7 @@
 Classes
 ^^^^^^^
 
-.. autoclass:: replication
+.. autoclass:: Replication
 
    **Class constants:**
 
@@ -60,7 +60,7 @@ Classes
 
    **Class methodes:**
 
-   .. automethod:: getReplicationSettings
+   .. automethod:: getreplicationsettings
 
       .. attribute:: returned dictionary (example):
 
@@ -71,7 +71,7 @@ Classes
              'enableDomainAndCertificateSynchronization': 'true',
              'network': '[hcp_system]'}
 
-   .. automethod:: getLinkList
+   .. automethod:: getlinklist
 
       .. attribute:: returned list (example):
 
@@ -79,14 +79,14 @@ Classes
 
             ['hcp1-a-a-hcp2']
 
-   .. automethod:: getLinkDetails
+   .. automethod:: getlinkdetails
 
       .. attribute:: the returned dictionary (example):
 
          ::
 
             {'compression': 'false',
-             'connection': {'localHost': '192.168.0.52, 192.168.0.53, 192.168.0.54, '
+             'Connection': {'localHost': '192.168.0.52, 192.168.0.53, 192.168.0.54, '
                                          '192.168.0.55',
                             'localPort': '5748',
                             'remoteHost': '192.168.0.56, 192.168.0.57, 192.168.0.58, '
@@ -119,7 +119,7 @@ Classes
              'type': 'ACTIVE_ACTIVE'}
 
 
-   .. automethod:: setReplicationLinkState
+   .. automethod:: setreplicationlinkstate
 
 
 Exceptions
@@ -140,16 +140,16 @@ Example
     >>> import hcpsdk.mapi
     >>> from pprint import pprint
     >>>
-    >>> t = hcpsdk.target('admin.hcp1.snomis.local', 'service', 'service01', port=9090)
-    >>> r = hcpsdk.mapi.replication(t)
-    >>> l = r.getLinkList()
+    >>> t = hcpsdk.Target('admin.hcp1.snomis.local', 'service', 'service01', port=9090)
+    >>> r = hcpsdk.mapi.Replication(t)
+    >>> l = r.getlinklist()
     >>> l
     ['hcp1-a-a-hcp2']
     >>>
-    >>> d = r.getLinkDetails(l[0])
+    >>> d = r.getlinkdetails(l[0])
     >>> pprint(d)
     {'compression': 'false',
-     'connection': {'localHost': '192.168.0.52, 192.168.0.53, 192.168.0.54, '
+     'Connection': {'localHost': '192.168.0.52, 192.168.0.53, 192.168.0.54, '
                                  '192.168.0.55',
                     'localPort': '5748',
                     'remoteHost': '192.168.0.56, 192.168.0.57, 192.168.0.58, '

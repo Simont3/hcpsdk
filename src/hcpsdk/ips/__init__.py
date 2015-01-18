@@ -55,7 +55,7 @@ class Circle(object):
     def __init__(self, fqdn, port=443):
         """
         :param fqdn: the FQDN to be resolved
-        :param port: the port to be used by the **hcpsdk.target** object
+        :param port: the port to be used by the **hcpsdk.Target** object
         """
         self.__authority = fqdn
         self.__port = port
@@ -97,7 +97,7 @@ class Circle(object):
                 for ipadr in self._addresses:
                     yield str(ipadr)
 
-        # acquire a lock to make sure that one request gets serviced at a time
+        # acquire a lock to make sure that one Request gets serviced at a time
         self._cLock.acquire()
         if fqdn:
             self.__generator = __addr(fqdn)
@@ -124,9 +124,9 @@ class Circle(object):
         return self.answer.qname
 
 
-class request(object):
+class Request(object):
     """
-    A DNS query request object
+    A DNS query Request object
     """
 
     def __init__(self, fqdn, cache):
@@ -135,15 +135,15 @@ class request(object):
         self.sub = None
 
 
-class response(object):
+class Response(object):
     """
-    DNS query response object, returned by the **query()** function.
+    DNS query Response object, returned by the **query()** function.
     """
 
     def __init__(self, fqdn, cache):
         """
-        :param fqdn:    the FQDN for the response
-        :param cache:   response from a query by-passing the local DNS cache (False)
+        :param fqdn:    the FQDN for the Response
+        :param cache:   Response from a query by-passing the local DNS cache (False)
                         or using the system resolver (True)
         """
         self.fqdn = fqdn
@@ -157,17 +157,17 @@ def query(fqdn, cache=False):
     Submit a DNS query, using *socket.getaddrinfo()* if cache=True, or
     *dns.resolver.query()* if cache=False.
 
-    :param fqdn:    a FQDN to query DNS -or- a *request* object
+    :param fqdn:    a FQDN to query DNS -or- a *Request* object
     :param cache:   if True, use the system resolver (which might do local caching),
                     else use an internal resolver, bypassing any cache available
-    :return:        an **hcpsdk.ips.response** object
+    :return:        an **hcpsdk.ips.Response** object
     :raises:        should never raise, as Exceptions are signaled through
-                    the **response.raised** attribute
+                    the **Response.raised** attribute
     """
-    if isinstance(fqdn, request):
-        _response = response(fqdn.fqdn, fqdn.cache)  # to collect the resolved IP addresses
+    if isinstance(fqdn, Request):
+        _response = Response(fqdn.fqdn, fqdn.cache)  # to collect the resolved IP addresses
     else:
-        _response = response(fqdn, cache)  # to collect the resolved IP addresses
+        _response = Response(fqdn, cache)  # to collect the resolved IP addresses
 
     if _response.cache:
         try:
@@ -187,7 +187,7 @@ def query(fqdn, cache=False):
         except dns.resolver.Timeout:
             _response.raised = 'Err: The operation timed out.'
         except dns.resolver.NoAnswer:
-            _response.raised = 'Err: The response did not contain an answer to the question.'
+            _response.raised = 'Err: The Response did not contain an answer to the question.'
         except dns.resolver.NoNameservers:
             _response.raised = 'Err: NoNameservers - No non-broken nameservers are available to answer the query.'
         except dns.resolver.NotAbsolute:
@@ -208,7 +208,7 @@ def query(fqdn, cache=False):
                                               int(hx[4:6], 16), int(hx[6:], 16))
                 _response.ips.append(str(ip))
             if not len(_response.ips):
-                _response.raised = 'Err: no response'
+                _response.raised = 'Err: no Response'
 
     return _response
 

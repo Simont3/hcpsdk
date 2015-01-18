@@ -21,23 +21,23 @@
 # CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 import hcpsdk
-import xml.etree.ElementTree as ET
+import xml.etree.ElementTree as Et
 from collections import OrderedDict
 import logging
 
-__all__ = ['info']
+__all__ = ['Info']
 
 logging.getLogger('hcpsdk.namespace').addHandler(logging.NullHandler())
 
 
-class info(object):
+class Info(object):
     """
     Class to access namespaces metadata information
     """
 
     def __init__(self, target, debuglevel=0):
         """
-        :param target:      an **hcpsdk.target** object
+        :param target:      an **hcpsdk.Target** object
         :param debuglevel:  0..9 (propagated to *http.client*)
         """
         self.target = target
@@ -46,7 +46,7 @@ class info(object):
         self.service_time = 0.0
         self.logger = logging.getLogger('hcpsdk.namespace.info')
 
-    def NSstatistics(self):
+    def nsstatistics(self):
         """
         Query for namespace statistic information
 
@@ -56,7 +56,7 @@ class info(object):
         # noinspection PyUnusedLocal
         d = None
         try:
-            con = hcpsdk.connection(self.target, debuglevel=self.debuglevel)
+            con = hcpsdk.Connection(self.target, debuglevel=self.debuglevel)
         except Exception as e:
             raise hcpsdk.HcpsdkError(str(e))
         else:
@@ -67,17 +67,17 @@ class info(object):
                 raise hcpsdk.HcpsdkError(str(e))
             else:
                 if r.status == 200:
-                    # Good status, get and parse the response
+                    # Good status, get and parse the Response
                     x = r.read()
                     self.service_time = con.service_time2
-                    root = ET.fromstring(x)
+                    root = Et.fromstring(x)
                     d = root.attrib
                     tobedel = None
                     for i in d.keys():
                         if i.startswith('{http'):
                             tobedel = i
                         else:
-                            d[i] = self._castVar(d[i])
+                            d[i] = self._castvar(d[i])
                     if tobedel:
                         del d[tobedel]
                 else:
@@ -89,7 +89,7 @@ class info(object):
         return d
 
     # noinspection PyShadowingBuiltins
-    def listAccessibleNS(self, all=False):
+    def listaccessiblens(self, all=False):
         """
         List the settings of the actual (or all accessible namespace(s).
 
@@ -98,7 +98,7 @@ class info(object):
         :return:        a dict holding a dict per namespace
         """
 
-        # setup target URL and apply parameters
+        # setup Target URL and apply parameters
         url = '/proc'
         if not all:
             params = None
@@ -106,7 +106,7 @@ class info(object):
             params = {'single': 'true'}
 
         try:
-            con = hcpsdk.connection(self.target, debuglevel=self.debuglevel)
+            con = hcpsdk.Connection(self.target, debuglevel=self.debuglevel)
         except Exception as e:
             raise hcpsdk.HcpsdkError(str(e))
         else:
@@ -118,16 +118,16 @@ class info(object):
                 raise hcpsdk.HcpsdkError(str(e))
             else:
                 if r.status == 200:
-                    # Good status, get and parse the response
+                    # Good status, get and parse the Response
                     x = r.read()
                     self.service_time = con.service_time2
-                    root = ET.fromstring(x)
+                    root = Et.fromstring(x)
                     d = OrderedDict()
                     for n in root:
                         d[n.attrib.get('name')] = n.attrib
                         for i in d[n.attrib.get('name')].keys():
                             d[n.attrib.get('name')][i] = \
-                                self._castVar(d[n.attrib.get('name')][i])
+                                self._castvar(d[n.attrib.get('name')][i])
                         for n1 in n:
                             d[n.attrib['name']]['description'] = n1.text.strip().split('°')
                 else:
@@ -138,14 +138,14 @@ class info(object):
 
         return d
 
-    def listRetentionClasses(self):
+    def listretentionclasses(self):
         """
         List the Retention Classes available for the actual namespace.
 
         :return: a dict holding a dict per Retention Class
         """
         try:
-            con = hcpsdk.connection(self.target, debuglevel=self.debuglevel)
+            con = hcpsdk.Connection(self.target, debuglevel=self.debuglevel)
         except Exception as e:
             raise hcpsdk.HcpsdkError(str(e))
         else:
@@ -153,16 +153,16 @@ class info(object):
 
             r = con.GET('/proc/retentionClasses')
             if r.status == 200:
-                # Good status, get and parse the response
+                # Good status, get and parse the Response
                 x = r.read()
                 self.service_time = con.service_time2
-                root = ET.fromstring(x)
+                root = Et.fromstring(x)
                 d = OrderedDict()
                 for n in root:
                     d[n.attrib.get('name')] = n.attrib
                     for i in d[n.attrib.get('name')].keys():
                         d[n.attrib.get('name')][i] = \
-                            self._castVar(d[n.attrib.get('name')][i])
+                            self._castvar(d[n.attrib.get('name')][i])
                     for n1 in n:
                         d[n.attrib.get('name')]['description'] = n1.text.strip()
             else:
@@ -173,14 +173,14 @@ class info(object):
 
         return d
 
-    def listPermissions(self):
+    def listpermissions(self):
         """
         List the namespace and user permissions for the actual namespace.
 
         :return: a dict holding a dict per permission domain
         """
         try:
-            con = hcpsdk.connection(self.target, debuglevel=self.debuglevel)
+            con = hcpsdk.Connection(self.target, debuglevel=self.debuglevel)
         except Exception as e:
             raise hcpsdk.HcpsdkError(str(e))
         else:
@@ -188,15 +188,15 @@ class info(object):
 
             r = con.GET('/proc/permissions')
             if r.status == 200:
-                # Good status, get and parse the response
+                # Good status, get and parse the Response
                 x = r.read()
                 self.service_time = con.service_time2
-                root = ET.fromstring(x)
+                root = Et.fromstring(x)
                 d = OrderedDict()
                 for n in root:
                     d[n.tag] = n.attrib
                     for i in d[n.tag].keys():
-                        d[n.tag][i] = self._castVar(d[n.tag][i])
+                        d[n.tag][i] = self._castvar(d[n.tag][i])
             else:
                 raise (hcpsdk.HcpsdkError('{} - {}'.format(r.status, r.reason)))
         finally:
@@ -206,7 +206,7 @@ class info(object):
         return d
 
     # noinspection PyMethodMayBeStatic
-    def _castVar(self, var):
+    def _castvar(self, var):
         """
         Cast a value to the right type.
         :param var: a string
