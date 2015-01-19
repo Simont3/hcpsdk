@@ -12,7 +12,7 @@ It's that easy:
 
         >>> import hcpsdk
 
-        >>> # initialize a ``Target`` object
+        >>> # initialize a *Target* object
         >>> hcptarget = hcpsdk.Target("namespace.tenant.hcp.your.domain",
                                       "your_user", "your_password", port=443)
 
@@ -62,14 +62,14 @@ Install hcpsdk by running:
 Contribute
 ----------
 
-- Issue Tracker: `https://github.com/simont3/hcpsdk/issues>`_
+- Issue Tracker: `<https://github.com/simont3/hcpsdk/issues>`_
 - Source Code: `<https://github.com/Simont3/hcpsdk>`_
 
 Support
 -------
 
 If you are having issues, please let us know via the Issue Tracker
-or send an email to `w@snomis.de>`_
+or send an email to `<sw@snomis.de>`_
 
 License
 -------
