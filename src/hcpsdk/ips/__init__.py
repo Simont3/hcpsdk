@@ -52,13 +52,18 @@ class Circle(object):
     """
     __EMPTY_ADDRLIST = []
 
-    def __init__(self, fqdn, port=443):
+    def __init__(self, fqdn, port=443, dnscache=False):
         """
-        :param fqdn: the FQDN to be resolved
-        :param port: the port to be used by the **hcpsdk.Target** object
+        :param fqdn:        the FQDN to be resolved
+        :param port:        the port to be used by the **hcpsdk.Target** object
+        :param dnscache:    if True, use the system resolver (which **might** do
+                            local caching), else use an internal resolver,
+                            bypassing any cache available
         """
+        self.logger = logging.getLogger(__name__ + '.Circle')
         self.__authority = fqdn
         self.__port = port
+        self.__dnscache = dnscache
         self._cLock = threading.Lock()
         self.__generator = None
         self._addresses = Circle.__EMPTY_ADDRLIST.copy()
@@ -82,13 +87,12 @@ class Circle(object):
         :return:        an IP address (as string)
         """
 
-        def __addr(dnsname):
+        def __addr(dnsname, dnscache=False):
             """
             resolve HCPs IP addresses and build a list with all IPs gathered
             """
             self._addresses = Circle.__EMPTY_ADDRLIST.copy()
-            # answer = Circle.__EMPTY_ADDRLIST.copy()
-            result = query(dnsname, cache=True)
+            result = query(dnsname, cache=dnscache)
             if result.raised:
                 raise IpsError(result.raised)
             self._addresses = result.ips.copy()
@@ -100,9 +104,13 @@ class Circle(object):
         # acquire a lock to make sure that one Request gets serviced at a time
         self._cLock.acquire()
         if fqdn:
-            self.__generator = __addr(fqdn)
+            self.__generator = __addr(fqdn, dnscache=self.__dnscache)
         myaddr = next(self.__generator)
         self._cLock.release()
+        if fqdn:
+            self.logger.debug('(re-) loaded IP address cache: {}, dnscache = {}'
+                              .format(self._addresses, self.__dnscache))
+        self.logger.debug('issued IP address: {}'.format(myaddr))
         return myaddr
 
     def refresh(self):
@@ -110,6 +118,7 @@ class Circle(object):
         Force a fresh DNS query and rebuild the cached list of IP addresses
         """
         self._addr(fqdn=self.__authority)
+        self.logger.debug('IP address cache refreshed')
 
     def __getattr__(self, item):
         """

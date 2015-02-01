@@ -157,60 +157,61 @@ class NativeAuthorization(BaseAuthorization):
                 "Cookie": "hcp-ns-auth={0}".format(token)}
 
 
-class HS3Authorization(BaseAuthorization):
-    """
-    Authorization for native http/REST access to HCP.
-    """
-    def __init__(self, user, password):
-        """
-        :param user:        the data access user
-        :param password:    his password
-        """
-        super().__init__()
-        self.headers = self._createauthorization(user, password)
-        self.logger.debug('*I_NATIVE* authorization initialized for user: {}'
-                          .format(user))
-        self.logger.debug('pre version 6:     Cookie: {}'.format(self.headers['Cookie']))
-        self.logger.debug('version 6+: Authorization: {}'.format(self.headers['Authorization']))
-
-    def _createauthorization(self, user, password):
-        """
-        Build the authorization headers by calculation from user and password.
-
-        :param user:        the name of a local HCP user
-        :param password:    his password
-        :return:            a dict holding the necessary headers
-        """
-        token = b64encode(user.encode()).decode() + ":" + md5(password.encode()).hexdigest()
-        return {"Authorization": 'HCP {}'.format(token),
-                "Cookie": "hcp-ns-auth={0}".format(token)}
+# class HS3Authorization(BaseAuthorization):
+#     """
+#     Authorization for native http/REST access to HCP.
+#     """
+#     def __init__(self, user, password):
+#         """
+#         :param user:        the data access user
+#         :param password:    his password
+#         """
+#         super().__init__()
+#         self.headers = self._createauthorization(user, password)
+#         self.logger.debug('*I_NATIVE* authorization initialized for user: {}'
+#                           .format(user))
+#         self.logger.debug('pre version 6:     Cookie: {}'.format(self.headers['Cookie']))
+#         self.logger.debug('version 6+: Authorization: {}'.format(self.headers['Authorization']))
+#
+#     def _createauthorization(self, user, password):
+#         """
+#         Build the authorization headers by calculation from user and password.
+#
+#         :param user:        the name of a local HCP user
+#         :param password:    his password
+#         :return:            a dict holding the necessary headers
+#         """
+#         token = b64encode(user.encode()).decode() + ":" + md5(password.encode()).hexdigest()
+#         return {"Authorization": 'HCP {}'.format(token),
+#                 "Cookie": "hcp-ns-auth={0}".format(token)}
 
 
 class Target(object):
     """
-    This is the a central access point to an HCP Target (and its replica,
-    evntually). It caches the FQDN, the port, the authentication header
-    (both variants - the legacy one for HCP up to version 5 and the new
-    style header for HCP version 6 and better.
-    Several REST-based interface to HCP are provided (**actually, just I_NATIVE
-    (the native http/REST interface) has been implemented**).
+    This is the a central access point to an HCP target (and its replica,
+    eventually). It caches the FQDN and the port and queries the provided
+    *Authorization* object for the required authorization token.
     """
 
-    def __init__(self, fqdn, authorization, port=443,
+    def __init__(self, fqdn, authorization, port=443, dnscache=False,
                  interface=I_NATIVE, replica_fqdn=None, replica_strategy=None):
         """
         :param fqdn:                ([namespace.]tenant.hcp.loc)
         :param authorization:       an instance of one of BaseAuthorization's subclasses
-        :param port:                port number
-                                    (443, 8000 and 9090 are seen as ports using ssl)
-        :param interface:           the HCP interface to use (I_NATIVE, I_HS3 or I_HSWIFT)
+        :param port:                port number (443, 8000 and 9090 are seen as ports
+                                    using ssl)
+        :param dnscache:            if True, use the system resolver (which **might** do
+                                    local caching), else use an internal resolver,
+                                    bypassing any cache available
+        :param interface:           the HCP interface to use (I_NATIVE)
         :param replica_fqdn:        the replica HCP's FQDN
-        :param replica_strategy:    or'd combination of the RS_* modes
+        :param replica_strategy:    ORed combination of the RS_* modes
         :raises:                    HcpsdkError
         """
         self.logger = logging.getLogger(__name__ + '.Target')
         self.__fqdn = fqdn
         self.__authorization = authorization
+        self.__dnscache = dnscache
         self.__headers = {'Host': self.__fqdn}
         self.__port = port
         if self.__port in SSL_PORTS:
@@ -223,14 +224,14 @@ class Target(object):
 
         # instantiate an IP address circler for this Target
         try:
-            self.ipaddrqry = ips.Circle(self.__fqdn, port=self.__port)
+            self.ipaddrqry = ips.Circle(self.__fqdn, port=self.__port, dnscache=self.__dnscache)
         except ips.IpsError as e:
             self.logger.error(e, exc_info=True)
             raise HcpsdkError(e)
 
         # noinspection PyProtectedMember
-        self.logger.debug('Target initialized: {}:{} - SSL = {} - IPs = {}'
-                          .format(self.__fqdn, self.__port, self.__ssl, self.ipaddrqry._addresses))
+        self.logger.debug('Target initialized: {}:{} - SSL = {}'
+                          .format(self.__fqdn, self.__port, self.__ssl))
 
         # If we have *replica_fqdn*, try to init its *Target* object
         if replica_fqdn:

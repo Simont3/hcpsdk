@@ -4,9 +4,32 @@
 .. automodule:: hcpsdk
    :synopsis: Framework for HCP access.
 
-**hcpsdk** provides functionality for access to HCP, where *Target()*  acts
-as a central object per HCP Target (and its replica, eventually) and
-*Connection()* provides methods for REST access.
+**hcpsdk** provides access to HCP through http[s]/REST dialects.
+
+Setup is three-fold (:ref:`see example below <hcpsdk_example>`):
+
+    1.  Instantiate an *Authorization* object with the required credentials.
+
+        This class will be queried by *Target* objects for authorization
+        tokens.
+
+    2.  Instantiate a *Target* class with HCPs FQDN, the port to be used,
+        the *Authorization* object  and -eventually- the FQDN of a replica HCP.
+
+        This class will care for name resolution and round-robin access to
+        all HCP nodes.
+
+    3.  Instantiate one or more *Connection* objects.
+
+        These objects are the workhorses of the *hcpsdk* - they are providing
+        the access methods needed. You'll need to consult the respective HCP
+        manuals to create the needed requests.
+
+        *Connection* objects will open a session to HCP as soon as
+        needed, but not before. After use, they keep the session open for a
+        tunable amount of time, to speed up things for a subsequent request.
+
+        Don't forget to close *Connection* objects when finished with them!
 
 
 Methods
@@ -155,6 +178,8 @@ Exceptions
 
       An error description.
 
+
+.. _hcpsdk_example:
 
 Example
 ^^^^^^^

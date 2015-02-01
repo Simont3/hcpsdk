@@ -4,8 +4,8 @@
 .. automodule:: hcpsdk.ips
    :synopsis: Name resolution through DNS
 
-**hcpsdk.ips** provides name resolution service and IP address caching. Typically
-used by *hcpsdk*'s internally, only.
+**hcpsdk.ips** provides name resolution service and IP address caching.
+Used by *hcpsdk* internally; exposed here as it might be useful alone.
 
 Classes
 ^^^^^^^
