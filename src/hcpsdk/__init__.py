@@ -72,6 +72,119 @@ RS_READ_ON_FAILOVER = 2  # automatically read from replica when failed over
 RS_WRITE_ALLOWED = 4  # allow to write to replica (always, A/A links only)
 RS_WRITE_ON_FAILOVER = 8  # allow to write to replica when failed over
 
+# The ports used for https
+SSL_PORTS = [443, 8000, 9090]
+
+
+class BaseAuthorization(object):
+    """
+    Represents the authorization for a *Target*.
+
+    This is a base class for all other *Authorization* classes, not intended for
+    direct usage, but to be sub-classed for specific protocols.
+    """
+    def __init__(self):
+        """
+        Calculate or acquire the authorization token (or whatever needed) to build the
+        required authorization header(s).
+        """
+        self.logger = logging.getLogger(__name__ + '__name__')
+        self.headers = {}   # the headers that authorize a request
+
+    def _createauthorization(self):
+        """
+        Do whatever is needed to create the authorization token.
+
+        This method needs to be overwritten to suite the needs of a specific
+        protocol.
+
+        :return:    a dict holding the necessary headers
+        """
+
+    def _refreshauthorization(self):
+        """
+        Do whatever is needed to refresh the authorization token.
+        This method will be called by *Target* if an refresh of the authorization
+        header(s) is required.
+
+        This method needs to be overwritten if the specific protocol to refresh
+        its authorization token from time to time.
+
+        :return:    a dict holding the necessary headers
+        :raises:    HcpsdkError
+        """
+        pass
+
+    def _getheaders(self):
+        """
+        This method will be called by *Target* to get the authorization header(s).
+
+        :returns:   a dict holding the authorization headers
+        :raises:    HcpsdkError, if no credentials are available
+        """
+        if self.headers:
+            return self.headers
+        else:
+            raise HcpsdkError('Err: no authorization token available')
+
+
+class NativeAuthorization(BaseAuthorization):
+    """
+    Authorization for native http/REST access to HCP.
+    """
+    def __init__(self, user, password):
+        """
+        :param user:        the data access user
+        :param password:    his password
+        """
+        super().__init__()
+        self.headers = self._createauthorization(user, password)
+        self.logger.debug('*I_NATIVE* authorization initialized for user: {}'
+                          .format(user))
+        self.logger.debug('pre version 6:     Cookie: {}'.format(self.headers['Cookie']))
+        self.logger.debug('version 6+: Authorization: {}'.format(self.headers['Authorization']))
+
+    def _createauthorization(self, user, password):
+        """
+        Build the authorization headers by calculation from user and password.
+
+        :param user:        the name of a local HCP user
+        :param password:    his password
+        :return:            a dict holding the necessary headers
+        """
+        token = b64encode(user.encode()).decode() + ":" + md5(password.encode()).hexdigest()
+        return {"Authorization": 'HCP {}'.format(token),
+                "Cookie": "hcp-ns-auth={0}".format(token)}
+
+
+class HS3Authorization(BaseAuthorization):
+    """
+    Authorization for native http/REST access to HCP.
+    """
+    def __init__(self, user, password):
+        """
+        :param user:        the data access user
+        :param password:    his password
+        """
+        super().__init__()
+        self.headers = self._createauthorization(user, password)
+        self.logger.debug('*I_NATIVE* authorization initialized for user: {}'
+                          .format(user))
+        self.logger.debug('pre version 6:     Cookie: {}'.format(self.headers['Cookie']))
+        self.logger.debug('version 6+: Authorization: {}'.format(self.headers['Authorization']))
+
+    def _createauthorization(self, user, password):
+        """
+        Build the authorization headers by calculation from user and password.
+
+        :param user:        the name of a local HCP user
+        :param password:    his password
+        :return:            a dict holding the necessary headers
+        """
+        token = b64encode(user.encode()).decode() + ":" + md5(password.encode()).hexdigest()
+        return {"Authorization": 'HCP {}'.format(token),
+                "Cookie": "hcp-ns-auth={0}".format(token)}
+
 
 class Target(object):
     """
@@ -83,15 +196,11 @@ class Target(object):
     (the native http/REST interface) has been implemented**).
     """
 
-    # private identifiers
-    __SSL_PORTS = [443, 8000, 9090]
-
-    def __init__(self, fqdn, user, password, port=443, interface=I_NATIVE,
-                 replica_fqdn=None, replica_strategy=None):
+    def __init__(self, fqdn, authorization, port=443,
+                 interface=I_NATIVE, replica_fqdn=None, replica_strategy=None):
         """
         :param fqdn:                ([namespace.]tenant.hcp.loc)
-        :param user:                HCP user name
-        :param password:            the users password
+        :param authorization:       an instance of one of BaseAuthorization's subclasses
         :param port:                port number
                                     (443, 8000 and 9090 are seen as ports using ssl)
         :param interface:           the HCP interface to use (I_NATIVE, I_HS3 or I_HSWIFT)
@@ -101,8 +210,10 @@ class Target(object):
         """
         self.logger = logging.getLogger(__name__ + '.Target')
         self.__fqdn = fqdn
+        self.__authorization = authorization
+        self.__headers = {'Host': self.__fqdn}
         self.__port = port
-        if self.__port in Target.__SSL_PORTS:
+        if self.__port in SSL_PORTS:
             self.__ssl = True
         else:
             self.__ssl = False
@@ -121,14 +232,6 @@ class Target(object):
         self.logger.debug('Target initialized: {}:{} - SSL = {} - IPs = {}'
                           .format(self.__fqdn, self.__port, self.__ssl, self.ipaddrqry._addresses))
 
-        # create the authentication header(s) needed for HCP access,
-        # both flavor (pre-HCP 6 and HCP 6+ are provided)
-        token = b64encode(user.encode()).decode() + ":" + md5(password.encode()).hexdigest()
-        self.__headers = {"Authorization": 'HCP {}'.format(token), "Cookie": "hcp-ns-auth={0}".format(token)}
-        del token
-
-        self.__headers['Host'] = self.__fqdn
-
         # If we have *replica_fqdn*, try to init its *Target* object
         if replica_fqdn:
             try:
@@ -136,8 +239,6 @@ class Target(object):
                                       self.__port, interface=self.interface)
             except HcpsdkError as e:
                 raise HcpsdkReplicaInitError(e)
-
-        del password
 
     def getaddr(self):
         """
@@ -163,7 +264,9 @@ class Target(object):
             # noinspection PyProtectedMember
             return self.ipaddrqry._addresses
         elif item == 'headers':
-            return self.__headers
+            tmp = self.__headers.copy()
+            tmp.update(self.__authorization._getheaders())
+            return tmp
         elif item == 'replica':
             return self.replica
         else:

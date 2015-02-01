@@ -29,18 +29,18 @@ import http.client
 
 class TestHcpsdk_1_Target(unittest.TestCase):
     def setUp(self):
-        self.T_NS_GOOD = "n1.m.hcp2.snomis.local"
+        self.T_NS_GOOD = "n1.m.hcp1.snomis.local"
         self.T_NS_BAD = "this_wont_work.at-all"
         self.T_USER = "n"
         self.T_PASSWORD = "n01"
+        self.T_AUTH = hcpsdk.NativeAuthorization(self.T_USER, self.T_PASSWORD)
         self.T_PORT = 443
 
     def test_1_10_ip_address_available(self):
         """
         Make sure we can get a single IP address from Target object's pool
         """
-        hcptarget = hcpsdk.Target(self.T_NS_GOOD,
-                                  self.T_USER, self.T_PASSWORD, self.T_PORT)
+        hcptarget = hcpsdk.Target(self.T_NS_GOOD, self.T_AUTH, port=self.T_PORT)
         self.assertTrue(hcptarget.getaddr() in hcptarget.addresses)
 
     def test_1_20_ip_address_not_available(self):
@@ -49,15 +49,13 @@ class TestHcpsdk_1_Target(unittest.TestCase):
         """
         with self.assertRaises(hcpsdk.HcpsdkError):
             # noinspection PyUnusedLocal
-            hcptarget = hcpsdk.Target(self.T_NS_BAD,
-                                      self.T_USER, self.T_PASSWORD, self.T_PORT)
+            hcptarget = hcpsdk.Target(self.T_NS_BAD, self.T_AUTH, self.T_PORT)
 
     def test_1_30_good_target_authority(self):
         """
         Make sure we get a hcpsdk.Target object
         """
-        hcptarget = hcpsdk.Target(self.T_NS_GOOD,
-                                  self.T_USER, self.T_PASSWORD, self.T_PORT)
+        hcptarget = hcpsdk.Target(self.T_NS_GOOD, self.T_AUTH, self.T_PORT)
         self.assertIs(type(hcptarget), hcpsdk.Target)
 
     def test_1_40_bad_target_authority(self):
@@ -67,21 +65,20 @@ class TestHcpsdk_1_Target(unittest.TestCase):
         """
         with self.assertRaises(hcpsdk.HcpsdkError):
             # noinspection PyUnusedLocal
-            hcptarget = hcpsdk.Target(self.T_NS_BAD,
-                                      self.T_USER, self.T_PASSWORD, self.T_PORT)
+            hcptarget = hcpsdk.Target(self.T_NS_BAD, self.T_AUTH, self.T_PORT)
 
 
 # @unittest.skip("demonstrating skipping")
 class TestHcpsdk_2_Access(unittest.TestCase):
     def setUp(self):
-        self.T_NS_GOOD = "n1.m.hcp2.snomis.local"
+        self.T_NS_GOOD = "n1.m.hcp1.snomis.local"
         self.T_NS_BAD = "this_wont_work.at-all"
         self.T_USER = "n"
         self.T_PASSWORD = "n01"
+        self.T_AUTH = hcpsdk.NativeAuthorization(self.T_USER, self.T_PASSWORD)
         self.T_PORT = 443
         self.T_HCPFILE = '/rest/hcpsdk/TestHCPsdk_20_access'
-        self.hcptarget = hcpsdk.Target(self.T_NS_GOOD, self.T_USER,
-                                       self.T_PASSWORD, self.T_PORT)
+        self.hcptarget = hcpsdk.Target(self.T_NS_GOOD, self.T_AUTH, self.T_PORT)
         self.con = hcpsdk.Connection(self.hcptarget)
 
     def tearDown(self):
@@ -122,14 +119,14 @@ class TestHcpsdk_2_Access(unittest.TestCase):
 # @unittest.skip("demonstrating skipping")
 class TestHcpsdk_3_Access_Fail(unittest.TestCase):
     def setUp(self):
-        self.T_NS_GOOD = "n1.m.hcp2.snomis.local"
+        self.T_NS_GOOD = "n1.m.hcp1.snomis.local"
         self.T_NS_BAD = "this_wont_work.at-all"
         self.T_USER = "n"
         self.T_PASSWORD = "n01"
+        self.T_AUTH = hcpsdk.NativeAuthorization(self.T_USER, self.T_PASSWORD)
         self.T_PORT = 443
         self.T_HCPFILE = '/rest/hcpsdk/TestHCPsdk_20_access'
-        self.hcptarget = hcpsdk.Target(self.T_NS_GOOD, self.T_USER,
-                                       self.T_PASSWORD, self.T_PORT)
+        self.hcptarget = hcpsdk.Target(self.T_NS_GOOD, self.T_AUTH, self.T_PORT)
         self.con = hcpsdk.Connection(self.hcptarget)
 
     def tearDown(self):

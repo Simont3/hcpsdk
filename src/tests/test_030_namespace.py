@@ -37,9 +37,9 @@ class TestHcpsdk_30_1_NamespaceInfo_NS_GOOD(unittest.TestCase):
         self.T_NS_GOOD = "n1.m.hcp1.snomis.local"
         self.T_USER = "n"
         self.T_PASSWORD = "n01"
+        self.T_AUTH = hcpsdk.NativeAuthorization(self.T_USER, self.T_PASSWORD)
         self.T_PORT = 443
-        self.hcptarget = hcpsdk.Target(self.T_NS_GOOD, self.T_USER,
-                                       self.T_PASSWORD, self.T_PORT)
+        self.hcptarget = hcpsdk.Target(self.T_NS_GOOD, self.T_AUTH, self.T_PORT)
         self.nso = hcpsdk.namespace.Info(self.hcptarget)
 
     def tearDown(self):

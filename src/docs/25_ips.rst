@@ -15,9 +15,9 @@ Classes
 
    **Read-only class attributes:**
 
-   .. attribute:: _addresses
+       .. attribute:: _addresses
 
-      List of the cached IP addresses
+          List of the cached IP addresses
 
    **Class methods:**
 
@@ -26,22 +26,22 @@ Classes
 
    **Read-only class attributes:**
 
-   .. attribute:: ips
+       .. attribute:: ips
 
-      List of resolved IP addresses (as strings)
+          List of resolved IP addresses (as strings)
 
-   .. attribute:: fqdn
+       .. attribute:: fqdn
 
-      The FQDN for which the resolve happened.
+          The FQDN for which the resolve happened.
 
-   .. attribute:: cache
+       .. attribute:: cache
 
-      False if the local DNS cache has been by-passed, True if the system-default
-      resolver was used.
+          False if the local DNS cache has been by-passed, True if the system-default
+          resolver was used.
 
-   .. attribute:: raised
+       .. attribute:: raised
 
-      Empty string when no Exception were raised, otherwise the Exception's error message.
+          Empty string when no Exception were raised, otherwise the Exception's error message.
 
 
 Functions

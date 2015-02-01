@@ -135,19 +135,19 @@ Example
 
     >>> import hcpsdk.namespace
     >>> from pprint import pprint
-
-    >>> t = hcpsdk.Target('n1.m.hcp1.snomis.local', 'n', 'n01')
+    >>> auth = hcpsdk.NativeAuthorization('n', 'n01')
+    >>> t = hcpsdk.Target('n1.m.hcp1.snomis.local', auth, port=443)
     >>> n = hcpsdk.namespace.Info(t)
-    >>> pprint(n.NSstatistics())
-    {'customMetadataObjectBytes': 13542405,
-     'customMetadataObjectCount': 380107,
+    >>> pprint(n.nsstatistics())
+    {'customMetadataObjectBytes': 0,
+     'customMetadataObjectCount': 0,
      'namespaceName': 'n1',
-     'objectCount': 402397,
+     'objectCount': 0,
      'shredObjectBytes': 0,
      'shredObjectCount': 0,
      'softQuotaPercent': 85,
      'totalCapacityBytes': 53687091200,
-     'usedCapacityBytes': 13785284608}
+     'usedCapacityBytes': 0}
     >>>
 
 

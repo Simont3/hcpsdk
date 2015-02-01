@@ -17,7 +17,16 @@ runs if called as such:
        :start-after: # start sample block 10
        :end-before:  # end sample block 10
 
-Now, we initialize a **Target** object with the parameters setup before.
+We need to create an authorization object, which converts the user credentials
+into the authorization token needed for HCP access.
+
+    .. include:: code/simple_primary_only.py
+       :literal:
+       :start-after: # start sample block 17
+       :end-before:  # end sample block 17
+
+Now, we initialize a **Target** object with the parameters and the
+authorization object created in the steps before.
 Notice that we do this within a try/except clause, as we need to be able
 to react on errors that might happen during initialization.
 

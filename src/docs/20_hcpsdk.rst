@@ -8,6 +8,7 @@
 as a central object per HCP Target (and its replica, eventually) and
 *Connection()* provides methods for REST access.
 
+
 Methods
 ^^^^^^^
 
@@ -15,69 +16,73 @@ Methods
 
    Returns the full version of the HCPsdk (|release|).
 
+
 Classes
 ^^^^^^^
+
+.. autoclass:: NativeAuthorization
+   :members:
 
 .. autoclass:: Target
    :members:
 
    **Class constants:**
 
-   .. attribute:: I_NATIVE
+       .. attribute:: I_NATIVE
 
-      HCP's http/REST dialect for access to HCPs authenticated namespaces.
+          HCP's http/REST dialect for access to HCPs authenticated namespaces.
 
-   .. attribute:: I_HS3
+       .. attribute:: I_HS3
 
-      The Amazon S3 compatible HS3 REST dialect.
-      *-not yet implemented-*
+          The Amazon S3 compatible HS3 REST dialect.
+          *-not yet implemented-*
 
-   .. attribute:: I_HSWIFT
+       .. attribute:: I_HSWIFT
 
-      The OpnStack Swift compatible HSWIFT dialect.
-      *-not yet implemented-*
+          The OpnStack Swift compatible HSWIFT dialect.
+          *-not yet implemented-*
 
-   .. attribute:: RS_READ_ALLOWED
+       .. attribute:: RS_READ_ALLOWED
 
-      Allow to read from replica (always)
+          Allow to read from replica (always)
 
-   .. attribute:: RS_READ_ON_FAILOVER
+       .. attribute:: RS_READ_ON_FAILOVER
 
-      Automatically read from replica when failed over
+          Automatically read from replica when failed over
 
-   .. attribute:: RS_WRITE_ALLOWED
+       .. attribute:: RS_WRITE_ALLOWED
 
-      Allow write to replica (always, **A/A links only**)
+          Allow write to replica (always, **A/A links only**)
 
-   .. attribute:: RS_WRITE_ON_FAILOVER
+       .. attribute:: RS_WRITE_ON_FAILOVER
 
-      Allow write to replica when failed over
+          Allow write to replica when failed over
 
    **Read-only class attributes:**
 
-   .. attribute:: fqdn
+       .. attribute:: fqdn
 
-      The FQDN for which the Target was initialized (string).
+          The FQDN for which the Target was initialized (string).
 
-   .. attribute:: port
+       .. attribute:: port
 
-      The port used by the Target (int).
+          The port used by the Target (int).
 
-   .. attribute:: ssl
+       .. attribute:: ssl
 
-      Target initialized for SSL (bool).
+          Target initialized for SSL (bool).
 
-   .. attribute:: addresses
+       .. attribute:: addresses
 
-      The IP addresses used by this Target (list).
+          The IP addresses used by this Target (list).
 
-   .. attribute:: headers
+       .. attribute:: headers
 
-      The http headers prepared for this Target (dictionary).
+          The http headers prepared for this Target (dictionary).
 
-   .. attribute:: replica
+       .. attribute:: replica
 
-      The replica Target, if available (an *hcpsdk.Target* object or None).
+          The replica Target, if available (an *hcpsdk.Target* object or None).
 
    **Class methods:**
 
@@ -86,36 +91,36 @@ Classes
 
    **Read-only class attributes:**
 
-   .. attribute:: address
+       .. attribute:: address
 
-      The IP address used for this Connection.
+          The IP address used for this Connection.
 
-   .. attribute:: Response
+       .. attribute:: Response
 
-      Exposition of the http.client.Response object for the last Request.
+          Exposition of the http.client.Response object for the last Request.
 
-   .. attribute:: response_status
+       .. attribute:: response_status
 
-      The HTTP status code of the last Request.
+          The HTTP status code of the last Request.
 
-   .. attribute:: response_reason
+       .. attribute:: response_reason
 
-      The corresponding HTTP status message.
+          The corresponding HTTP status message.
 
-   .. attribute:: connect_time
+       .. attribute:: connect_time
 
-      The time the last connect took.
+          The time the last connect took.
 
-   .. attribute:: service_time1
+       .. attribute:: service_time1
 
-      The time the last action on a Request took. This can be the initial part
-      of PUT/GET/etc. or a single (possibly incomplete) read from
-      a Response.
+          The time the last action on a Request took. This can be the initial part
+          of PUT/GET/etc. or a single (possibly incomplete) read from
+          a Response.
 
-   .. attribute:: service_time2
+       .. attribute:: service_time2
 
-      Duration of the complete Request up to now. Sum of all ``service_time1``
-      during handling a Request.
+          Duration of the complete Request up to now. Sum of all ``service_time1``
+          during handling a Request.
 
    **Class methods:**
 
@@ -158,11 +163,12 @@ Example
 
     >>> import hcpsdk
     >>> hcpsdk.version()
-    '0.9.0-1'
-    >>> t = hcpsdk.Target('n1.m.hcp1.snomis.local', 'n', 'n01')
+    '0.9.0-2'
+    >>> auth = hcpsdk.NativeAuthorization('n', 'n01')
+    >>> t = hcpsdk.Target('n1.m.hcp1.snomis.local', auth, port=443)
     >>> c = hcpsdk.Connection(t)
     >>> c.connect_time
-    0.000000000010
+    '0.000000000010'
     >>>
     >>> r = c.PUT('/rest/hcpsdk/test1.txt', body='This is an example', params={'index': 'true'})
     >>> c.response_status, c.response_reason
@@ -172,12 +178,12 @@ Example
     >>> c.response_status, c.response_reason
     (200, 'OK')
     >>> c.getheaders()
-    [('Date', 'Sun, 18 Jan 2015 14:22:23 GMT'),
-     ('Server', 'HCP V7.0.1.17'),
-     ('X-RequestId', 'AA6FF1E05A49375'),
+    [('Date', 'Sat, 31 Jan 2015 20:34:53 GMT'),
+     ('Server', 'HCP V7.1.0.10'),
+     ('X-RequestId', '38AD86EF250DEB35'),
      ('X-HCP-ServicedBySystem', 'hcp1.snomis.local'),
-     ('X-HCP-Time', '1421590943'),
-     ('X-HCP-SoftwareVersion', '7.0.1.17'),
+     ('X-HCP-Time', '1422736493'),
+     ('X-HCP-SoftwareVersion', '7.1.0.10'),
      ('ETag', '"68791e1b03badd5e4eb9287660f67745"'),
      ('Cache-Control', 'no-cache,no-store'),
      ('Pragma', 'no-cache'),
@@ -187,8 +193,8 @@ Example
      ('X-HCP-Type', 'object'),
      ('X-HCP-Size', '18'),
      ('X-HCP-Hash', 'SHA-256 47FB563CC8F86DC37C86D08BC542968F7986ACD81C97BF76DB7AD744407FE117'),
-     ('X-HCP-VersionId', '90981819023489'),
-     ('X-HCP-IngestTime', '1421590922'),
+     ('X-HCP-VersionId', '91055133849537'),
+     ('X-HCP-IngestTime', '1422736466'),
      ('X-HCP-RetentionClass', ''),
      ('X-HCP-RetentionString', 'Deletion Allowed'),
      ('X-HCP-Retention', '0'),
@@ -206,9 +212,10 @@ Example
      ('X-HCP-CustomMetadataAnnotations', ''),
      ('X-HCP-Replicated', 'false'),
      ('X-HCP-ReplicationCollision', 'false'),
-     ('X-HCP-ChangeTimeMilliseconds', '1421590922263.00'),
-     ('X-HCP-ChangeTimeString', '2015-01-18T15:22:02+0100'),
-     ('Last-Modified', 'Sun, 18 Jan 2015 14:22:02 GMT')]
+     ('X-HCP-ChangeTimeMilliseconds', '1422736466446.00'),
+     ('X-HCP-ChangeTimeString', '2015-01-31T21:34:26+0100'),
+     ('Last-Modified', 'Sat, 31 Jan 2015 20:34:26 GMT')
+    ]
     >>>
     >>> r = c.GET('/rest/hcpsdk/test1.txt')
     >>> c.response_status, c.response_reason
@@ -216,13 +223,13 @@ Example
     >>> c.read()
     b'This is an example'
     >>> c.service_time2
-    0.0004937648773193359
+    0.0005471706390380859
     >>>
     >>> r = c.DELETE('/rest/hcpsdk/test1.txt')
     >>> c.response_status, c.response_reason
     (200, 'OK')
     >>> c.service_time2
-    0.00019121170043945312
+    0.0002570152282714844
     >>>
     >>> c.close()
     >>>

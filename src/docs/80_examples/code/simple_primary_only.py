@@ -27,7 +27,7 @@ from os.path import normpath
 from pprint import pprint
 import hcpsdk
 
-# HCP Connection details - you'll need to adopt this!
+# HCP Connection details - you'll need to adopt this to your environment!
 # -- primary HCP
 P_FQDN = 'n1.m.hcp1.snomis.local'
 P_USER = 'n'
@@ -36,7 +36,7 @@ P_PORT = 443
 # -- file to be used for the test (read-only)
 P_FILE = normpath('../testfiles/128kbfile')
 # -- debug mode
-P_DEBUG = False
+P_DEBUG = True
 
 if __name__ == '__main__':
     # end sample block 10
@@ -50,10 +50,17 @@ if __name__ == '__main__':
     # noinspection PyUnboundLocalVariable
     print('running *simple_primary_only.py*')
 
+    # start sample block 17
+    # Setup an authorization object:
+    auth = hcpsdk.NativeAuthorization(P_USER, P_PASS)
+    print('*I_NATIVE* authorization initialized')
+    print('')
+    # end sample block 17
+
     # start sample block 20
-    # Setup the Target HCP objects:
+    # Setup an HCP Target object:
     try:
-        t = hcpsdk.Target(P_FQDN, P_USER, P_PASS, port=P_PORT)
+        t = hcpsdk.Target(P_FQDN, auth, port=P_PORT)
     except hcpsdk.HcpsdkError as e:
         sys.exit('init of *Target* failed - {}'.format(e))
     else:
@@ -61,7 +68,7 @@ if __name__ == '__main__':
     # end sample block 20
 
     # start sample block 30
-    # setup a Connection object:
+    # Setup a Connection object:
     try:
         c = hcpsdk.Connection(t)
     except hcpsdk.HcpsdkError as e:
@@ -72,7 +79,7 @@ if __name__ == '__main__':
         # end sample block 30
 
         # start sample block 40
-        # ingest an object:
+        # Ingest an object:
         try:
             with open(P_FILE, 'r') as infile:
                 r = c.PUT('/rest/hcpsdk/sample_primary_only.txt',
@@ -98,7 +105,7 @@ if __name__ == '__main__':
         # end sample block 40
 
         # start sample block 50
-        # check an object for existence and get its metadata:
+        # Check an object for existence and get its metadata:
         try:
             r = c.HEAD('/rest/hcpsdk/sample_primary_only.txt')
         except hcpsdk.HcpsdkTimeoutError as e:
@@ -118,7 +125,7 @@ if __name__ == '__main__':
         # end sample block 50
 
         # start sample block 60
-        # read an object:
+        # Read an object:
         try:
             r = c.GET('/rest/hcpsdk/sample_primary_only.txt')
         except hcpsdk.HcpsdkTimeoutError as e:
@@ -139,7 +146,7 @@ if __name__ == '__main__':
         # end sample block 60
 
         # start sample block 65
-        # delete the object:
+        # Delete the object:
         try:
             r = c.DELETE('/rest/hcpsdk/sample_primary_only.txt')
         except hcpsdk.HcpsdkTimeoutError as e:
@@ -158,7 +165,7 @@ if __name__ == '__main__':
                 # end sample block 65
 
     # start sample block 70
-    # close the Connection:
+    # Close the Connection:
     finally:
         # noinspection PyUnboundLocalVariable
         c.close()

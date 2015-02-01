@@ -37,9 +37,9 @@ class TestHcpsdk_40_1_Mapi_Replication(unittest.TestCase):
         self.T_NS_GOOD = "admin.hcp1.snomis.local"
         self.T_USER = "service"
         self.T_PASSWORD = "service01"
+        self.T_AUTH = hcpsdk.NativeAuthorization(self.T_USER, self.T_PASSWORD)
         self.T_PORT = 9090
-        self.hcptarget = hcpsdk.Target(self.T_NS_GOOD, self.T_USER,
-                                       self.T_PASSWORD, self.T_PORT)
+        self.hcptarget = hcpsdk.Target(self.T_NS_GOOD, self.T_AUTH, self.T_PORT)
         self.mapi = hcpsdk.mapi.Replication(self.hcptarget)
 
     def tearDown(self):
