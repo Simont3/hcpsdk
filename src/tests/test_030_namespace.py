@@ -25,21 +25,22 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 import unittest
 from collections import OrderedDict
 from pprint import pprint
+
 import hcpsdk
+import tests.init_tests as it
 
 import logging
-
 logging.basicConfig(filename='_example.log', level=logging.DEBUG)
 
 
 class TestHcpsdk_30_1_NamespaceInfo_NS_GOOD(unittest.TestCase):
     def setUp(self):
-        self.T_NS_GOOD = "n1.m.hcp1.snomis.local"
-        self.T_USER = "n"
-        self.T_PASSWORD = "n01"
-        self.T_AUTH = hcpsdk.NativeAuthorization(self.T_USER, self.T_PASSWORD)
-        self.T_PORT = 443
-        self.hcptarget = hcpsdk.Target(self.T_NS_GOOD, self.T_AUTH, self.T_PORT)
+        # self.T_NS_GOOD = "n1.m.hcp1.snomis.local"
+        # self.T_USER = "n"
+        # self.T_PASSWORD = "n01"
+        # self.T_AUTH = hcpsdk.NativeAuthorization(self.T_USER, self.T_PASSWORD)
+        # self.T_PORT = 443
+        self.hcptarget = hcpsdk.Target(it.P_NS_GOOD, it.P_AUTH, port=it.P_PORT, dnscache=it.P_DNSCACHE)
         self.nso = hcpsdk.namespace.Info(self.hcptarget)
 
     def tearDown(self):

@@ -26,6 +26,7 @@ import unittest
 from pprint import pprint
 
 import hcpsdk
+import tests.init_tests as it
 
 
 class LtVars(object):
@@ -34,12 +35,12 @@ class LtVars(object):
 
 class TestHcpsdk_40_1_Mapi_Replication(unittest.TestCase):
     def setUp(self):
-        self.T_NS_GOOD = "admin.hcp1.snomis.local"
-        self.T_USER = "service"
-        self.T_PASSWORD = "service01"
-        self.T_AUTH = hcpsdk.NativeAuthorization(self.T_USER, self.T_PASSWORD)
+        # self.T_NS_GOOD = "admin.hcp1.snomis.local"
+        # self.T_USER = "service"
+        # self.T_PASSWORD = "service01"
+        # self.T_AUTH = hcpsdk.NativeAuthorization(self.T_USER, self.T_PASSWORD)
         self.T_PORT = 9090
-        self.hcptarget = hcpsdk.Target(self.T_NS_GOOD, self.T_AUTH, self.T_PORT)
+        self.hcptarget = hcpsdk.Target(it.P_NS_GOOD, it.P_AUTH, port=self.T_PORT, dnscache=it.P_DNSCACHE)
         self.mapi = hcpsdk.mapi.Replication(self.hcptarget)
 
     def tearDown(self):

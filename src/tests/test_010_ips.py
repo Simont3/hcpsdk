@@ -23,21 +23,23 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 """
 
 import unittest
+
 from hcpsdk import ips
+import tests.init_tests as it
 
 
 class TestHcpsdk_10_1_Ips(unittest.TestCase):
-    def setUp(self):
-        self.T_NS_GOOD = "n1.m.hcp1.snomis.local"
-        self.T_NS_BAD = "this_wont_work.at-all"
-        self.T_PORT = 443
+    # def setUp(self):
+    #     self.T_NS_GOOD = "n1.m.hcp1.snomis.local"
+    #     self.T_NS_BAD = "this_wont_work.at-all"
+    #     self.T_PORT = 443
 
     def test_1_05_query_good_fqdn(self):
         """
         Make sure we get a hcpsdk.Target object
         """
         print('test_1_05_query_good_fqdn')
-        r = ips.query(self.T_NS_GOOD)
+        r = ips.query(it.P_NS_GOOD, cache=it.P_DNSCACHE)
         print(r)
         self.assertTrue(type(r) == ips.Response)
         self.assertTrue(type(r.ips) == list)
@@ -48,7 +50,7 @@ class TestHcpsdk_10_1_Ips(unittest.TestCase):
         """
         Make sure we get a hcpsdk.Target object
         """
-        ipaddrqry = ips.Circle(fqdn=self.T_NS_GOOD, port=self.T_PORT)
+        ipaddrqry = ips.Circle(fqdn=it.P_NS_GOOD, port=it.P_PORT, dnscache=it.P_DNSCACHE)
         self.assertTrue(ipaddrqry._addr() in ipaddrqry._addresses)
 
     def test_1_20_bad_fqdn(self):
@@ -57,7 +59,7 @@ class TestHcpsdk_10_1_Ips(unittest.TestCase):
         (which means, we can't resolve an IP address for it)
         """
         with self.assertRaises(ips.IpsError):
-            ips.Circle(fqdn=self.T_NS_BAD, port=self.T_PORT)
+            ips.Circle(fqdn=it.P_NS_BAD, port=it.P_PORT, dnscache=it.P_DNSCACHE)
 
 
 if __name__ == '__main__':

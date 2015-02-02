@@ -1,61 +1,60 @@
 # -*- coding: utf-8 -*-
-"""
-The MIT License (MIT)
-
-Copyright (c) 2014 Thorsten Simons (sw@snomis.de)
-
-Permission is hereby granted, free of charge, to any person obtaining a copy of
-this software and associated documentation files (the "Software"), to deal in
-the Software without restriction, including without limitation the rights to
-use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of
-the Software, and to permit persons to whom the Software is furnished to do so,
-subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS
-FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR
-COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER
-IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
-CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-"""
+# The MIT License (MIT)
+#
+# Copyright (c) 2014-2015 Thorsten Simons (sw@snomis.de)
+#
+# Permission is hereby granted, free of charge, to any person obtaining a copy of
+# this software and associated documentation files (the "Software"), to deal in
+# the Software without restriction, including without limitation the rights to
+# use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of
+# the Software, and to permit persons to whom the Software is furnished to do so,
+# subject to the following conditions:
+#
+# The above copyright notice and this permission notice shall be included in all
+# copies or substantial portions of the Software.
+#
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS
+# FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR
+# COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER
+# IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
+# CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 import unittest
 import hcpsdk
 import http.client
 
+import tests.init_tests as it
+
 
 class TestHcpsdk_1_Target(unittest.TestCase):
-    def setUp(self):
-        self.T_NS_GOOD = "n1.m.hcp1.snomis.local"
-        self.T_NS_BAD = "this_wont_work.at-all"
-        self.T_USER = "n"
-        self.T_PASSWORD = "n01"
-        self.T_AUTH = hcpsdk.NativeAuthorization(self.T_USER, self.T_PASSWORD)
-        self.T_PORT = 443
+    # def setUp(self):
+    #     self.T_NS_GOOD = "n1.m.hcp1.snomis.local"
+    #     self.T_NS_BAD = "this_wont_work.at-all"
+    #     self.T_USER = "n"
+    #     self.T_PASSWORD = "n01"
+    #     self.T_AUTH = hcpsdk.NativeAuthorization(self.T_USER, self.T_PASSWORD)
+    #     self.T_PORT = 443
 
     def test_1_10_ip_address_available(self):
         """
         Make sure we can get a single IP address from Target object's pool
         """
-        hcptarget = hcpsdk.Target(self.T_NS_GOOD, self.T_AUTH, port=self.T_PORT)
+        hcptarget = hcpsdk.Target(it.P_NS_GOOD, it.P_AUTH, port=it.P_PORT, dnscache=it.P_DNSCACHE)
         self.assertTrue(hcptarget.getaddr() in hcptarget.addresses)
 
     def test_1_20_ip_address_not_available(self):
         """
-        Make sure we can get a single IP address from Target object's pool
+        Make sure an exception is raised if the FQDN can't be resolved
         """
         with self.assertRaises(hcpsdk.HcpsdkError):
-            # noinspection PyUnusedLocal
-            hcptarget = hcpsdk.Target(self.T_NS_BAD, self.T_AUTH, self.T_PORT)
+            hcpsdk.Target(it.P_NS_BAD, it.P_AUTH, port=it.P_PORT, dnscache=it.P_DNSCACHE)
 
     def test_1_30_good_target_authority(self):
         """
         Make sure we get a hcpsdk.Target object
         """
-        hcptarget = hcpsdk.Target(self.T_NS_GOOD, self.T_AUTH, self.T_PORT)
+        hcptarget = hcpsdk.Target(it.P_NS_GOOD, it.P_AUTH, port=it.P_PORT, dnscache=it.P_DNSCACHE)
         self.assertIs(type(hcptarget), hcpsdk.Target)
 
     def test_1_40_bad_target_authority(self):
@@ -64,21 +63,20 @@ class TestHcpsdk_1_Target(unittest.TestCase):
         (which means, we can't resolve an IP address for it)
         """
         with self.assertRaises(hcpsdk.HcpsdkError):
-            # noinspection PyUnusedLocal
-            hcptarget = hcpsdk.Target(self.T_NS_BAD, self.T_AUTH, self.T_PORT)
+            hcpsdk.Target(it.P_NS_BAD, it.P_AUTH, port=it.P_PORT, dnscache=it.P_DNSCACHE)
 
 
 # @unittest.skip("demonstrating skipping")
 class TestHcpsdk_2_Access(unittest.TestCase):
     def setUp(self):
-        self.T_NS_GOOD = "n1.m.hcp1.snomis.local"
-        self.T_NS_BAD = "this_wont_work.at-all"
-        self.T_USER = "n"
-        self.T_PASSWORD = "n01"
-        self.T_AUTH = hcpsdk.NativeAuthorization(self.T_USER, self.T_PASSWORD)
-        self.T_PORT = 443
+        # self.T_NS_GOOD = "n1.m.hcp1.snomis.local"
+        # self.T_NS_BAD = "this_wont_work.at-all"
+        # self.T_USER = "n"
+        # self.T_PASSWORD = "n01"
+        # self.T_AUTH = hcpsdk.NativeAuthorization(self.T_USER, self.T_PASSWORD)
+        # self.T_PORT = 443
         self.T_HCPFILE = '/rest/hcpsdk/TestHCPsdk_20_access'
-        self.hcptarget = hcpsdk.Target(self.T_NS_GOOD, self.T_AUTH, self.T_PORT)
+        self.hcptarget = hcpsdk.Target(it.P_NS_GOOD, it.P_AUTH, it.P_PORT, dnscache=it.P_DNSCACHE)
         self.con = hcpsdk.Connection(self.hcptarget)
 
     def tearDown(self):
@@ -119,14 +117,14 @@ class TestHcpsdk_2_Access(unittest.TestCase):
 # @unittest.skip("demonstrating skipping")
 class TestHcpsdk_3_Access_Fail(unittest.TestCase):
     def setUp(self):
-        self.T_NS_GOOD = "n1.m.hcp1.snomis.local"
-        self.T_NS_BAD = "this_wont_work.at-all"
-        self.T_USER = "n"
-        self.T_PASSWORD = "n01"
-        self.T_AUTH = hcpsdk.NativeAuthorization(self.T_USER, self.T_PASSWORD)
-        self.T_PORT = 443
+        # self.T_NS_GOOD = "n1.m.hcp1.snomis.local"
+        # self.T_NS_BAD = "this_wont_work.at-all"
+        # self.T_USER = "n"
+        # self.T_PASSWORD = "n01"
+        # self.T_AUTH = hcpsdk.NativeAuthorization(self.T_USER, self.T_PASSWORD)
+        # self.T_PORT = 443
         self.T_HCPFILE = '/rest/hcpsdk/TestHCPsdk_20_access'
-        self.hcptarget = hcpsdk.Target(self.T_NS_GOOD, self.T_AUTH, self.T_PORT)
+        self.hcptarget = hcpsdk.Target(it.P_NS_GOOD, it.P_AUTH, it.P_PORT, dnscache=it.P_DNSCACHE)
         self.con = hcpsdk.Connection(self.hcptarget)
 
     def tearDown(self):
