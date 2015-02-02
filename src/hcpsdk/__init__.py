@@ -526,12 +526,18 @@ class Connection(object):
                     for another Request.
         """
         s_t = time.time()
-        buf = self._response.read(amt)
-        self.__service_time1 = time.time() - s_t
-        self.logger.log(logging.DEBUG, '(partial?) read: service_time1 = {} secs'
-                        .format(self.__service_time1))
-        self.__service_time2 += self.__service_time1
-        return buf
+        try:
+            buf = self._response.read(amt)
+            self.__service_time1 = time.time() - s_t
+        except AttributeError as e:
+            msg = 'faulty read: {}'.format(str(e))
+            self.logger.log(logging.DEBUG, msg)
+            raise HcpsdkError(msg)
+        else:
+            self.logger.log(logging.DEBUG, '(partial?) read: service_time1 = {} secs'
+                            .format(self.__service_time1))
+            self.__service_time2 += self.__service_time1
+            return buf
 
     def __getattr__(self, item):
         """
