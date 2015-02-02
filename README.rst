@@ -12,12 +12,15 @@ It's that easy:
 
         >>> import hcpsdk
 
+        >>> # initialize an *Authorization* object
+        >>> auth = hcpsdk.NativeAuthorization('user', 'password')
+
         >>> # initialize a *Target* object
-        >>> hcptarget = hcpsdk.Target("namespace.tenant.hcp.your.domain",
-                                      "your_user", "your_password", port=443)
+        >>> t = hcpsdk.Target("namespace.tenant.hcp.your.domain",
+                              auth, port=443)
 
         >>> # initialize a Connection to the `Target``
-        >>> c = hcpsdk.Connection(hcptarget)
+        >>> c = hcpsdk.Connection(t)
 
         >>> # do something with the connection...
         >>> r = c.GET('/rest/your_file.txt')
@@ -34,7 +37,7 @@ Features
 
 - Handles HCP as a target object
 - Replica-aware (replica can be part of a target object)
-- Varous strategies on how to use a replica
+- Various strategies on how to use a replica
 - Connection objects, while tied to a target object, allow
   access to HCP through the various http/REST dialects
   (native, HS3, HSwift)
@@ -68,7 +71,7 @@ Contribute
 Support
 -------
 
-If you are having issues, please let us know via the Issue Tracker
+If you have any comments, please let us know via the Issue Tracker
 or send an email to `<sw@snomis.de>`_
 
 License
