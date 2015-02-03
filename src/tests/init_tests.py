@@ -23,24 +23,40 @@
 import hcpsdk
 
 # primary HCP
-P_HCP       = 'hcp.snomis.local'
+P_HCP       = 'hcp1.snomis.local'
+P_ADMIN     = 'admin.' + P_HCP
 P_TENANT    = 'm.' + P_HCP
 P_NS_GOOD   = 'n1.' + P_TENANT
 P_NS_BAD    = "this_wont_work.at-all"
 P_PORT      = 443
+P_ADMINPORT = 8000
+P_MAPIPORT  = 9090
 P_DNSCACHE  = True
 
 P_USER      = "n"
 P_PASSWORD  = "n01"
 P_AUTH      = hcpsdk.NativeAuthorization(P_USER, P_PASSWORD)
 
+P_ADMUSER   = "service"
+P_ADMPWD    = "service01"
+P_ADMAUTH      = hcpsdk.NativeAuthorization(P_ADMUSER, P_ADMPWD)
+
+
 # replica HCP
 R_HCP       = 'hcp2.snomis.local'
+R_ADMIN     = 'admin' + R_HCP
 R_TENANT    = 'm.' + R_HCP
 R_NS_GOOD   = 'n1.' + R_TENANT
 R_NS_BAD    = "this_wont_work.at-all"
-R_PORT      = 443
+R_PORT      = P_PORT
+R_ADMINPORT = P_ADMINPORT
+R_MAPIPORT  = P_MAPIPORT
+R_DNSCACHE  = P_DNSCACHE
 
 R_USER      = P_USER
 R_PASSWORD  = P_PASSWORD
 R_AUTH      = hcpsdk.NativeAuthorization(R_USER, R_PASSWORD)
+
+R_ADMUSER   = "service"
+R_ADMPWD    = "service01"
+R_ADMAUTH      = hcpsdk.NativeAuthorization(R_ADMUSER, R_ADMPWD)
