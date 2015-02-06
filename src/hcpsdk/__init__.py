@@ -22,6 +22,14 @@
 
 from base64 import b64encode
 from hashlib import md5
+# As of Python 3.4.3, http.client.HTTPSconnection() will default to verify presented
+# certificates against the system's trusted CA chain. To enable the the previous
+# behaviour, we switch it off.
+try:
+    from ssl import _create_unverified_context
+    SSL_NOVERIFY = _create_unverified_context()
+except ImportError:
+    SSL_NOVERIFY = None
 import http.client
 from urllib.parse import urlencode, quote_plus
 import logging
@@ -157,35 +165,6 @@ class NativeAuthorization(BaseAuthorization):
                 "Cookie": "hcp-ns-auth={0}".format(token)}
 
 
-# class HS3Authorization(BaseAuthorization):
-#     """
-#     Authorization for native http/REST access to HCP.
-#     """
-#     def __init__(self, user, password):
-#         """
-#         :param user:        the data access user
-#         :param password:    his password
-#         """
-#         super().__init__()
-#         self.headers = self._createauthorization(user, password)
-#         self.logger.debug('*I_NATIVE* authorization initialized for user: {}'
-#                           .format(user))
-#         self.logger.debug('pre version 6:     Cookie: {}'.format(self.headers['Cookie']))
-#         self.logger.debug('version 6+: Authorization: {}'.format(self.headers['Authorization']))
-#
-#     def _createauthorization(self, user, password):
-#         """
-#         Build the authorization headers by calculation from user and password.
-#
-#         :param user:        the name of a local HCP user
-#         :param password:    his password
-#         :return:            a dict holding the necessary headers
-#         """
-#         token = b64encode(user.encode()).decode() + ":" + md5(password.encode()).hexdigest()
-#         return {"Authorization": 'HCP {}'.format(token),
-#                 "Cookie": "hcp-ns-auth={0}".format(token)}
-
-
 class Target(object):
     """
     This is the a central access point to an HCP target (and its replica,
@@ -193,7 +172,7 @@ class Target(object):
     *Authorization* object for the required authorization token.
     """
 
-    def __init__(self, fqdn, authorization, port=443, dnscache=False,
+    def __init__(self, fqdn, authorization, port=443, dnscache=False, sslcontext=SSL_NOVERIFY,
                  interface=I_NATIVE, replica_fqdn=None, replica_strategy=None):
         """
         :param fqdn:                ([namespace.]tenant.hcp.loc)
@@ -203,6 +182,8 @@ class Target(object):
         :param dnscache:            if True, use the system resolver (which **might** do
                                     local caching), else use an internal resolver,
                                     bypassing any cache available
+        :param sslcontext:          the context used to handle https requests; defaults to
+                                    no certificate verification
         :param interface:           the HCP interface to use (I_NATIVE)
         :param replica_fqdn:        the replica HCP's FQDN
         :param replica_strategy:    ORed combination of the RS_* modes
@@ -212,6 +193,7 @@ class Target(object):
         self.__fqdn = fqdn
         self.__authorization = authorization
         self.__dnscache = dnscache
+        self.__sslcontext = sslcontext
         self.__headers = {'Host': self.__fqdn}
         self.__port = port
         if self.__port in SSL_PORTS:
@@ -261,6 +243,8 @@ class Target(object):
             return self.__port
         elif item == 'ssl':
             return self.__ssl
+        elif item == 'sslcontext':
+            return self.__sslcontext
         elif item == 'addresses':
             # noinspection PyProtectedMember
             return self.ipaddrqry._addresses
@@ -284,7 +268,7 @@ class Connection(object):
     """
 
     # noinspection PyShadowingNames
-    def __init__(self, target, timeout=30, idletime=30, debuglevel=0, retries=3):
+    def __init__(self, target, timeout=30, idletime=30, retries=3, debuglevel=0):
         """
         :param target:      an initialized Target object
         :param timeout:     the timeout for this Connection (secs)
@@ -302,6 +286,7 @@ class Connection(object):
         self.__debuglevel = debuglevel  # 0..9 -see-> http.client.HTTP[S]connetion
         self.__retries = retries  # the number of retries until giving up on a Request
 
+        self.__sslcontext = self.__target.sslcontext
         self.__con = None  # http.client.HTTP[S]Connection object
         self._response = None
 
@@ -311,15 +296,11 @@ class Connection(object):
 
         self.idletimer = None  # used to hold a threading.Timer() object
 
-        # try:
-        # self.__con = self._connect()
-        # except Exception as e:
-        # raise e
-        # else:
         self.logger.log(logging.DEBUG,
                         'Connection object initialized: IP {} ({}) - timeout: {} - idletime: {} - retries: {}'
                         .format(self.__address, self.__target.fqdn, self.__timeout, self.__idletime, self.__retries))
-        # self.set_idletimer()
+        if self.__sslcontext:
+            self.logger.log(logging.DEBUG, 'SSLcontext = {}'.format(self.__sslcontext))
 
     def _set_idletimer(self):
         """
@@ -360,7 +341,7 @@ class Connection(object):
         if self.__target.ssl:
             c_t = time.time()
             con = http.client.HTTPSConnection(self.__address, port=self.__target.port,
-                                              timeout=self.__timeout)
+                                              timeout=self.__timeout, context=self.__sslcontext)
             self.__connect_time = time.time() - c_t
         else:
             c_t = time.time()

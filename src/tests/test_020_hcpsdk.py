@@ -22,19 +22,14 @@
 
 import unittest
 import hcpsdk
+import ssl
 import http.client
+from pprint import pprint
 
 import tests.init_tests as it
 
 
 class TestHcpsdk_1_Target(unittest.TestCase):
-    # def setUp(self):
-    #     self.T_NS_GOOD = "n1.m.hcp1.snomis.local"
-    #     self.T_NS_BAD = "this_wont_work.at-all"
-    #     self.T_USER = "n"
-    #     self.T_PASSWORD = "n01"
-    #     self.T_AUTH = hcpsdk.NativeAuthorization(self.T_USER, self.T_PASSWORD)
-    #     self.T_PORT = 443
 
     def test_1_10_ip_address_available(self):
         """
@@ -67,14 +62,8 @@ class TestHcpsdk_1_Target(unittest.TestCase):
 
 
 # @unittest.skip("demonstrating skipping")
-class TestHcpsdk_2_Access(unittest.TestCase):
+class TestHcpsdk_2_Access_http(unittest.TestCase):
     def setUp(self):
-        # self.T_NS_GOOD = "n1.m.hcp1.snomis.local"
-        # self.T_NS_BAD = "this_wont_work.at-all"
-        # self.T_USER = "n"
-        # self.T_PASSWORD = "n01"
-        # self.T_AUTH = hcpsdk.NativeAuthorization(self.T_USER, self.T_PASSWORD)
-        # self.T_PORT = 443
         self.T_HCPFILE = '/rest/hcpsdk/TestHCPsdk_20_access'
         self.hcptarget = hcpsdk.Target(it.P_NS_GOOD, it.P_AUTH, it.P_PORT, dnscache=it.P_DNSCACHE)
         self.con = hcpsdk.Connection(self.hcptarget)
@@ -115,14 +104,83 @@ class TestHcpsdk_2_Access(unittest.TestCase):
 
 
 # @unittest.skip("demonstrating skipping")
-class TestHcpsdk_3_Access_Fail(unittest.TestCase):
+class TestHcpsdk_3_Access_https_success(unittest.TestCase):
     def setUp(self):
-        # self.T_NS_GOOD = "n1.m.hcp1.snomis.local"
-        # self.T_NS_BAD = "this_wont_work.at-all"
-        # self.T_USER = "n"
-        # self.T_PASSWORD = "n01"
-        # self.T_AUTH = hcpsdk.NativeAuthorization(self.T_USER, self.T_PASSWORD)
-        # self.T_PORT = 443
+        self.T_HCPFILE = '/rest/hcpsdk/TestHCPsdk_20_access'
+        self.ctxt = ssl.create_default_context(purpose=ssl.Purpose.SERVER_AUTH,
+                                               cafile='certs/rootCertificate.pem')
+        self.hcptarget = hcpsdk.Target(it.P_NS_GOOD, it.P_AUTH, it.P_PORT,
+                                       dnscache=it.P_DNSCACHE, sslcontext=self.ctxt)
+        self.con = hcpsdk.Connection(self.hcptarget)
+
+    def tearDown(self):
+        self.con.close()
+        del self.hcptarget
+
+    def test_3_10_put(self):
+        """
+        Ingest a file
+        """
+        # noinspection PyPep8Naming
+        T_BUF = '0123456789ABCDEF' * 64
+        r = self.con.PUT(self.T_HCPFILE, T_BUF)
+        self.assertEqual(r.status, 201)
+
+    def test_3_20_head(self):
+        """
+        Delete a file
+        """
+        r = self.con.HEAD(self.T_HCPFILE)
+        self.assertEqual(r.status, 200)
+
+    def test_3_30_post(self):
+        """
+        Delete a file
+        """
+        r = self.con.POST(self.T_HCPFILE, {'index': 'true'})
+        self.assertEqual(r.status, 200)
+
+    def test_3_90_delete(self):
+        """
+        Delete a file
+        """
+        r = self.con.DELETE(self.T_HCPFILE)
+        self.assertEqual(r.status, 200)
+
+
+# @unittest.skip("demonstrating skipping")
+class TestHcpsdk_4_Access_https_fail(unittest.TestCase):
+    def setUp(self):
+        self.T_HCPFILE = '/rest/hcpsdk/TestHCPsdk_20_access'
+        self.ctxt = ssl.create_default_context()
+        self.hcptarget = hcpsdk.Target(it.P_NS_GOOD, it.P_AUTH, it.P_PORT,
+                                       dnscache=it.P_DNSCACHE, sslcontext=self.ctxt)
+        self.con = hcpsdk.Connection(self.hcptarget)
+
+    def tearDown(self):
+        self.con.close()
+        del self.hcptarget
+
+    def test_4_10_put(self):
+        """
+        Ingest a file
+        """
+        # noinspection PyPep8Naming
+        T_BUF = '0123456789ABCDEF' * 64
+        with self.assertRaises(hcpsdk.HcpsdkError):
+            r = self.con.PUT(self.T_HCPFILE, T_BUF)
+
+    def test_4_90_delete(self):
+        """
+        Delete a file
+        """
+        with self.assertRaises(hcpsdk.HcpsdkError):
+            r = self.con.DELETE(self.T_HCPFILE)
+
+
+# @unittest.skip("demonstrating skipping")
+class TestHcpsdk_5_Access_Fail(unittest.TestCase):
+    def setUp(self):
         self.T_HCPFILE = '/rest/hcpsdk/TestHCPsdk_20_access'
         self.hcptarget = hcpsdk.Target(it.P_NS_GOOD, it.P_AUTH, it.P_PORT, dnscache=it.P_DNSCACHE)
         self.con = hcpsdk.Connection(self.hcptarget)
@@ -134,7 +192,7 @@ class TestHcpsdk_3_Access_Fail(unittest.TestCase):
         self.con.close()
         del self.hcptarget
 
-    def test_3_10_put(self):
+    def test_5_10_put(self):
         """
         Ingest a file
         """
