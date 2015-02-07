@@ -70,9 +70,9 @@ class HcpsdkReplicaInitError(HcpsdkError):
         self.reason = reason
 
 # Interface constants
-I_NATIVE = 'native'
-I_HS3 = 'hs3'
-I_HSWIFT = 'hswift'
+I_NATIVE = 'I_NATIVE'
+I_HS3 = 'I_HS3'
+I_HSWIFT = 'I_HSWIFT'
 
 # Replication strategie constants
 RS_READ_ALLOWED = 1  # allow to read from replica (always)

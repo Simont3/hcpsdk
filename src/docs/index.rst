@@ -14,6 +14,7 @@ Contents:
    10_intention
    15_state_of_implementation
    20_hcpsdk
+   22_https
    25_ips
    30_namespace
    35_pathbuilder

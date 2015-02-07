@@ -55,10 +55,14 @@ Classes
 
           HCP's http/REST dialect for access to HCPs authenticated namespaces.
 
+..
+
        .. attribute:: I_HS3
 
           The Amazon S3 compatible HS3 REST dialect.
           *-not yet implemented-*
+
+..
 
        .. attribute:: I_HSWIFT
 
