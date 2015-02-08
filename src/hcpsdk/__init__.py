@@ -25,10 +25,10 @@ from hashlib import md5
 # As of Python 3.4.3, http.client.HTTPSconnection() will default to verify presented
 # certificates against the system's trusted CA chain. To enable the the previous
 # behaviour, we switch it off.
+import ssl
 try:
-    from ssl import _create_unverified_context
     SSL_NOVERIFY = _create_unverified_context()
-except ImportError:
+except NameError:
     SSL_NOVERIFY = None
 import http.client
 from urllib.parse import urlencode, quote_plus
@@ -59,6 +59,12 @@ class HcpsdkError(Exception):
 
 
 class HcpsdkTimeoutError(HcpsdkError):
+    def __init__(self, reason):
+        self.args = reason,
+        self.reason = reason
+
+
+class HcpsdkCertificateError(HcpsdkError):
     def __init__(self, reason):
         self.args = reason,
         self.reason = reason
@@ -417,6 +423,9 @@ class Connection(object):
                     continue
                 else:
                     raise HcpsdkError('Not connected, retry failed ({})'.format(str(e)))
+            except ssl.SSLError as e:
+                self.logger.log(logging.DEBUG, 'Request raised exception: {}'.format(str(e)))
+                raise HcpsdkCertificateError(str(e))
             except TimeoutError:
                 self.logger.log(logging.DEBUG, 'Connection closed after timeout')
                 self.close()

@@ -171,6 +171,15 @@ Exceptions
 
       An error description.
 
+.. autoexception:: HcpsdkCertificateError
+
+   Raises if the *SSLcontext* wasn't able to verify a certificate
+   presented by HCP.
+
+   .. attribute:: reason
+
+      An error description.
+
 .. autoexception:: HcpsdkReplicaInitError
 
    Used to signal that the Target for a replica HCP couldn't be

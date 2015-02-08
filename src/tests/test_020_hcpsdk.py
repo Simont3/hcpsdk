@@ -63,6 +63,9 @@ class TestHcpsdk_1_Target(unittest.TestCase):
 
 # @unittest.skip("demonstrating skipping")
 class TestHcpsdk_2_Access_http(unittest.TestCase):
+    '''
+    Make sure we can write/head/post/delete a file using http
+    '''
     def setUp(self):
         self.T_HCPFILE = '/rest/hcpsdk/TestHCPsdk_20_access'
         self.hcptarget = hcpsdk.Target(it.P_NS_GOOD, it.P_AUTH, it.P_PORT, dnscache=it.P_DNSCACHE)
@@ -104,12 +107,21 @@ class TestHcpsdk_2_Access_http(unittest.TestCase):
 
 
 # @unittest.skip("demonstrating skipping")
-class TestHcpsdk_3_Access_https_success(unittest.TestCase):
+class TestHcpsdk_3_Access_https_certfile(unittest.TestCase):
+    '''
+    Make sure we can write/head/post/delete a file using https,
+    verifying the cert against a local rootCertificate.
+    '''
     def setUp(self):
+        print('>>> TestHcpsdk_3_Access_https_certfile:')
         self.T_HCPFILE = '/rest/hcpsdk/TestHCPsdk_20_access'
         self.ctxt = ssl.create_default_context(purpose=ssl.Purpose.SERVER_AUTH,
                                                cafile='certs/rootCertificate.pem')
-        self.hcptarget = hcpsdk.Target(it.P_NS_GOOD, it.P_AUTH, it.P_PORT,
+        print('Certificate store status:')
+        pprint(self.ctxt.cert_store_stats())
+        print('CA certificates:')
+        pprint((self.ctxt.get_ca_certs()))
+        self.hcptarget = hcpsdk.Target(it.P_NS_GOOD, it.P_AUTH, it.P_SSLPORT,
                                        dnscache=it.P_DNSCACHE, sslcontext=self.ctxt)
         self.con = hcpsdk.Connection(self.hcptarget)
 
@@ -149,11 +161,20 @@ class TestHcpsdk_3_Access_https_success(unittest.TestCase):
 
 
 # @unittest.skip("demonstrating skipping")
-class TestHcpsdk_4_Access_https_fail(unittest.TestCase):
+class TestHcpsdk_4_Access_https_systemCA(unittest.TestCase):
+    '''
+    Make sure we can write/head/post/delete a file using https,
+    verifying the cert against the systems CA store.
+    '''
     def setUp(self):
+        print('>>> TestHcpsdk_4_Access_https_systemCA:')
         self.T_HCPFILE = '/rest/hcpsdk/TestHCPsdk_20_access'
         self.ctxt = ssl.create_default_context()
-        self.hcptarget = hcpsdk.Target(it.P_NS_GOOD, it.P_AUTH, it.P_PORT,
+        print('Certificate store status:')
+        pprint(self.ctxt.cert_store_stats())
+        print('CA certificates:')
+        pprint((self.ctxt.get_ca_certs()))
+        self.hcptarget = hcpsdk.Target(it.P_NS_GOOD, it.P_AUTH, it.P_SSLPORT,
                                        dnscache=it.P_DNSCACHE, sslcontext=self.ctxt)
         self.con = hcpsdk.Connection(self.hcptarget)
 
@@ -167,28 +188,39 @@ class TestHcpsdk_4_Access_https_fail(unittest.TestCase):
         """
         # noinspection PyPep8Naming
         T_BUF = '0123456789ABCDEF' * 64
-        with self.assertRaises(hcpsdk.HcpsdkError):
-            r = self.con.PUT(self.T_HCPFILE, T_BUF)
+        r = self.con.PUT(self.T_HCPFILE, T_BUF)
+        print(self.con.response_status, self.con.response_reason)
+        self.assertEqual(r.status, 201)
 
     def test_4_90_delete(self):
         """
         Delete a file
         """
-        with self.assertRaises(hcpsdk.HcpsdkError):
-            r = self.con.DELETE(self.T_HCPFILE)
+        r = self.con.DELETE(self.T_HCPFILE)
+        print(self.con.response_status, self.con.response_reason)
+        self.assertEqual(r.status, 200)
 
 
 # @unittest.skip("demonstrating skipping")
-class TestHcpsdk_5_Access_Fail(unittest.TestCase):
+class TestHcpsdk_5_Access_https_certfile_fail(unittest.TestCase):
+    '''
+    Make sure we fail write/delete a file using https,
+    verifying the cert against a false rootCertificate.
+    '''
     def setUp(self):
+        print('>>> TestHcpsdk_5_Access_https_certfile_fail:')
         self.T_HCPFILE = '/rest/hcpsdk/TestHCPsdk_20_access'
-        self.hcptarget = hcpsdk.Target(it.P_NS_GOOD, it.P_AUTH, it.P_PORT, dnscache=it.P_DNSCACHE)
+        self.ctxt = ssl.create_default_context(purpose=ssl.Purpose.SERVER_AUTH,
+                                               cafile='certs/failCertificate.pem')
+        print('Certificate store status:')
+        pprint(self.ctxt.cert_store_stats())
+        print('CA certificates:')
+        pprint((self.ctxt.get_ca_certs()))
+        self.hcptarget = hcpsdk.Target(it.P_NS_GOOD, it.P_AUTH, it.P_SSLPORT,
+                                       dnscache=it.P_DNSCACHE, sslcontext=self.ctxt)
         self.con = hcpsdk.Connection(self.hcptarget)
 
     def tearDown(self):
-        self.con.close()
-        self.con = hcpsdk.Connection(self.hcptarget)
-        self.con.DELETE(self.T_HCPFILE)
         self.con.close()
         del self.hcptarget
 
@@ -198,16 +230,39 @@ class TestHcpsdk_5_Access_Fail(unittest.TestCase):
         """
         # noinspection PyPep8Naming
         T_BUF = '0123456789ABCDEF' * 64
-        self.r = self.con.PUT(self.T_HCPFILE, T_BUF)
-        self.r.read()
-        self.assertEqual(self.r.status, 201)
+        with self.assertRaises(hcpsdk.HcpsdkCertificateError):
+            r = self.con.PUT(self.T_HCPFILE, T_BUF)
 
+    def test_5_90_delete(self):
+        """
+        Delete a file
+        """
+        with self.assertRaises(hcpsdk.HcpsdkCertificateError):
+            r = self.con.DELETE(self.T_HCPFILE)
+
+
+# @unittest.skip("demonstrating skipping")
+class TestHcpsdk_6_Access_Fail(unittest.TestCase):
+    '''
+    Make sure we fail when trying to read a non-existant file
+    not verifying the cert at all.
+    '''
+    def setUp(self):
+        self.T_HCPFILE = '/rest/hcpsdk/fail_TestHCPsdk_20_access'
+        self.hcptarget = hcpsdk.Target(it.P_NS_GOOD, it.P_AUTH, it.P_SSLPORT, dnscache=it.P_DNSCACHE)
+        self.con = hcpsdk.Connection(self.hcptarget)
+
+    def tearDown(self):
+        self.con.close()
+        del self.hcptarget
+
+    def test_6_10_get(self):
+        """
+        Ingest a file
+        """
         self.r = self.con.GET(self.T_HCPFILE)
-        # self.r.read()
-        self.assertEqual(self.r.status, 200)
-
-        with self.assertRaises(http.client.ResponseNotReady):
-            self.r = self.con.HEAD(self.T_HCPFILE)
+        print(self.con.response_status, self.con.response_reason)
+        self.assertEqual(self.r.status, 404)
 
 
 if __name__ == '__main__':
