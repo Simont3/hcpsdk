@@ -6,28 +6,29 @@
 
 **hcpsdk** provides access to HCP through http[s]/REST dialects.
 
-Setup is three-fold (:ref:`see example below <hcpsdk_example>`):
+Setup is easy (:ref:`see example below <hcpsdk_example>`):
 
     1.  Instantiate an *Authorization* object with the required credentials.
 
         This class will be queried by *Target* objects for authorization
         tokens.
 
-    2.  Instantiate a *Target* class with HCPs FQDN, the port to be used,
-        the *Authorization* object  and -eventually- the FQDN of a replica HCP.
+    2.  **Optional:** create an *SSL context* if you want to have certificates
+        presented by HCP validated.
 
-        This class will care for name resolution and round-robin access to
-        all HCP nodes.
+    3.  Instantiate a *Target* class with HCPs *Full Qualified Domain Name*,
+        the port to be used, the *Authorization* object, optionally the
+        *SSL context* created in 2. and -eventually- the FQDN of a replica HCP.
 
-    3.  Instantiate one or more *Connection* objects.
+    4.  Instantiate one or more *Connection* objects.
 
         These objects are the workhorses of the *hcpsdk* - they are providing
         the access methods needed. You'll need to consult the respective HCP
-        manuals to create the needed requests.
+        manuals to find out how to frame the required requests.
 
         *Connection* objects will open a session to HCP as soon as
-        needed, but not before. After use, they keep the session open for a
-        tunable amount of time, to speed up things for a subsequent request.
+        needed, but not before. After use, they keep the session open for an
+        adjustable amount of time, helping to speed up things for an subsequent request.
 
         Don't forget to close *Connection* objects when finished with them!
 
@@ -37,7 +38,7 @@ Methods
 
 .. py:method:: version()
 
-   Returns the full version of the HCPsdk (|release|).
+   Return the full version of the HCPsdk (|release|).
 
 
 Classes
@@ -51,65 +52,51 @@ Classes
 
    **Class constants:**
 
-       .. attribute:: I_NATIVE
+   .. attribute:: I_NATIVE
 
-          HCP's http/REST dialect for access to HCPs authenticated namespaces.
+      HCP's http/REST dialect for access to HCPs authenticated namespaces.
 
-..
+   .. attribute:: RS_READ_ALLOWED
 
-       .. attribute:: I_HS3
+      Allow to read from replica (always)
 
-          The Amazon S3 compatible HS3 REST dialect.
-          *-not yet implemented-*
+   .. attribute:: RS_READ_ON_FAILOVER
 
-..
+      Automatically read from replica when failed over
 
-       .. attribute:: I_HSWIFT
+   .. attribute:: RS_WRITE_ALLOWED
 
-          The OpnStack Swift compatible HSWIFT dialect.
-          *-not yet implemented-*
+      Allow write to replica (always, **A/A links only**)
 
-       .. attribute:: RS_READ_ALLOWED
+   .. attribute:: RS_WRITE_ON_FAILOVER
 
-          Allow to read from replica (always)
-
-       .. attribute:: RS_READ_ON_FAILOVER
-
-          Automatically read from replica when failed over
-
-       .. attribute:: RS_WRITE_ALLOWED
-
-          Allow write to replica (always, **A/A links only**)
-
-       .. attribute:: RS_WRITE_ON_FAILOVER
-
-          Allow write to replica when failed over
+      Allow write to replica when failed over
 
    **Read-only class attributes:**
 
-       .. attribute:: fqdn
+   .. attribute:: fqdn
 
-          The FQDN for which the Target was initialized (string).
+      The FQDN for which the Target was initialized (string).
 
-       .. attribute:: port
+   .. attribute:: port
 
-          The port used by the Target (int).
+      The port used by the Target (int).
 
-       .. attribute:: ssl
+   .. attribute:: ssl
 
-          Target initialized for SSL (bool).
+      Target initialized for SSL (bool).
 
-       .. attribute:: addresses
+   .. attribute:: addresses
 
-          The IP addresses used by this Target (list).
+      The IP addresses used by this Target (list).
 
-       .. attribute:: headers
+   .. attribute:: headers
 
-          The http headers prepared for this Target (dictionary).
+      The http headers prepared for this Target (dictionary).
 
-       .. attribute:: replica
+   .. attribute:: replica
 
-          The replica Target, if available (an *hcpsdk.Target* object or None).
+      The replica Target, if available (an *hcpsdk.Target* object or None).
 
    **Class methods:**
 
@@ -118,36 +105,36 @@ Classes
 
    **Read-only class attributes:**
 
-       .. attribute:: address
+   .. attribute:: address
 
-          The IP address used for this Connection.
+      The IP address used for this Connection.
 
-       .. attribute:: Response
+   .. attribute:: Response
 
-          Exposition of the http.client.Response object for the last Request.
+      Exposition of the http.client.Response object for the last Request.
 
-       .. attribute:: response_status
+   .. attribute:: response_status
 
-          The HTTP status code of the last Request.
+      The HTTP status code of the last Request.
 
-       .. attribute:: response_reason
+   .. attribute:: response_reason
 
-          The corresponding HTTP status message.
+      The corresponding HTTP status message.
 
-       .. attribute:: connect_time
+   .. attribute:: connect_time
 
-          The time the last connect took.
+      The time the last connect took.
 
-       .. attribute:: service_time1
+   .. attribute:: service_time1
 
-          The time the last action on a Request took. This can be the initial part
-          of PUT/GET/etc. or a single (possibly incomplete) read from
-          a Response.
+      The time the last action on a Request took. This can be the initial part
+      of PUT/GET/etc. or a single (possibly incomplete) read from
+      a Response.
 
-       .. attribute:: service_time2
+   .. attribute:: service_time2
 
-          Duration of the complete Request up to now. Sum of all ``service_time1``
-          during handling a Request.
+      Duration of the complete Request up to now. Sum of all ``service_time1``
+      during handling a Request.
 
    **Class methods:**
 
@@ -173,7 +160,7 @@ Exceptions
 
 .. autoexception:: HcpsdkCertificateError
 
-   Raised if the *SSLcontext* wasn't able to verify a certificate
+   Raised if the *SSL context* wasn't able to verify a certificate
    presented by HCP.
 
    .. attribute:: reason

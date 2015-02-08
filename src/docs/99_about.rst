@@ -5,9 +5,9 @@ About
 
 The developer serves for Hitachi Data Systems since
 2007, with a main focus on **Hitachi Content Platform** and its
-surrounding products. Being a presales consultant with HDS Germany for
-more than six years, he actually works for HCP engineering as an HCP
-Technologist for the EMEA region.
+family of related products. Being a presales consultant with HDS
+Germany for more than six years, he actually works for the HCP
+engineering department as an HCP Technologist for the EMEA region.
 
 Prior to HDS, he served for eight years as a presales manager for
 a major storage vendor in Germany. Before that, he worked for ten years

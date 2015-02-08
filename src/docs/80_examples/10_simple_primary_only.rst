@@ -104,12 +104,12 @@ will enable the logging facility:
 Sample code output
 ------------------
 
-.. rubric:: Without debug messages:
+.. rubric:: Without debug messages
 
 .. include:: output/print_simple_primary_only.txt
    :literal:
 
-.. rubric:: With debug messages:
+.. rubric:: With debug messages
 
 .. include:: output/debug_simple_primary_only.txt
    :literal:

@@ -45,6 +45,17 @@ Features
   statistics and some MAPI functionality, along with
   the ability to create unique object names / paths
 
+Dependencies
+------------
+
+**hcpsdk** depends on these packages:
+
+    *   `dnspython3 <http://www.dnspython.org>`_ -  Used for non-cached name
+        resolution when bypassing the system's resolver.
+
+    *   `sphinx <http://sphinx-doc.org>`_ -  Used for local documentation
+        builds from source code and \*.rst files.
+
 Installation
 ------------
 
@@ -71,8 +82,8 @@ Contribute
 Support
 -------
 
-If you have any comments, please let us know via the Issue Tracker
-or send an email to `<sw@snomis.de>`_
+If you find any bugs, please let us know via the Issue Tracker;
+if you have comments or suggestions, send an email to `<sw@snomis.de>`_
 
 License
 -------

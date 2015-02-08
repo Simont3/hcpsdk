@@ -385,7 +385,7 @@ class Connection(object):
 
         :param headers: a dictionary holding additional key/value pairs to add to the
                         auto-prepared header
-        :return:        the original Response object received from
+        :return:        the original *Response* object received from
                         *http.client.HTTP[s]Connection.requests()*.
         """
         self._cancel_idletimer()  # 1st, cancel the idletimer
@@ -444,14 +444,14 @@ class Connection(object):
 
     def getheader(self, *args, **kwargs):
         """
-        Used to get a single Response header. Wraps *http.client.Response.getheader()*.
+        Used to get a single *Response* header. Wraps *http.client.Response.getheader()*.
         Arguments are simply passed through.
         """
         return self._response.getheader(*args, **kwargs)
 
     def getheaders(self):
         """
-        Used to get a the Response headers. Wraps *http.client.Response.getheaders()*.
+        Used to get a the *Response* headers. Wraps *http.client.Response.getheaders()*.
         """
         return self._response.getheaders()
 
@@ -508,7 +508,7 @@ class Connection(object):
 
     def read(self, amt=None):
         """
-        Read amt # of bytes (or all, if amt isn't given) from a Response.
+        Read amt # of bytes (or all, if amt isn't given) from a *Response*.
 
         :param amt: number of bytes to read
         :return:    the requested number of bytes; fewer (or zero) bytes signal

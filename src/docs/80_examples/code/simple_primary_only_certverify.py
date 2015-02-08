@@ -24,6 +24,7 @@
 
 import sys
 from os.path import normpath
+from ssl import create_default_context
 from pprint import pprint
 import hcpsdk
 
@@ -35,6 +36,8 @@ P_PASS = 'n01'
 P_PORT = 443
 # -- file to be used for the test (read-only)
 P_FILE = normpath('../testfiles/128kbfile')
+# -- file holding a private CA certificate chain
+P_CAFILE = normpath('../../../tests/certs/failCertificate.pem')
 # -- debug mode
 P_DEBUG = True
 
@@ -55,12 +58,13 @@ if __name__ == '__main__':
     auth = hcpsdk.NativeAuthorization(P_USER, P_PASS)
     print('*I_NATIVE* authorization initialized')
     print('')
-    # end sample block 17
 
-    # start sample block 20
+    # Create an SSL context for server authentication, using a local CAfile
+    ctxt = create_default_context(cafile=P_CAFILE)
+
     # Setup an HCP Target object:
     try:
-        t = hcpsdk.Target(P_FQDN, auth, port=P_PORT)
+        t = hcpsdk.Target(P_FQDN, auth, port=P_PORT, sslcontext=ctxt)
     except hcpsdk.HcpsdkError as e:
         sys.exit('init of *Target* failed - {}'.format(e))
     else:

@@ -1,62 +1,25 @@
 running *simple_primary_only.py*
 *I_NATIVE* authorization initialized
 
-Target *t* was initialized with IP addresses: ['192.168.0.54', '192.168.0.55', '192.168.0.53', '192.168.0.52']
+Target *t* was initialized with IP addresses: ['192.168.0.53', '192.168.0.54', '192.168.0.55', '192.168.0.52']
 Connection *c* uses IP address: None
 
 PUT Request was successful
-used IP address: 192.168.0.55
+used IP address: 192.168.0.54
 hash = SHA-256 A2706A20394E48179A86C71E82C360C2960D3652340F9B9FDB355A42E3AC7691
-connect time:     0.001457214355 seconds
-Request duration: 0.042128801346 seconds
+connect time:     0.001283884048 seconds
+Request duration: 0.079370975494 seconds
 
-HEAD Request was successful - headers:
-[('Date', 'Sat, 31 Jan 2015 18:53:16 GMT'),
- ('Server', 'HCP V7.1.0.10'),
- ('X-RequestId', '2D7DF390A7714581'),
- ('X-HCP-ServicedBySystem', 'hcp1.snomis.local'),
- ('X-HCP-Time', '1422730396'),
- ('X-HCP-SoftwareVersion', '7.1.0.10'),
- ('ETag', '"ced877c812a6b561fa8c28b99fda69f2"'),
- ('Cache-Control', 'no-cache,no-store'),
- ('Pragma', 'no-cache'),
- ('Expires', 'Thu, 01 Jan 1970 00:00:00 GMT'),
- ('Content-Type', 'text/plain'),
- ('Content-Length', '131072'),
- ('X-HCP-Type', 'object'),
- ('X-HCP-Size', '131072'),
- ('X-HCP-Hash',
-  'SHA-256 A2706A20394E48179A86C71E82C360C2960D3652340F9B9FDB355A42E3AC7691'),
- ('X-HCP-VersionId', '91054745358209'),
- ('X-HCP-IngestTime', '1422730396'),
- ('X-HCP-RetentionClass', ''),
- ('X-HCP-RetentionString', 'Deletion Allowed'),
- ('X-HCP-Retention', '0'),
- ('X-HCP-IngestProtocol', 'HTTP'),
- ('X-HCP-RetentionHold', 'false'),
- ('X-HCP-Shred', 'false'),
- ('X-HCP-DPL', '2'),
- ('X-HCP-Index', 'true'),
- ('X-HCP-Custom-Metadata', 'false'),
- ('X-HCP-ACL', 'false'),
- ('X-HCP-Owner', 'n'),
- ('X-HCP-Domain', ''),
- ('X-HCP-UID', ''),
- ('X-HCP-GID', ''),
- ('X-HCP-CustomMetadataAnnotations', ''),
- ('X-HCP-Replicated', 'false'),
- ('X-HCP-ReplicationCollision', 'false'),
- ('X-HCP-ChangeTimeMilliseconds', '1422730396251.00'),
- ('X-HCP-ChangeTimeString', '2015-01-31T19:53:16+0100'),
- ('Last-Modified', 'Sat, 31 Jan 2015 18:53:16 GMT')]
-used IP address: 192.168.0.55
-Request duration: 0.000173091888 seconds
+HEAD Request was successful - one of the headers:
+Server: HCP V7.1.0.10
+used IP address: 192.168.0.54
+Request duration: 0.000217914581 seconds
 
 GET Request was successful - here's the content:
 b'0123456789abcdef0123456789abcdef01234567'...
-used IP address: 192.168.0.55
-Request duration: 0.047782897949 seconds
+used IP address: 192.168.0.54
+Request duration: 0.019832849503 seconds
 
 DELETE Request was successful
-used IP address: 192.168.0.55
-Request duration: 0.000145196915 seconds
+used IP address: 192.168.0.54
+Request duration: 0.000179052353 seconds

@@ -11,8 +11,8 @@ Contents:
    :maxdepth: 3
 
    05_preface
-   10_intention
    15_state_of_implementation
+   17_installation
    20_hcpsdk
    22_https
    25_ips
