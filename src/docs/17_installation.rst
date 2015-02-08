@@ -45,6 +45,7 @@ Contribute
 Support
 -------
 
-If you find any bugs, please let us know via the Issue Tracker;
+If you find any bugs, please let us know via the
+`Issue Tracker <https://github.com/simont3/hcpsdk/issues>`_;
 if you have comments or suggestions, send an email to `<sw@snomis.de>`_
 
