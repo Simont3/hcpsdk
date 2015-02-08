@@ -173,7 +173,7 @@ Exceptions
 
 .. autoexception:: HcpsdkCertificateError
 
-   Raises if the *SSLcontext* wasn't able to verify a certificate
+   Raised if the *SSLcontext* wasn't able to verify a certificate
    presented by HCP.
 
    .. attribute:: reason

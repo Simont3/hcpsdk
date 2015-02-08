@@ -10,11 +10,11 @@ For the case that SSL certificate verification is desired, **hcpsdk**
 allows to do so without excessive effort:
 
     *   Make sure the SSL certificate presented by HCP contains the IP
-        addresses of all HCP nodes as *Subject Alternative Names*.
+        addresses (!) of all HCP nodes as *Subject Alternative Names*.
 
-    *   Create an *SSL context* and assign it to a **Target**
-        object during creation. Each **Connection** created with it will
-        automatically inherit the *SSL context*.
+    *   Create an *SSL context* and assign it to the **Target**
+        object during creation. Each **Connection** created using that
+        **Target** will automatically inherit the *SSL context*.
 
 Here are some hints:
 
@@ -42,5 +42,5 @@ Here are some hints:
                                   port=443, sslcontext=context)
 
 If you want to have more control about the protocol and/or the cipher
-suites in use, read the `Python documentation about SSL context creation
+suites in use, follow the `Python documentation about SSL context creation
 <https://docs.python.org/3/library/ssl.html?highlight=ssl.sslcontext#ssl.SSLContext>`_\ .
