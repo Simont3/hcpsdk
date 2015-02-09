@@ -46,7 +46,7 @@ Coding for HCP
 Even as HCP might behave like a web server at first glance, it has some
 very different characteristics when it comes to coding against it, using
 one of the http/:term:`reST` based interfaces (native http/:term:`reST`,
-HS3 and HSwift). This isn't really relevant for an application doing a
+:term:`HS3` and :term:`HSwift`). This isn't really relevant for an application doing a
 single Request from time to time, but it is critical for an application
 designated for high load / high performance HCP access.
 
@@ -73,7 +73,7 @@ but for reliability:
         IP addresses in the application and use them to access all nodes
         in a round-robin fashion. Refresh the cached address pool from time
         to time and on a failed Connection, too.
-        *Depending on how HCP has been integrated with the corporate DNS,
+        *Depending on how HCP has been integrated with the corporate* :term:`DNS`\ *,
         this can lower network traffic overhead significantly.*
 
     6)  If there is a replication Target HCP, make the application replica-aware -

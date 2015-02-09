@@ -6,7 +6,7 @@
 
 **hcpsdk.namespace** provides access to the actual Namespace's parameters and
 statistics. The **hcpsdk.Target** object must have been instantiated with a
-**Namespace FQDN**.
+:term:`Namespace` :term:`FQDN`.
 
 Classes
 ^^^^^^^

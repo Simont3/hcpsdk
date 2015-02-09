@@ -18,7 +18,7 @@ Setup is easy (:ref:`see example below <hcpsdk_example>`):
 
     3.  Instantiate a *Target* class with HCPs *Full Qualified Domain Name*,
         the port to be used, the *Authorization* object, optionally the
-        *SSL context* created in 2. and -eventually- the FQDN of a replica HCP.
+        *SSL context* created in 2. and -eventually- the :term:`FQDN` of a replica HCP.
 
     4.  Instantiate one or more *Connection* objects.
 
@@ -76,7 +76,7 @@ Classes
 
    .. attribute:: fqdn
 
-      The FQDN for which the Target was initialized (string).
+      The :term:`FQDN` for which the Target was initialized (string).
 
    .. attribute:: port
 

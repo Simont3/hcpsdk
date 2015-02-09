@@ -2,7 +2,7 @@
 =====================================
 
 .. automodule:: hcpsdk.ips
-   :synopsis: Name resolution through DNS
+   :synopsis: Name resolution through :term:`DNS`
 
 **hcpsdk.ips** provides name resolution service and IP address caching.
 Used by *hcpsdk* internally; exposed here as it might be useful alone.
@@ -32,11 +32,11 @@ Classes
 
    .. attribute:: fqdn
 
-      The FQDN for which the resolve happened.
+      The :term:`FQDN` for which the resolve happened.
 
    .. attribute:: cache
 
-      False if the local DNS cache has been by-passed, True if the system-default
+      False if the local :term:`DNS` cache has been by-passed, True if the system-default
       resolver was used.
 
    .. attribute:: raised

@@ -2,9 +2,9 @@
 ==================================
 
 .. automodule:: hcpsdk.mapi
-   :synopsis: Access to selected Management API (MAPI) functionality.
+   :synopsis: Access to selected Management API (:term:`MAPI`) functionality.
 
-**hcpsdk.mapi** provides access to selected MAPI functions.
+**hcpsdk.mapi** provides access to selected :term:`MAPI` functions.
 
 
 Classes
