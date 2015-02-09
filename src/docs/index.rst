@@ -22,6 +22,7 @@ Contents:
    80_examples/examples
    98_license
    99_about
+   A0_glossary
 
 
 

@@ -7,7 +7,7 @@ Intention
 There are several needs that led to the creation of the HCP SDK:
 
     *   Blueprint implementation of a connector module to
-        access HCPs authenticated namespaces in a language that is easy
+        access HCPs authenticated :term:`namespaces <Namespace>` in a language that is easy
         enough to understand for any developers, whatever language she/he
         normally uses, to provide a base for own development.
     *   Showcase for coding guidelines outlined below.
@@ -31,12 +31,13 @@ HCP system consists of both hardware (physical or virtual) and software.
 HCP stores objects that include both data and metadata that describes
 that data. HCP distributes these objects across the storage space. HCP
 represents objects either as URLs or as files in a standard file system.
-An HCP repository is partitioned into namespaces. Each namespace consists
+An HCP repository is partitioned into namespaces. Each
+:term:`namespace <Namespace>` consists
 of a distinct logical grouping of objects with its own directory structure.
-Namespaces are owned and managed by tenants.
+:term:`Namespaces <Namespace>` are owned and managed by :term:`tenants <Tenant>`.
 
 HCP provides access to objects through a variety of industry-standard
-protocols, as well as through various HCP-specific interfaces.
+protocols, as well as through a native http[s]/:term:`reST` interface.
 
 
 Coding for HCP
@@ -44,10 +45,10 @@ Coding for HCP
 
 Even as HCP might behave like a web server at first glance, it has some
 very different characteristics when it comes to coding against it, using
-one of the http/REST based interfaces (native http/REST, HS3 and HSwift).
-This isn't really relevant for an application doing a single Request
-from time to time, but it is critical for an application designated for
-high load / high performance HCP access.
+one of the http/:term:`reST` based interfaces (native http/:term:`reST`,
+HS3 and HSwift). This isn't really relevant for an application doing a
+single Request from time to time, but it is critical for an application
+designated for high load / high performance HCP access.
 
 To create an application optimized for optimal HCP access for the latter case:
 

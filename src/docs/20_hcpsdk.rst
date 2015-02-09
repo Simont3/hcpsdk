@@ -54,7 +54,7 @@ Classes
 
    .. attribute:: I_NATIVE
 
-      HCP's http/REST dialect for access to HCPs authenticated namespaces.
+      HCP's http/REST dialect for access to HCPs authenticated :term:`namespaces <Namespace>`.
 
    .. attribute:: RS_READ_ALLOWED
 
