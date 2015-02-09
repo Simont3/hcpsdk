@@ -24,9 +24,9 @@ About HCP
 
    A simple HCP environment
 
-**Hitachi Content Platform (HCP)** is a distributed storage system designed to
-support large, growing repositories of fixed-content data. An HCP system
-consists of both hardware (physical or virtual) and software.
+**Hitachi Content Platform (HCP)** is a distributed object storage system
+designed to support large, growing repositories of fixed-content data. An
+HCP system consists of both hardware (physical or virtual) and software.
 
 HCP stores objects that include both data and metadata that describes
 that data. HCP distributes these objects across the storage space. HCP
