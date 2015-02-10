@@ -47,7 +47,7 @@ Even as HCP might behave like a web server at first glance, it has some
 very different characteristics when it comes to coding against it, using
 one of the http/:term:`reST` based interfaces (native http/:term:`reST`,
 :term:`HS3` and :term:`HSwift`). This isn't really relevant for an application doing a
-single Request from time to time, but it is critical for an application
+single request from time to time, but it is critical for an application
 designated for high load / high performance HCP access.
 
 To create an application optimized for optimal HCP access for the latter case:
@@ -57,9 +57,9 @@ To create an application optimized for optimal HCP access for the latter case:
 
     2)  Use all available nodes, in conjunction with (1.)
 
-    3)  Keep connections persistent, as Connection setup is an expensive
-        operation, especially when using https. Nevertheless, release Connection
-        if unused for some time, as one should not block an HCP Connection slot
+    3)  Keep connections persistent, as connection setup is an expensive
+        operation, especially when using https. Nevertheless, release connections
+        if unused for some time, as one should not block an HCP connection slot
         permanently without using it.
 
     4)  If there's no urgent need for an human-readable structure, use a
@@ -76,7 +76,7 @@ but for reliability:
         *Depending on how HCP has been integrated with the corporate* :term:`DNS`\ *,
         this can lower network traffic overhead significantly.*
 
-    6)  If there is a replication Target HCP, make the application replica-aware -
+    6)  If there is a replication target HCP, make the application replica-aware -
         at least, allow the application to read from the replica.
 
     7)  As a last resort, make sure the application can survive some time of

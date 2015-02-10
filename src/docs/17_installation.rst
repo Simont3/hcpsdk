@@ -12,6 +12,9 @@ Dependencies
     *   `sphinx <http://sphinx-doc.org>`_ -  Used to build this documentation
         from source code and \*.rst files.
 
+    *   `alabaster <https://github.com/bitprophet/alabaster>`_ - the html template
+        used for documentation
+
     **Thanks for creating those great packages!**
 
 Installation

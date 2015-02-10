@@ -4,7 +4,7 @@
 .. automodule:: hcpsdk
    :synopsis: Framework for HCP access.
 
-**hcpsdk** provides access to HCP through http[s]/REST dialects.
+**hcpsdk** provides access to HCP through http[s]/\ :term:`reST` dialects.
 
 Setup is easy (:ref:`see example below <hcpsdk_example>`):
 

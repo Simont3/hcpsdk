@@ -5,9 +5,9 @@ State of Implementation
 
 *   Handle HCP as a *Target* object, responsible for IP address resolution
     (by-passing the local :term:`DNS` cache, per default) and assigning IP addresses
-    out of a cached pool to *Connection* objects.
-    As of today, it handles the native http/:term:`reST` interface, only. Support for
-    :term:`HS3` and :term:`HSwift` are planned.
+    out of an internally cached pool to *Connection* objects.
+    As of today, it handles the native http/:term:`reST` interface. Support for
+    :term:`HS3` and :term:`HSwift` is planned.
 
     Support for automated usage of a replicated HCP will be implemented soon,
     with various usage strategies available.
@@ -27,7 +27,8 @@ State of Implementation
     combination to be used to store an object into HCP, keeping the number of
     needed folders low.
 
-*   Provide access to to the :term:`Management API (MAPI) <MAPI>`. This is very restricted today,
-    but will be extended on the authors personal needs. Available today:
+*   Provide convenience methods for the :term:`Management API (MAPI) <MAPI>`. This
+    is a bit limited today, but will be extended primarily on the authors needs.
+    Available today:
 
     *   Replication link information, link failover/failback.
