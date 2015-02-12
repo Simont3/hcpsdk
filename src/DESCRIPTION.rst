@@ -57,6 +57,11 @@ Dependencies
     *   `sphinx <http://sphinx-doc.org>`_ -  Used for local documentation
         builds from source code and \*.rst files.
 
+Documentation
+-------------
+
+To be found at `readthedocs.org <http://hcpsdk.readthedocs.org>`_
+
 Installation
 ------------
 
