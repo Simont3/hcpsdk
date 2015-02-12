@@ -61,7 +61,7 @@ Installation
 
 Install hcpsdk by running:
 
-    ``pip install hcpsdk``  *(not available, yet)*
+    ``pip install hcpsdk``
 
     -or-
 
