@@ -1,0 +1,156 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <title>HCPsdk by Simont3</title>
+
+    <link rel="stylesheet" href="stylesheets/styles.css">
+    <link rel="stylesheet" href="stylesheets/pygment_trac.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+    <!--[if lt IE 9]>
+    <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+  </head>
+  <body>
+    <div class="wrapper">
+      <header>
+        <h1>HCPsdk</h1>
+        <p>Python3 SDK for Hitachi Content Platform (HCP)</p>
+
+        <p class="view"><a href="https://github.com/Simont3/hcpsdk">View the Project on GitHub <small>Simont3/hcpsdk</small></a></p>
+
+
+        <ul>
+          <li><a href="https://github.com/Simont3/hcpsdk/zipball/master">Download <strong>ZIP File</strong></a></li>
+          <li><a href="https://github.com/Simont3/hcpsdk/tarball/master">Download <strong>TAR Ball</strong></a></li>
+          <li><a href="https://github.com/Simont3/hcpsdk">View On <strong>GitHub</strong></a></li>
+        </ul>
+      </header>
+      <section>
+        <h1>
+<a id="hcpsdk" class="anchor" href="#hcpsdk" aria-hidden="true"><span class="octicon octicon-link"></span></a>HCPsdk</h1>
+
+<p>HCPsdk provides a simple SDK to access an Hitachi Content Platform (HCP)
+from Python3. It handles name resolution, multiple sessions spread across all
+available HCP nodes, persistent connections and recovery from failing
+connections.</p>
+
+<p>It's that easy:</p>
+
+<pre><code>::
+
+    &gt;&gt;&gt; import hcpsdk
+
+    &gt;&gt;&gt; # initialize an *Authorization* object
+    &gt;&gt;&gt; auth = hcpsdk.NativeAuthorization('user', 'password')
+
+    &gt;&gt;&gt; # initialize a *Target* object
+    &gt;&gt;&gt; t = hcpsdk.Target("namespace.tenant.hcp.your.domain",
+                          auth, port=443)
+
+    &gt;&gt;&gt; # initialize a Connection to the `Target``
+    &gt;&gt;&gt; c = hcpsdk.Connection(t)
+
+    &gt;&gt;&gt; # do something with the connection...
+    &gt;&gt;&gt; r = c.GET('/rest/your_file.txt')
+    &gt;&gt;&gt; c.response_status, c.response_reason
+    (200, 'OK')
+    &gt;&gt;&gt; r.read()
+    b'some data...'
+    &gt;&gt;&gt;
+    &gt;&gt;&gt; c.close()
+</code></pre>
+
+<h2>
+<a id="features" class="anchor" href="#features" aria-hidden="true"><span class="octicon octicon-link"></span></a>Features</h2>
+
+<ul>
+<li>Handles HCP as a target object</li>
+<li>Replica-aware (replica can be part of a target object)</li>
+<li>Various strategies on how to use a replica</li>
+<li>Connection objects, while tied to a target object, allow
+access to HCP through the various http/REST dialects
+(native, HS3, HSwift)</li>
+<li>Higher level modules provide easy access to namespace
+statistics and some MAPI functionality, along with
+the ability to create unique object names / paths</li>
+</ul>
+
+<h2>
+<a id="dependencies" class="anchor" href="#dependencies" aria-hidden="true"><span class="octicon octicon-link"></span></a>Dependencies</h2>
+
+<p><strong>hcpsdk</strong> depends on these packages:</p>
+
+<pre><code>*   `dnspython3 &lt;http://www.dnspython.org&gt;`_ -  Used for non-cached name
+    resolution when bypassing the system's resolver.
+
+*   `sphinx &lt;http://sphinx-doc.org&gt;`_ -  Used for local documentation
+    builds from source code and \*.rst files.
+</code></pre>
+
+<h2>
+<a id="installation" class="anchor" href="#installation" aria-hidden="true"><span class="octicon octicon-link"></span></a>Installation</h2>
+
+<p>Install hcpsdk by running:</p>
+
+<pre><code>``pip install hcpsdk``
+
+-or-
+
+* get the source from `GitHub &lt;https://github.com/Simont3/hcpsdk/archive/master.zip&gt;`_
+* unzip the archive
+* run ``python setup.py install``
+
+-or-
+
+* Fork at `Github &lt;https://github.com/Simont3/hcpsdk&gt;`_
+</code></pre>
+
+<h2>
+<a id="contribute" class="anchor" href="#contribute" aria-hidden="true"><span class="octicon octicon-link"></span></a>Contribute</h2>
+
+<ul>
+<li>Issue Tracker: <code>&lt;https://github.com/simont3/hcpsdk/issues&gt;</code>_</li>
+<li>Source Code: <code>&lt;https://github.com/Simont3/hcpsdk&gt;</code>_</li>
+</ul>
+
+<h2>
+<a id="support" class="anchor" href="#support" aria-hidden="true"><span class="octicon octicon-link"></span></a>Support</h2>
+
+<p>If you find any bugs, please let us know via the Issue Tracker;
+if you have comments or suggestions, send an email to <code>&lt;sw@snomis.de&gt;</code>_</p>
+
+<h2>
+<a id="license" class="anchor" href="#license" aria-hidden="true"><span class="octicon octicon-link"></span></a>License</h2>
+
+<p>The MIT License (MIT)</p>
+
+<p>Copyright (c) 2014-2015 Thorsten Simons (<a href="mailto:sw@snomis.de">sw@snomis.de</a>)</p>
+
+<p>Permission is hereby granted, free of charge, to any person obtaining a copy of
+this software and associated documentation files (the "Software"), to deal in
+the Software without restriction, including without limitation the rights to
+use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of
+the Software, and to permit persons to whom the Software is furnished to do so,
+subject to the following conditions:</p>
+
+<p>The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.</p>
+
+<p>THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS
+FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR
+COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER
+IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
+CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.</p>
+      </section>
+      <footer>
+        <p>This project is maintained by <a href="https://github.com/Simont3">Simont3</a></p>
+        <p><small>Hosted on GitHub Pages &mdash; Theme by <a href="https://github.com/orderedlist">orderedlist</a></small></p>
+      </footer>
+    </div>
+    <script src="javascripts/scale.fix.js"></script>
+    
+  </body>
+</html>
