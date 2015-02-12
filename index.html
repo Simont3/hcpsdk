@@ -38,29 +38,29 @@ connections.</p>
 
 <p>It's that easy:</p>
 
-<pre><code>::
+<blockquote>
+<pre><code>&gt;&gt;&gt; import hcpsdk
 
-    &gt;&gt;&gt; import hcpsdk
+&gt;&gt;&gt; # initialize an *Authorization* object
+&gt;&gt;&gt; auth = hcpsdk.NativeAuthorization('user', 'password')
 
-    &gt;&gt;&gt; # initialize an *Authorization* object
-    &gt;&gt;&gt; auth = hcpsdk.NativeAuthorization('user', 'password')
+&gt;&gt;&gt; # initialize a *Target* object
+&gt;&gt;&gt; t = hcpsdk.Target("namespace.tenant.hcp.your.domain",
+                      auth, port=443)
 
-    &gt;&gt;&gt; # initialize a *Target* object
-    &gt;&gt;&gt; t = hcpsdk.Target("namespace.tenant.hcp.your.domain",
-                          auth, port=443)
+&gt;&gt;&gt; # initialize a Connection to the `Target``
+&gt;&gt;&gt; c = hcpsdk.Connection(t)
 
-    &gt;&gt;&gt; # initialize a Connection to the `Target``
-    &gt;&gt;&gt; c = hcpsdk.Connection(t)
-
-    &gt;&gt;&gt; # do something with the connection...
-    &gt;&gt;&gt; r = c.GET('/rest/your_file.txt')
-    &gt;&gt;&gt; c.response_status, c.response_reason
-    (200, 'OK')
-    &gt;&gt;&gt; r.read()
-    b'some data...'
-    &gt;&gt;&gt;
-    &gt;&gt;&gt; c.close()
+&gt;&gt;&gt; # do something with the connection...
+&gt;&gt;&gt; r = c.GET('/rest/your_file.txt')
+&gt;&gt;&gt; c.response_status, c.response_reason
+(200, 'OK')
+&gt;&gt;&gt; r.read()
+b'some data...'
+&gt;&gt;&gt;
+&gt;&gt;&gt; c.close()
 </code></pre>
+</blockquote>
 
 <h2>
 <a id="features" class="anchor" href="#features" aria-hidden="true"><span class="octicon octicon-link"></span></a>Features</h2>
@@ -94,9 +94,11 @@ the ability to create unique object names / paths</li>
 
 <p>Install hcpsdk by running:</p>
 
-<pre><code>``pip install hcpsdk``
+<blockquote>
+<p>pip install hcpsdk</p>
+</blockquote>
 
--or-
+<pre><code>-or-
 
 * get the source from `GitHub &lt;https://github.com/Simont3/hcpsdk/archive/master.zip&gt;`_
 * unzip the archive
