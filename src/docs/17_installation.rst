@@ -20,11 +20,6 @@ Dependencies
 Installation
 ------------
 
-.. Warning::
-
-    **hcpsdk** isn't public available, right now. Following statements are
-    hopefully valid in the future.
-
 Install **hcpsdk** by running:
 
     ``pip install hcpsdk``
