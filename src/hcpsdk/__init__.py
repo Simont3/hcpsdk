@@ -274,14 +274,13 @@ class Connection(object):
     """
 
     # noinspection PyShadowingNames
-    def __init__(self, target, timeout=30, idletime=30, retries=3, debuglevel=0):
+    def __init__(self, target, timeout=30, idletime=30, retries=0, debuglevel=0):
         """
         :param target:      an initialized Target object
         :param timeout:     the timeout for this Connection (secs)
         :param idletime:    the time the Connection shall stay persistence when idle (secs)
-        :param debuglevel:  0..9 -see-> http.client.HTTP[S]connetion
         :param retries:     the number of retries until giving up on a Request
-                            **-not yet implemented-**
+        :param debuglevel:  0..9 -see-> http.client.HTTP[S]connetion
         """
         self.logger = logging.getLogger(__name__ + '.Connection')
 
@@ -400,10 +399,10 @@ class Connection(object):
             url = url + '?' + urlencode(params)
         self.logger.log(logging.DEBUG, 'URL = {}'.format(url))
 
-        retry = False
+        initialretry = False
         while True:
             try:
-                if retry:
+                if initialretry:
                     self.__con = self._connect()
                 s_t = time.time()
                 self.__con.request(method, url, body=body, headers=headers)
@@ -417,24 +416,24 @@ class Connection(object):
                 time). So, we open up a new Connection and start over by calling
                 our self again...
                 """
-                if not retry:
+                if not initialretry:
                     self.logger.log(logging.DEBUG, 'Connection needs to be opened')
-                    retry = True
+                    initialretry = True
                     continue
                 else:
                     raise HcpsdkError('Not connected, retry failed ({})'.format(str(e)))
             except ssl.SSLError as e:
-                self.logger.log(logging.DEBUG, 'Request raised exception: {}'.format(str(e)))
+                self.logger.log(logging.DEBUG, 'ssl.SSLError: {}'.format(str(e)))
                 raise HcpsdkCertificateError(str(e))
             except TimeoutError:
-                self.logger.log(logging.DEBUG, 'Connection closed after timeout')
+                self.logger.log(logging.DEBUG, 'TimeoutError')
                 self.close()
                 raise HcpsdkTimeoutError('Timeout - {}'.format(url))
             except http.client.HTTPException as e:
-                self.logger.log(logging.DEBUG, 'Request raised exception: {}'.format(str(e)))
+                self.logger.log(logging.DEBUG, 'http.client.HTTPException: {}'.format(str(e)))
                 raise e
             except Exception as e:
-                self.logger.log(logging.DEBUG, 'Request raised exception: {}'.format(str(e)))
+                self.logger.log(logging.DEBUG, 'Exception: {}'.format(str(e)))
                 raise HcpsdkError(str(e))
             else:
                 self._response = self.__con.getresponse()
@@ -521,6 +520,10 @@ class Connection(object):
             self.__service_time1 = time.time() - s_t
         except AttributeError as e:
             msg = 'faulty read: {}'.format(str(e))
+            self.logger.log(logging.DEBUG, msg)
+            raise HcpsdkError(msg)
+        except (http.client.IncompleteRead, OSError) as e:
+            msg = 'read error: {}'.format(str(e))
             self.logger.log(logging.DEBUG, msg)
             raise HcpsdkError(msg)
         else:
