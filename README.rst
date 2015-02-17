@@ -45,6 +45,12 @@ Features
   statistics and some MAPI functionality, along with
   the ability to create unique object names / paths
 
+Documentation
+-------------
+
+Hosted at `readthedocs.org <http://hcpsdk.readthedocs.org>`_
+
+
 Dependencies
 ------------
 
