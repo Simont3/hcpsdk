@@ -76,6 +76,7 @@ class HcpsdkReplicaInitError(HcpsdkError):
         self.reason = reason
 
 # Interface constants
+I_DUMMY = 'I_DUMMY'
 I_NATIVE = 'I_NATIVE'
 I_HS3 = 'I_HS3'
 I_HSWIFT = 'I_HSWIFT'
@@ -140,6 +141,16 @@ class BaseAuthorization(object):
             return self.headers
         else:
             raise HcpsdkError('Err: no authorization token available')
+
+
+class DummyAuthorization(BaseAuthorization):
+    """
+    Dummy authorization for the :term:`Default Namespace <Default Namespace>`.
+    """
+    def __init__(self):
+        super().__init__()
+        self.headers = {'HCPSDK_DUMMY': 'DUMMY'}
+        self.logger.debug('*I_DUMMY* dummy authorization initialized')
 
 
 class NativeAuthorization(BaseAuthorization):
@@ -280,7 +291,14 @@ class Connection(object):
         :param timeout:     the timeout for this Connection (secs)
         :param idletime:    the time the Connection shall stay persistence when idle (secs)
         :param retries:     the number of retries until giving up on a Request
-        :param debuglevel:  0..9 -see-> http.client.HTTP[S]connetion
+        :param debuglevel:  0..9 -see-> `http.client.HTTPconnection <https://docs.python.org/3/library/http.client.html?highlight=http.client#http.client.HTTPConnection.set_debuglevel>`_
+
+        *Connection()* retries *request()s* if:
+            a)  the underlying connection has been closed by HCP before *idletime* has passed
+                (the request will be retried using the existing connection context) or
+            b)  a timeout emerges during an active request, in which case the connection
+                is closed, *Target()* is urged to refresh its cache of IP addresses, a fresh
+                IP address is acquired from the cache and the connection is setup from scratch.
         """
         self.logger = logging.getLogger(__name__ + '.Connection')
 
@@ -399,11 +417,19 @@ class Connection(object):
             url = url + '?' + urlencode(params)
         self.logger.log(logging.DEBUG, 'URL = {}'.format(url))
 
-        initialretry = False
+        initialretry = False    # used if connection isn't open
+        retryonfailure = False  # used for retries on failures
+        retries = 0             # - " -
         while True:
             try:
+                if retryonfailure:
+                    retryonfailure = False
+                    self.__con.close()
+                    self.__target.ipaddrqry.refresh()
+                    self.__con = self._connect()
                 if initialretry:
                     self.__con = self._connect()
+                    initialretry = False
                 s_t = time.time()
                 self.__con.request(method, url, body=body, headers=headers)
                 self.__service_time1 = self.__service_time2 = time.time() - s_t
@@ -426,9 +452,16 @@ class Connection(object):
                 self.logger.log(logging.DEBUG, 'ssl.SSLError: {}'.format(str(e)))
                 raise HcpsdkCertificateError(str(e))
             except TimeoutError:
-                self.logger.log(logging.DEBUG, 'TimeoutError')
-                self.close()
-                raise HcpsdkTimeoutError('Timeout - {}'.format(url))
+                if retries < self.__retries:
+                    retries += 1
+                    retryonfailure = True
+                    self.logger.log(logging.DEBUG, 'TimeoutError - retry # {}'.format(retries))
+                    continue
+                else:
+                    self.logger.log(logging.DEBUG, 'TimeoutError ({} retries), giving up'
+                                    .format(retries))
+                    self.close()
+                    raise HcpsdkTimeoutError('Timeout ({} retries) - {}'.format(retries, url))
             except http.client.HTTPException as e:
                 self.logger.log(logging.DEBUG, 'http.client.HTTPException: {}'.format(str(e)))
                 raise e
@@ -436,7 +469,26 @@ class Connection(object):
                 self.logger.log(logging.DEBUG, 'Exception: {}'.format(str(e)))
                 raise HcpsdkError(str(e))
             else:
-                self._response = self.__con.getresponse()
+                try:
+                    self._response = self.__con.getresponse()
+                except http.client.BadStatusLine as e:
+                    # BadStatusLine most likely means that HCP has closed the connection.
+                    # ('HTTP Persistent Connection Timeout Interval' < Connection.timeout)
+                    # So, we re-open the connection and try again...
+                    if retries < self.__retries:
+                        retries += 1
+                        retryonfailure = True
+                        self.logger.log(logging.DEBUG,
+                                        'HCP most likely closed the connection - retry # {}'
+                                        .format(retries))
+                        continue
+                    else:
+                        self.logger.log(logging.DEBUG,
+                                        'HCP most likely closed the connection ({} retries, giving up)'
+                                        .format(retries))
+                        self.close()
+                        raise HcpsdkTimeoutError('HCP most likely closed the connection ({} retries) - {}'
+                                                 .format(retries, url))
 
             self._set_idletimer()
             return self._response

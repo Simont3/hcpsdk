@@ -47,6 +47,9 @@ Classes
 .. autoclass:: NativeAuthorization
    :members:
 
+.. autoclass:: DummyAuthorization
+   :members:
+
 .. autoclass:: Target
    :members:
 
@@ -55,6 +58,10 @@ Classes
    .. attribute:: I_NATIVE
 
       HCP's http/REST dialect for access to HCPs authenticated :term:`namespaces <Namespace>`.
+
+   .. attribute:: I_DUMMY
+
+      HCP's http dialect for access to HCPs :term:`Default Namespace <Default Namespace>`.
 
    .. attribute:: RS_READ_ALLOWED
 

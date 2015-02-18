@@ -40,6 +40,19 @@ HCP provides access to objects through a variety of industry-standard
 protocols, as well as through a native http[s]/:term:`reST` interface.
 
 
+Focus
+-----
+
+**hcpsdk** primarily focuses on HCP version 3 and above, and the
+:term:`authenticated Namespaces <Namespace>` invented with version 3.
+
+For using **hcpsdk** with the :term:`Default Namespace <Default Namespace>`,
+see :doc:`Appendix 1 <A0_appendixes/A1_apdx1_defns>`.
+
+Using the **hcpsdk.mapi.replication** class needs functionality
+invented with HCP version 7.
+
+
 Coding for HCP
 --------------
 

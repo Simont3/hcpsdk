@@ -22,6 +22,11 @@ Glossary
         an individual filesystem-like structure, several access protocols along with a
         set of other configurables.
 
+    Default Namespace
+        The legacy Namespace, a relict from the time before HCP version 3. Doesn't support
+        user authentication. Seldomly used in our days, deprecated.
+        (*default.default.hcp.domain.com* or *www.hcp.domain.com*)
+
     Data Access Account
         A local user within a :term:`Tenant`
 
@@ -35,7 +40,7 @@ Glossary
         Management API - a :term:`reSTful <reST>` interface to manage HCP
 
     DNS
-        Domain Name System - used to translate a :term:`FQDN` to IP addresses
+        Domain Name System - used to translate an :term:`FQDN` to IP addresses
 
     FQDN
         Full Qualified Domain Name (*namespace.tenant.hcp.domain.com*)
