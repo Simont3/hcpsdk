@@ -149,11 +149,11 @@ Example
     >>> d = r.getlinkdetails(l[0])
     >>> pprint(d)
     {'compression': 'false',
-     'connection': {'localHost': '192.168.0.52, 192.168.0.53, 192.168.0.54, '
-                                 '192.168.0.55',
+     'connection': {'localHost': '192.168.0.52, 192.168.0.53, '
+                                 '192.168.0.54, 192.168.0.55',
                     'localPort': '5748',
-                    'remoteHost': '192.168.0.56, 192.168.0.57, 192.168.0.58, '
-                                  '192.168.0.59',
+                    'remoteHost': '192.168.0.56, 192.168.0.57, '
+                                  '192.168.0.58, 192.168.0.59',
                     'remotePort': '5748'},
      'description': 'active/active replication between HCP1 and HCP2',
      'encryption': 'false',

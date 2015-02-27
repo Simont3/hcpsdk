@@ -202,7 +202,8 @@ Example
     >>> c.connect_time
     '0.000000000010'
     >>>
-    >>> r = c.PUT('/rest/hcpsdk/test1.txt', body='This is an example', params={'index': 'true'})
+    >>> r = c.PUT('/rest/hcpsdk/test1.txt', body='This is an example',
+                  params={'index': 'true'})
     >>> c.response_status, c.response_reason
     (201, 'Created')
     >>>
@@ -224,7 +225,8 @@ Example
      ('Content-Length', '18'),
      ('X-HCP-Type', 'object'),
      ('X-HCP-Size', '18'),
-     ('X-HCP-Hash', 'SHA-256 47FB563CC8F86DC37C86D08BC542968F7986ACD81C97BF76DB7AD744407FE117'),
+     ('X-HCP-Hash', 'SHA-256 47FB563CC8F86DC37C86D08BC542968F7986ACD81C97B'
+                    'F76DB7AD744407FE117'),
      ('X-HCP-VersionId', '91055133849537'),
      ('X-HCP-IngestTime', '1422736466'),
      ('X-HCP-RetentionClass', ''),

@@ -1,12 +1,16 @@
 running *simple_primary_only.py*
 *I_NATIVE* authorization initialized
 
-Target *t* was initialized with IP addresses: ['192.168.0.53', '192.168.0.54', '192.168.0.55', '192.168.0.52']
+Target *t* was initialized with IP addresses: ['192.168.0.53',
+                                               '192.168.0.54',
+                                               '192.168.0.55',
+                                               '192.168.0.52']
 Connection *c* uses IP address: None
 
 PUT Request was successful
 used IP address: 192.168.0.54
-hash = SHA-256 A2706A20394E48179A86C71E82C360C2960D3652340F9B9FDB355A42E3AC7691
+hash = SHA-256
+       A2706A20394E48179A86C71E82C360C2960D3652340F9B9FDB355A42E3AC7691
 connect time:     0.001283884048 seconds
 Request duration: 0.079370975494 seconds
 

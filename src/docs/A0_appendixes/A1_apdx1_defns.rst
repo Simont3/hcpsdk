@@ -40,12 +40,14 @@ Example
     >>> import hcpsdk
     >>>
     >>> auth = hcpsdk.DummyAuthorization()
-    >>> t = hcpsdk.Target('default.default.hcp1.snomis.local', auth, port=443)
+    >>> t = hcpsdk.Target('default.default.hcp1.snomis.local',
+                          auth, port=443)
     >>> c = hcpsdk.Connection(t)
     >>> c.connect_time
     '0.000000000010'
     >>>
-    >>> r = c.PUT('/fcfs_data/hcpsdk/test1.txt', body='This is an example', params={'index': 'true'})
+    >>> r = c.PUT('/fcfs_data/hcpsdk/test1.txt', body='This is an example',
+                  params={'index': 'true'})
     >>> c.response_status, c.response_reason
     (201, 'Created')
     >>>
@@ -68,7 +70,8 @@ Example
      ('Content-Type', 'text/plain'),
      ('Content-Length', '18'),
      ('X-ArcPermissionsUidGid', 'mode=0100400; uid=0; gid=0'),
-     ('X-ArcTimes', 'ctime=1424278066; mtime=1424278066; atime=1424278065'),
+     ('X-ArcTimes', 'ctime=1424278066; mtime=1424278066; '
+                    'atime=1424278065'),
      ('X-ArcSize', '18')]
     >>>
     >>> r = c.GET('/fcfs_data/hcpsdk/test1.txt')

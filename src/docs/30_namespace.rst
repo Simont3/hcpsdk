@@ -66,16 +66,19 @@ Classes
          ::
 
             {'initial_unspecified': {'autoDelete': False,
-                                     'description': 'Retention Class with an initial '
-                                                    'unspecified value.',
+                                     'description': 'Retention Class with '
+                                                    'an initial unspecifie'
+                                                    'd value.',
                                      'name': 'initial_unspecified',
                                      'value': -2},
              'deletion_prohibited': {'autoDelete': False,
-                                     'description': 'Class which prohibits deletion.',
+                                     'description': 'Class which prohibits'
+                                                    ' deletion.',
                                      'name': 'deletion_prohibited',
                                      'value': -1},
              'TAX_DATA': {'autoDelete': True,
-                          'description': 'Class for tax data - actually 10 years.',
+                          'description': 'Class for tax data - actually 10'
+                                         ' years.',
                           'name': 'TAX_DATA',
                           'value': 'A+10y'}}
 

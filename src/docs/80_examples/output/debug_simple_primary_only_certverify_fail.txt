@@ -1,14 +1,22 @@
  INFO running *simple_primary_only.py*
 DEBUG *I_NATIVE* authorization initialized for user: n
-DEBUG pre version 6:     Cookie: hcp-ns-auth=bg==:1dc7fed37e11b35093d311ef66928ad9
-DEBUG version 6+: Authorization: HCP bg==:1dc7fed37e11b35093d311ef66928ad9
+DEBUG pre version 6:     Cookie: hcp-ns-auth=bg==:1dc7fed37e11b35093d311...
+DEBUG version 6+: Authorization: HCP bg==:1dc7fed37e11b35093d311ef66928...
  INFO *I_NATIVE* authorization initialized
  INFO
-DEBUG (re-) loaded IP address cache: ['192.168.0.53', '192.168.0.54', '192.168.0.55', '192.168.0.52'], dnscache = False
+DEBUG (re-) loaded IP address cache: ['192.168.0.53', '192.168.0.54',
+                                      '192.168.0.55', '192.168.0.52'],
+                                      dnscache = False
+
 DEBUG issued IP address: 192.168.0.53
 DEBUG Target initialized: n1.m.hcp1.snomis.local:443 - SSL = True
- INFO Target *t* was initialized with IP addresses: ['192.168.0.53', '192.168.0.54', '192.168.0.55', '192.168.0.52']
-DEBUG Connection object initialized: IP None (n1.m.hcp1.snomis.local) - timeout: 30 - idletime: 30.0 - retries: 3
+ INFO Target *t* was initialized with IP addresses: ['192.168.0.53',
+                                                     '192.168.0.54',
+                                                     '192.168.0.55',
+                                                     '192.168.0.52']
+DEBUG Connection object initialized: IP None (n1.m.hcp1.snomis.local)
+                                     - timeout: 30 - idletime: 30.0
+                                     - retries: 3
 DEBUG SSLcontext = <ssl.SSLContext object at 0x102220638>
  INFO Connection *c* uses IP address: None
  INFO
@@ -16,8 +24,11 @@ DEBUG tried to cancel a non-existing idletimer (pretty OK)
 DEBUG URL = /rest/hcpsdk/sample_primary_only.txt
 DEBUG Connection needs to be opened
 DEBUG issued IP address: 192.168.0.54
-DEBUG Connection open: IP 192.168.0.54 (n1.m.hcp1.snomis.local) - connect_time: 2.5987625122070312e-05
-DEBUG Request raised exception: [SSL: CERTIFICATE_VERIFY_FAILED] certificate verify failed (_ssl.c:600)
+DEBUG Connection open: IP 192.168.0.54 (n1.m.hcp1.snomis.local)
+                       - connect_time: 2.5987625122070312e-05
+DEBUG Request raised exception: [SSL: CERTIFICATE_VERIFY_FAILED]
+                                 certificate verify failed (_ssl.c:600)
 DEBUG tried to cancel a non-existing idletimer (pretty OK)
 DEBUG Connection object closed: IP 192.168.0.54 (n1.m.hcp1.snomis.local)
-PUT failed - [SSL: CERTIFICATE_VERIFY_FAILED] certificate verify failed (_ssl.c:600)
+PUT failed - [SSL: CERTIFICATE_VERIFY_FAILED]
+             certificate verify failed (_ssl.c:600)
