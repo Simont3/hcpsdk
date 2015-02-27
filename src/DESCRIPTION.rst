@@ -9,28 +9,28 @@ connections.
 
 It's that easy:
 
-    ::
+::
 
-        >>> import hcpsdk
+    >>> import hcpsdk
 
-        >>> # initialize an *Authorization* object
-        >>> auth = hcpsdk.NativeAuthorization('user', 'password')
+    >>> # initialize an *Authorization* object
+    >>> auth = hcpsdk.NativeAuthorization('user', 'password')
 
-        >>> # initialize a *Target* object
-        >>> t = hcpsdk.Target("namespace.tenant.hcp.your.domain",
-                              auth, port=443)
+    >>> # initialize a *Target* object
+    >>> t = hcpsdk.Target("namespace.tenant.hcp.your.domain",
+                          auth, port=443)
 
-        >>> # initialize a Connection to the `Target``
-        >>> c = hcpsdk.Connection(t)
+    >>> # initialize a Connection to the `Target``
+    >>> c = hcpsdk.Connection(t)
 
-        >>> # do something with the connection...
-        >>> r = c.GET('/rest/your_file.txt')
-        >>> c.response_status, c.response_reason
-        (200, 'OK')
-        >>> r.read()
-        b'some data...'
-        >>>
-        >>> c.close()
+    >>> # do something with the connection...
+    >>> r = c.GET('/rest/your_file.txt')
+    >>> c.response_status, c.response_reason
+    (200, 'OK')
+    >>> r.read()
+    b'some data...'
+    >>>
+    >>> c.close()
 
 
 Features
