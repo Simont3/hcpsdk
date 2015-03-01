@@ -443,7 +443,7 @@ class Connection(object):
                 our self again...
                 """
                 if not initialretry:
-                    self.logger.log(logging.WARNING, 'Connection needs to be opened',
+                    self.logger.log(logging.DEBUG, 'Connection needs to be opened',
                                     exc_info=True, stack_info=True)
                     initialretry = True
                     continue
