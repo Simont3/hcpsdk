@@ -443,11 +443,13 @@ class Connection(object):
                 our self again...
                 """
                 if not initialretry:
-                    self.logger.log(logging.DEBUG, 'Connection needs to be opened')
+                    self.logger.log(logging.WARNING, 'Connection needs to be opened',
+                                    exc_info=True, stack_info=True)
                     initialretry = True
                     continue
                 else:
-                    raise HcpsdkError('Not connected, retry failed ({})'.format(str(e)))
+                    raise HcpsdkError('Not connected, retry failed ({})'
+                                      .format(str(e)))
             except ssl.SSLError as e:
                 self.logger.log(logging.DEBUG, 'ssl.SSLError: {}'.format(str(e)))
                 raise HcpsdkCertificateError(str(e))
@@ -463,10 +465,13 @@ class Connection(object):
                     self.close()
                     raise HcpsdkTimeoutError('Timeout ({} retries) - {}'.format(retries, url))
             except http.client.HTTPException as e:
-                self.logger.log(logging.DEBUG, 'http.client.HTTPException: {}'.format(str(e)))
+                self.logger.log(logging.WARNING, 'http.client.HTTPException: {}'
+                                .format(str(e)),
+                                exc_info=True, stack_info=True)
                 raise e
             except Exception as e:
-                self.logger.log(logging.DEBUG, 'Exception: {}'.format(str(e)))
+                self.logger.log(logging.WARNING, 'Exception: {}'.format(str(e)),
+                                exc_info=True, stack_info=True)
                 raise HcpsdkError(str(e))
             else:
                 try:
