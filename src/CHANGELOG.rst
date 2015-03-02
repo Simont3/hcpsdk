@@ -1,3 +1,6 @@
+Appendix 9 - Default Namespace
+==============================
+
 0.9.2-1 2015-03-01
 ------------------
 Changed:    hcpsdk.Connection.request() now logs exception information

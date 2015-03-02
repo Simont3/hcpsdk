@@ -23,6 +23,7 @@ Contents:
    98_license
    99_about
    A0_appendixes/A0_appendixes
+   CHANGELOG
    B0_glossary
 
 
