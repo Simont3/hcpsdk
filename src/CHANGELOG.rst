@@ -1,13 +1,18 @@
 Release History
 ===============
 
+**0.9.2-4 2015-03-06**
+
+*   Fixed:
+
+    added the missing param keyword argument to hcpsdk.Connection.PUT()
+
 **0.9.2-3 2015-03-06**
 
 *   Fixed:
 
     a missing import in hcpsdk.__init__.py that led to an unrecoverable
     error when running on Python 3.4.3
-
 
 **0.9.2-1 2015-03-01**
 

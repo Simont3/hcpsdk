@@ -518,7 +518,7 @@ class Connection(object):
         Cleans up and leaves the Connection ready for the next Request.
         For parameter description see *Request()*.
         """
-        r = self.request('PUT', url, body, headers)
+        r = self.request('PUT', url, body, params, headers)
         r.read()  # clean up
         return r
 
