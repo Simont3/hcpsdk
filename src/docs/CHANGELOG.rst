@@ -1,12 +1,20 @@
 Release History
 ===============
 
+**0.9.2-3 2015-03-06**
+
+*   Fixed:
+
+    a missing import in hcpsdk.__init__.py that led to an unrecoverable
+    error when running on Python 3.4.3
+
+
 **0.9.2-1 2015-03-01**
 
 *   Changed:
 
     hcpsdk.Connection.request() now logs exception information
-    and stack trace if a catch'd exception is re-raised as an
+    and stack trace if a catched exception is re-raised as an
     *hcpsdk.[..]Error*. This will get visible only if the application
     has initialized the logging subsystem.
 
@@ -14,7 +22,7 @@ Release History
 
 *   Fixed:
 
-    Fixed line width in documeantion (.rst files) to match
+    Fixed line width in documentation (.rst files) to match
     limitations for pdf generation
 
 **0.9.1-7 2015-02-27**

@@ -27,7 +27,7 @@ from hashlib import md5
 # behaviour, we switch it off.
 import ssl
 try:
-    SSL_NOVERIFY = _create_unverified_context()
+    SSL_NOVERIFY = ssl._create_unverified_context()
 except NameError:
     SSL_NOVERIFY = None
 import http.client

@@ -26,7 +26,7 @@ import ssl
 import http.client
 from pprint import pprint
 
-import tests.init_tests as it
+import init_tests as it
 
 
 class TestHcpsdk_1_Target(unittest.TestCase):

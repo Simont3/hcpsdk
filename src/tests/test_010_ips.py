@@ -23,7 +23,7 @@
 import unittest
 
 from hcpsdk import ips
-import tests.init_tests as it
+import init_tests as it
 
 
 class TestHcpsdk_10_1_Ips(unittest.TestCase):

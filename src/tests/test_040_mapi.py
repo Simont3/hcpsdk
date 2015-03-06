@@ -24,7 +24,7 @@ import unittest
 from pprint import pprint
 
 import hcpsdk
-import tests.init_tests as it
+import init_tests as it
 
 
 class LtVars(object):

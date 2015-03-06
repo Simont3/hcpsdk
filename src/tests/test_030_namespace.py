@@ -25,7 +25,7 @@ from collections import OrderedDict
 from pprint import pprint
 
 import hcpsdk
-import tests.init_tests as it
+import init_tests as it
 
 import logging
 logging.basicConfig(filename='_example.log', level=logging.DEBUG)
