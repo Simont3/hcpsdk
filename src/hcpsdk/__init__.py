@@ -28,7 +28,7 @@ from hashlib import md5
 import ssl
 try:
     SSL_NOVERIFY = ssl._create_unverified_context()
-except NameError:
+except (AttributeError, NameError):
     SSL_NOVERIFY = None
 import http.client
 from urllib.parse import urlencode, quote_plus
