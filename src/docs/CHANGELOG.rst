@@ -1,6 +1,12 @@
 Release History
 ===============
 
+**0.9.2-5 2015-03-07**
+
+*   Fixed:
+
+    __all__ in several modules, some typos in comments
+
 **0.9.2-4 2015-03-06**
 
 *   Fixed:

@@ -22,9 +22,9 @@
 
 from base64 import b64encode
 from hashlib import md5
-# As of Python 3.4.3, http.client.HTTPSconnection() will default to verify presented
-# certificates against the system's trusted CA chain. To enable the the previous
-# behaviour, we switch it off.
+# As of Python 3.4.3, http.client.HTTPSconnection() will default to verify
+# presented certificates against the system's trusted CA chain. To enable
+# the previous behaviour, we switch it off.
 import ssl
 try:
     SSL_NOVERIFY = ssl._create_unverified_context()
@@ -43,7 +43,9 @@ from . import namespace
 from . import mapi
 
 
-__all__ = ['Target', 'Connection', 'HcpsdkError', 'HcpsdkTimeoutError']
+__all__ = ['Target', 'Connection', 'BaseAuthorization', 'DummyAuthorization',
+           'NativeAuthorization', 'HcpsdkError', 'HcpsdkTimeoutError',
+           'HcpsdkCertificateError', 'HcpsdkReplicaInitError']
 
 logging.getLogger('hcpsdk').addHandler(logging.NullHandler())
 

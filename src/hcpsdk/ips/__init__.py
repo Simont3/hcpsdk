@@ -29,7 +29,7 @@ import dns
 import dns.resolver
 
 
-__all__ = ['IpsError', '_request', '_response', 'Circle', 'query']
+__all__ = ['IpsError', 'Circle', 'Request', 'Response', 'query']
 
 logging.getLogger('hcpsdk.ips').addHandler(logging.NullHandler())
 
