@@ -1,6 +1,12 @@
 Release History
 ===============
 
+**0.9.2-7 2015-03-09**
+
+*   Fixed:
+
+    dependency handling, again...
+
 **0.9.2-6 2015-03-08**
 
 *   Fixed:
