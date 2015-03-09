@@ -185,7 +185,8 @@ def query(fqdn, cache=False):
             _response.raised = 'Err: ' + str(e)
         else:
             for a in ips:
-                _response.ips.append(a[4][0])
+                if a[4][0] not in _response.ips:
+                    _response.ips.append(a[4][0])
     else:
         try:
             ips = dns.resolver.query(_response.fqdn, raise_on_no_answer=True)

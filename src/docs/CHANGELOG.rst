@@ -1,6 +1,14 @@
 Release History
 ===============
 
+**0.9.2-8 2015-03-09**
+
+*   Fixed:
+
+    as *socket.getaddrinfo()* seems to double the resolved IP addresses under
+    some circumstances, added a check to make sure we don't have duplicates
+    in the result of *hcpsdk.ips.query()*
+
 **0.9.2-7 2015-03-09**
 
 *   Fixed:

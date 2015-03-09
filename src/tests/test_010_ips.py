@@ -22,6 +22,9 @@
 
 import unittest
 
+import sys
+import os.path
+sys.path.insert(0, os.path.abspath('..'))
 from hcpsdk import ips
 import init_tests as it
 
