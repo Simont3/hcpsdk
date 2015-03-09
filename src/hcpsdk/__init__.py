@@ -304,6 +304,11 @@ class Connection(object):
         """
         self.logger = logging.getLogger(__name__ + '.Connection')
 
+        # This is here to allow test cases to inject error situations.
+        # You need to set _fail to an exception object...
+        self._fail = None
+        #################
+
         self.__target = target  # an initialized Target object
         self.__address = None  # the assigned IP address to use
         self.__timeout = timeout  # the timeout for this Connection (secs)
@@ -432,6 +437,12 @@ class Connection(object):
                 if initialretry:
                     self.__con = self._connect()
                     initialretry = False
+
+                # This is to allow a test case to inject an error situation...
+                if self._fail:
+                    raise self._fail
+                ####################
+
                 s_t = time.time()
                 self.__con.request(method, url, body=body, headers=headers)
                 self.__service_time1 = self.__service_time2 = time.time() - s_t
@@ -445,13 +456,28 @@ class Connection(object):
                 our self again...
                 """
                 if not initialretry:
-                    self.logger.log(logging.DEBUG, 'Connection needs to be opened',
-                                    exc_info=True, stack_info=True)
+                    self.logger.log(logging.DEBUG, 'Connection needs to be opened')
                     initialretry = True
                     continue
                 else:
                     raise HcpsdkError('Not connected, retry failed ({})'
                                       .format(str(e)))
+            except ConnectionAbortedError as e:
+                """
+                This is a trigger for the case that HCP aborts a connection for
+                whatever reason. We close the connection and try to open a new one
+                on the same IP.
+                """
+                self.logger.exception('ConnectionAbortedError: {} Request for {} failed (retry)'
+                                .format(method, url))
+                self._fail = None
+                try:
+                    self.__con.close()
+                except:
+                    self.logger.log(logging.WARNING, 'con.close() for {} failed ({})'
+                                    .format(url, e))
+                initialretry = True
+                continue
             except ssl.SSLError as e:
                 self.logger.log(logging.DEBUG, 'ssl.SSLError: {}'.format(str(e)))
                 raise HcpsdkCertificateError(str(e))
@@ -467,13 +493,10 @@ class Connection(object):
                     self.close()
                     raise HcpsdkTimeoutError('Timeout ({} retries) - {}'.format(retries, url))
             except http.client.HTTPException as e:
-                self.logger.log(logging.WARNING, 'http.client.HTTPException: {}'
-                                .format(str(e)),
-                                exc_info=True, stack_info=True)
-                raise e
+                self.logger.exception('unexpected HTTPException')
+                raise HcpsdkError(str(e))
             except Exception as e:
-                self.logger.log(logging.WARNING, 'Exception: {}'.format(str(e)),
-                                exc_info=True, stack_info=True)
+                self.logger.exception('unexpected Exception')
                 raise HcpsdkError(str(e))
             else:
                 try:
@@ -635,8 +658,10 @@ class Connection(object):
         try:
             self._cancel_idletimer()
             self.__con.close()
-        except:
-            pass
+        except Exception as e:
+            self.logger.exception('Connection object close failed: IP {} ({})'
+                            .format(self.__address, self.__target.fqdn))
+
         self.logger.log(logging.DEBUG, 'Connection object closed: IP {} ({})'
                         .format(self.__address, self.__target.fqdn))
 

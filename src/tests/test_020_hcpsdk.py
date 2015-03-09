@@ -20,8 +20,12 @@
 # IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
 # CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-import unittest
+import sys
+import os.path
+sys.path.insert(0, os.path.abspath('..'))
 import hcpsdk
+print(hcpsdk.version())
+import unittest
 import ssl
 import http.client
 from pprint import pprint
@@ -29,6 +33,7 @@ from pprint import pprint
 import init_tests as it
 
 
+# @unittest.skip("demonstrating skipping")
 class TestHcpsdk_1_Target(unittest.TestCase):
 
     def test_1_10_ip_address_available(self):
@@ -263,6 +268,42 @@ class TestHcpsdk_6_Access_Fail(unittest.TestCase):
         self.r = self.con.GET(self.T_HCPFILE)
         print(self.con.response_status, self.con.response_reason)
         self.assertEqual(self.r.status, 404)
+
+
+# @unittest.skip("demonstrating skipping")
+class TestHcpsdk_7_ConnectionAbortedError(unittest.TestCase):
+    '''
+    Make sure we get the proper error if an ConnectionAbortedError is raised
+    '''
+    def setUp(self):
+        self.T_HCPFILE = '/rest/hcpsdk/TestHCPsdk_20_access'
+        self.hcptarget = hcpsdk.Target(it.P_NS_GOOD, it.P_AUTH, it.P_SSLPORT, dnscache=it.P_DNSCACHE)
+        self.con = hcpsdk.Connection(self.hcptarget)
+
+    def tearDown(self):
+        self.con.close()
+        del self.hcptarget
+
+    def test_7_10_putput(self):
+        """
+        Ingest a file
+        """
+        T_BUF = '0123456789ABCDEF' * 64
+        r = self.con.PUT(self.T_HCPFILE, T_BUF)
+        self.assertEqual(r.status, 201)
+
+        self.con._fail = ConnectionAbortedError
+        r = self.con.HEAD(self.T_HCPFILE)
+        self.assertEqual(r.status, 200)
+
+    def test_7_90_delete(self):
+        """
+        Delete a file
+        """
+        r = self.con.DELETE(self.T_HCPFILE)
+        self.assertEqual(r.status, 200)
+
+
 
 
 if __name__ == '__main__':

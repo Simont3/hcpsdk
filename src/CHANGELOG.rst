@@ -1,6 +1,14 @@
 Release History
 ===============
 
+**0.9.2-6 2015-03-08**
+
+*   Fixed:
+
+    now handling *ConnectionAbortedError* properly in hcpsdk.Connection()
+    by closing and re-opening the connection on the same target IP
+    address
+
 **0.9.2-5 2015-03-07**
 
 *   Fixed:
