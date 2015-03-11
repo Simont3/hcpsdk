@@ -27,6 +27,7 @@ import hcpsdk
 print(hcpsdk.version())
 import unittest
 import ssl
+import socket
 import http.client
 from pprint import pprint
 
@@ -111,7 +112,7 @@ class TestHcpsdk_2_Access_http(unittest.TestCase):
         self.assertEqual(r.status, 200)
 
 
-# @unittest.skip("demonstrating skipping")
+@unittest.skip("demonstrating skipping")
 class TestHcpsdk_3_Access_https_certfile(unittest.TestCase):
     '''
     Make sure we can write/head/post/delete a file using https,
@@ -165,7 +166,7 @@ class TestHcpsdk_3_Access_https_certfile(unittest.TestCase):
         self.assertEqual(r.status, 200)
 
 
-# @unittest.skip("demonstrating skipping")
+@unittest.skip("demonstrating skipping")
 class TestHcpsdk_4_Access_https_systemCA(unittest.TestCase):
     '''
     Make sure we can write/head/post/delete a file using https,
@@ -278,7 +279,7 @@ class TestHcpsdk_7_ConnectionAbortedError(unittest.TestCase):
     def setUp(self):
         self.T_HCPFILE = '/rest/hcpsdk/TestHCPsdk_20_access'
         self.hcptarget = hcpsdk.Target(it.P_NS_GOOD, it.P_AUTH, it.P_SSLPORT, dnscache=it.P_DNSCACHE)
-        self.con = hcpsdk.Connection(self.hcptarget)
+        self.con = hcpsdk.Connection(self.hcptarget, retries=3)
 
     def tearDown(self):
         self.con.close()
@@ -292,7 +293,7 @@ class TestHcpsdk_7_ConnectionAbortedError(unittest.TestCase):
         r = self.con.PUT(self.T_HCPFILE, T_BUF)
         self.assertEqual(r.status, 201)
 
-        self.con._fail = ConnectionAbortedError
+        self.con._fail = socket.timeout
         r = self.con.HEAD(self.T_HCPFILE)
         self.assertEqual(r.status, 200)
 

@@ -157,6 +157,14 @@ Exceptions
 
       An error description.
 
+.. autoexception:: HcpsdkCantConnectError
+
+   Used to signal that a connection couldn't be established.
+
+   .. attribute:: reason
+
+      An error description.
+
 .. autoexception:: HcpsdkTimeoutError
 
    Used to signal a Connection timeout.
@@ -167,7 +175,7 @@ Exceptions
 
 .. autoexception:: HcpsdkCertificateError
 
-   Raised if the *SSL context* wasn't able to verify a certificate
+   Raised if the *SSL context* could doesn't verify a certificate
    presented by HCP.
 
    .. attribute:: reason

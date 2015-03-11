@@ -1,6 +1,19 @@
 Release History
 ===============
 
+**0.9.2-10 2015-03-11**
+
+*   Fixed:
+
+    fixed an issue in *hcpsdk.Connection.request()* that led to situations
+    where a failed connection wasn't recovered correctly.
+
+**0.9.2-9 2015-03-09**
+
+*   Fixed:
+
+    added missing import of subpackage pathbuilder into hcpsdk.__init__.py
+
 **0.9.2-8 2015-03-09**
 
 *   Fixed:

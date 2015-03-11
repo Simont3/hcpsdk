@@ -30,6 +30,7 @@ try:
     SSL_NOVERIFY = ssl._create_unverified_context()
 except (AttributeError, NameError):
     SSL_NOVERIFY = None
+import socket
 import http.client
 from urllib.parse import urlencode, quote_plus
 import logging
@@ -41,11 +42,12 @@ from .version import _Version
 from . import ips
 from . import namespace
 from . import mapi
+from . import pathbuilder
 
 
 __all__ = ['Target', 'Connection', 'BaseAuthorization', 'DummyAuthorization',
-           'NativeAuthorization', 'HcpsdkError', 'HcpsdkTimeoutError',
-           'HcpsdkCertificateError', 'HcpsdkReplicaInitError']
+           'NativeAuthorization', 'HcpsdkError', 'HcpsdkCantConnectError',
+           'HcpsdkTimeoutError', 'HcpsdkCertificateError', 'HcpsdkReplicaInitError']
 
 logging.getLogger('hcpsdk').addHandler(logging.NullHandler())
 
@@ -53,26 +55,46 @@ version = _Version()
 
 
 class HcpsdkError(Exception):
-    # Subclasses that define an __init__ must call Exception.__init__
-    # or define self.args.  Otherwise, str() will fail.
+    """
+    Subclasses that define an __init__ must call Exception.__init__
+    or define self.args.  Otherwise, str() will fail.
+    """
+    def __init__(self, reason):
+        self.args = reason,
+        self.reason = reason
+
+
+class HcpsdkCantConnectError(HcpsdkError):
+    """
+    Raised if we can't connect to the HCP node
+    """
     def __init__(self, reason):
         self.args = reason,
         self.reason = reason
 
 
 class HcpsdkTimeoutError(HcpsdkError):
+    """
+    Raised if we have a timeout
+    """
     def __init__(self, reason):
         self.args = reason,
         self.reason = reason
 
 
 class HcpsdkCertificateError(HcpsdkError):
+    """
+    Raised if we can't verify against the presented ssl certificate
+    """
     def __init__(self, reason):
         self.args = reason,
         self.reason = reason
 
 
 class HcpsdkReplicaInitError(HcpsdkError):
+    """
+    Raised if we can't setup the internal *Target* for the replica HCP
+    """
     def __init__(self, reason):
         self.args = reason,
         self.reason = reason
@@ -431,7 +453,7 @@ class Connection(object):
             try:
                 if retryonfailure:
                     retryonfailure = False
-                    self.__con.close()
+                    self.close()
                     self.__target.ipaddrqry.refresh()
                     self.__con = self._connect()
                 if initialretry:
@@ -440,7 +462,9 @@ class Connection(object):
 
                 # This is to allow a test case to inject an error situation...
                 if self._fail:
-                    raise self._fail
+                    __e = self._fail
+                    self._fail = None
+                    raise __e
                 ####################
 
                 s_t = time.time()
@@ -460,7 +484,8 @@ class Connection(object):
                     initialretry = True
                     continue
                 else:
-                    raise HcpsdkError('Not connected, retry failed ({})'
+                    self.close()
+                    raise HcpsdkError('Can\'t connect, retry failed ({})'
                                       .format(str(e)))
             except ConnectionAbortedError as e:
                 """
@@ -471,18 +496,24 @@ class Connection(object):
                 self.logger.exception('ConnectionAbortedError: {} Request for {} failed (retry)'
                                 .format(method, url))
                 self._fail = None
-                try:
-                    self.__con.close()
-                except:
-                    self.logger.log(logging.WARNING, 'con.close() for {} failed ({})'
-                                    .format(url, e))
+                self.close()
                 initialretry = True
                 continue
             except ssl.SSLError as e:
+                """
+                This is a blocking issue - will *not* retry and will close the
+                underlying connection.
+                """
                 self.logger.log(logging.DEBUG, 'ssl.SSLError: {}'.format(str(e)))
+                self.close()
                 raise HcpsdkCertificateError(str(e))
-            except TimeoutError:
+            except (TimeoutError, socket.timeout):
+                """
+                We will retry in this case (if retries have been asked for). If we fail
+                we close the underlying connection.
+                """
                 if retries < self.__retries:
+                    self.close()
                     retries += 1
                     retryonfailure = True
                     self.logger.log(logging.DEBUG, 'TimeoutError - retry # {}'.format(retries))
@@ -493,10 +524,20 @@ class Connection(object):
                     self.close()
                     raise HcpsdkTimeoutError('Timeout ({} retries) - {}'.format(retries, url))
             except http.client.HTTPException as e:
+                """
+                Again, there might be no recovery from this, so we close the underlying
+                connection and give up.
+                """
                 self.logger.exception('unexpected HTTPException')
+                self.close()
                 raise HcpsdkError(str(e))
             except Exception as e:
+                """
+                Again, there might be no recovery from this, so we close the underlying
+                connection and give up.
+                """
                 self.logger.exception('unexpected Exception')
+                self.close()
                 raise HcpsdkError(str(e))
             else:
                 try:
@@ -504,7 +545,8 @@ class Connection(object):
                 except http.client.BadStatusLine as e:
                     # BadStatusLine most likely means that HCP has closed the connection.
                     # ('HTTP Persistent Connection Timeout Interval' < Connection.timeout)
-                    # So, we re-open the connection and try again...
+                    # So, we close the connection here and trigger a retry...
+                    self.close()
                     if retries < self.__retries:
                         retries += 1
                         retryonfailure = True
@@ -516,7 +558,6 @@ class Connection(object):
                         self.logger.log(logging.DEBUG,
                                         'HCP most likely closed the connection ({} retries, giving up)'
                                         .format(retries))
-                        self.close()
                         raise HcpsdkTimeoutError('HCP most likely closed the connection ({} retries) - {}'
                                                  .format(retries, url))
 
