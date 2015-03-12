@@ -708,6 +708,6 @@ class Connection(object):
 
     def __str__(self):
         return ("<{} class initialized for fqdn {} @ {}>".format(Connection.__name__,
-                                                                 self.__target.authority,
+                                                                 self.__target.fqdn,
                                                                  self.__address))
 

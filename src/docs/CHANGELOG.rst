@@ -1,6 +1,13 @@
 Release History
 ===============
 
+**0.9.2-11 2015-03-12**
+
+*   Fixed:
+
+    fixed an issue in *hcpsdk.Connection.__str__()* where a false attribute
+    was referenced.
+
 **0.9.2-10 2015-03-11**
 
 *   Fixed:
