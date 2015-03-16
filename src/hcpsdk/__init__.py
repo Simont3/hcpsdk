@@ -226,9 +226,10 @@ class Target(object):
         :param sslcontext:          the context used to handle https requests; defaults to
                                     no certificate verification
         :param interface:           the HCP interface to use (I_NATIVE)
-        :param replica_fqdn:        the replica HCP's FQDN
+        :param replica_fqdn:        the replica HCP's FQDN (not yet implemented)
         :param replica_strategy:    ORed combination of the RS_* modes
-        :raises:                    HcpsdkError
+        :raises:                    *ips.IpsError* if DNS query fails, *HcpsdkError* in all
+                                    other fault cases
         """
         self.logger = logging.getLogger(__name__ + '.Target')
         self.__fqdn = fqdn
@@ -249,6 +250,9 @@ class Target(object):
         try:
             self.ipaddrqry = ips.Circle(self.__fqdn, port=self.__port, dnscache=self.__dnscache)
         except ips.IpsError as e:
+            self.logger.exception('Error: DNS query failed')
+            raise ips.IpsError(e)
+        except Exception as e:
             self.logger.error(e, exc_info=True)
             raise HcpsdkError(e)
 
@@ -258,11 +262,12 @@ class Target(object):
 
         # If we have *replica_fqdn*, try to init its *Target* object
         if replica_fqdn:
-            try:
-                self.replica = Target(replica_fqdn, user, password,
-                                      self.__port, interface=self.interface)
-            except HcpsdkError as e:
-                raise HcpsdkReplicaInitError(e)
+            # try:
+            #     self.replica = Target(replica_fqdn, user, password,
+            #                           self.__port, interface=self.interface)
+            # except HcpsdkError as e:
+            #     raise HcpsdkReplicaInitError(e)
+            raise HcpsdkReplicaInitError('Error: not yet implemented')
 
     def getaddr(self):
         """
@@ -467,11 +472,13 @@ class Connection(object):
                     raise __e
                 ####################
 
+                self.logger.log(logging.DEBUG, '{} About to request for {}'
+                                .format(method, url))
                 s_t = time.time()
                 self.__con.request(method, url, body=body, headers=headers)
-                self.__service_time1 = self.__service_time2 = time.time() - s_t
-                self.logger.log(logging.DEBUG, '{} Request for {} - service_time1 = {}'
-                                .format(method, url, self.__service_time1))
+                # self.__service_time1 = self.__service_time2 = time.time() - s_t
+                # self.logger.log(logging.DEBUG, '{} Request for {} - service_time1 = {}'
+                #                 .format(method, url, self.__service_time1))
             except (http.client.NotConnected, AttributeError) as e:
                 """
                 This is a trigger for the case the Connection is not open
@@ -499,6 +506,31 @@ class Connection(object):
                 self.close()
                 initialretry = True
                 continue
+            except http.client.CannotSendRequest as e:
+                """
+                If this gets raised, the underlying connection seems to be in a state where
+                it can't handle a new request, yet.
+                We'll try it with the same aproach as with the ConnectionAbortedError...
+                """
+                self.logger.exception('http.client.CannotSendRequest: {} Request for {} failed (retry)'
+                                      .format(method, url))
+                self._fail = None
+                self.close()
+                initialretry = True
+                continue
+            except http.client.ResponseNotReady as e:
+                """
+                If this gets raised, the underlying connection seems to be in a state where
+                it can't handle a new request, yet.
+                We'll try it with the same aproach as with the ConnectionAbortedError...
+                """
+                self.logger.exception('http.client.ResponseNotReady: {} Request for {} failed (retry)'
+                                      .format(method, url))
+                self._fail = None
+                self.close()
+                initialretry = True
+                continue
+
             except ssl.SSLError as e:
                 """
                 This is a blocking issue - will *not* retry and will close the
@@ -540,6 +572,9 @@ class Connection(object):
                 self.close()
                 raise HcpsdkError(str(e))
             else:
+                self.__service_time1 = self.__service_time2 = time.time() - s_t
+                self.logger.log(logging.DEBUG, '{} Request for {} - service_time1 = {}'
+                                .format(method, url, self.__service_time1))
                 try:
                     self._response = self.__con.getresponse()
                 except http.client.BadStatusLine as e:
@@ -560,6 +595,8 @@ class Connection(object):
                                         .format(retries))
                         raise HcpsdkTimeoutError('HCP most likely closed the connection ({} retries) - {}'
                                                  .format(retries, url))
+                except Exception as e:
+                    self.logger.exception(str(e))
 
             self._set_idletimer()
             return self._response
