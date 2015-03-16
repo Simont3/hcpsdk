@@ -293,7 +293,7 @@ class TestHcpsdk_7_ConnectionAbortedError(unittest.TestCase):
         r = self.con.PUT(self.T_HCPFILE, T_BUF)
         self.assertEqual(r.status, 201)
 
-        self.con._fail = socket.timeout
+        self.con._fail = ConnectionAbortedError
         r = self.con.HEAD(self.T_HCPFILE)
         self.assertEqual(r.status, 200)
 

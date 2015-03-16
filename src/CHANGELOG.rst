@@ -1,6 +1,16 @@
 Release History
 ===============
 
+**0.9.2-12 2015-03-16**
+
+*   Fixed:
+
+    *   Now raising HcpsdkReplicaInitError id a *hcpsdk.Target* is initialized with
+        a replica HCP (not yet implemented).
+    *   Improved error handling in *hcpsdk.Connection.request()*.
+    *   *hcpsdk.Target()* will now raise *ips.IpsError* if DNS name resolution
+        fails.
+
 **0.9.2-11 2015-03-12**
 
 *   Fixed:
@@ -89,7 +99,7 @@ Release History
 
 *   Added:
 
-    Automatic retires for hcpsdk.Connection.request() in case of a
-    timeout or connection abort. A DummyAuthorization class for use
-    with the Default Namespace. An appendiy on the difference when
-    working with the Default Namespace
+    *   Automatic retires for hcpsdk.Connection.request() in case of a
+        timeout or connection abort.
+    *   A DummyAuthorization class for use with the Default Namespace.
+    *   An appendiy on the difference when working with the Default Namespace.
