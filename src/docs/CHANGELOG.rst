@@ -1,6 +1,12 @@
 Release History
 ===============
 
+**0.9.2-13 2015-03-16**
+
+*   Fixed:
+
+    Changed some unnecessary logging.error calls to logging.debug
+
 **0.9.2-12 2015-03-16**
 
 *   Fixed:
