@@ -250,10 +250,9 @@ class Target(object):
         try:
             self.ipaddrqry = ips.Circle(self.__fqdn, port=self.__port, dnscache=self.__dnscache)
         except ips.IpsError as e:
-            self.logger.exception('Error: DNS query failed')
+            self.logger.debug(e, exc_info=True)
             raise ips.IpsError(e)
         except Exception as e:
-            self.logger.error(e, exc_info=True)
             raise HcpsdkError(e)
 
         # noinspection PyProtectedMember
