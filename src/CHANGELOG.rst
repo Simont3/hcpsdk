@@ -1,6 +1,12 @@
 Release History
 ===============
 
+**0.9.2-14 2015-03-20**
+
+*   Fixed:
+
+    *hcpsdk.Connection.POST()* now allows to add a body to the request.
+
 **0.9.2-13 2015-03-16**
 
 *   Fixed:

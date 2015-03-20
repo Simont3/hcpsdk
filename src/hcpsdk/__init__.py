@@ -644,14 +644,13 @@ class Connection(object):
         r.read()  # clean up
         return r
 
-    def POST(self, url, params=None, headers=None):
+    def POST(self, url, body=None, params=None, headers=None):
         """
         Convenience method for Request() - POST metadata.
-        Cleans up and leaves the Connection ready for the next Request.
+        Does no clean-up, as a POST can have a response body!
         For parameter description see *Request()*.
         """
-        r = self.request('POST', url, params=params, headers=headers)
-        r.read()  # clean up
+        r = self.request('POST', url, body=body, params=params, headers=headers)
         return r
 
     def DELETE(self, url, params=None, headers=None):
