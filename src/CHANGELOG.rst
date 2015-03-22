@@ -1,6 +1,13 @@
 Release History
 ===============
 
+**0.9.2-16 2015-03-22**
+
+*   Fixed:
+
+    *hcpsdk.Connection.close()* now checks if the underlying connection
+    is really open before trying to close it.
+
 **0.9.2-15 2015-03-22**
 
 *   Fixed:

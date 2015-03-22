@@ -731,12 +731,13 @@ class Connection(object):
         be canceled on *close()*.
         """
         # noinspection PyBroadException
-        try:
-            self._cancel_idletimer()
-            self.__con.close()
-        except Exception as e:
-            self.logger.exception('Connection object close failed: IP {} ({})'
-                            .format(self.__address, self.__target.fqdn))
+        if self.__con:
+            try:
+                self._cancel_idletimer()
+                self.__con.close()
+            except Exception as e:
+                self.logger.exception('Connection object close failed: IP {} ({})'
+                                .format(self.__address, self.__target.fqdn))
 
         self.logger.log(logging.DEBUG, 'Connection object closed: IP {} ({})'
                         .format(self.__address, self.__target.fqdn))
