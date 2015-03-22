@@ -1,6 +1,13 @@
 Release History
 ===============
 
+**0.9.2-15 2015-03-22**
+
+*   Fixed:
+
+    *hcpsdk.Connection.request()* excluded '+' from being urlencoded in
+    params.
+
 **0.9.2-14 2015-03-20**
 
 *   Fixed:

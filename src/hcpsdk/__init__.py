@@ -447,7 +447,7 @@ class Connection(object):
         # make sure that the URL and params are proper encoded
         url = quote_plus(url, safe='/')
         if params:
-            url = url + '?' + urlencode(params)
+            url = url + '?' + urlencode(params, safe='+')
         self.logger.log(logging.DEBUG, 'URL = {}'.format(url))
 
         initialretry = False    # used if connection isn't open
