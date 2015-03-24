@@ -1,6 +1,14 @@
 Release History
 ===============
 
+**0.9.2-17 2015-03-24**
+
+*   Fixed:
+
+    *hcpsdk.Connection.request()* is now aware of timeouts that occur
+    during *http.client.HTTPConnection.getresponse()* and retries
+    appropriately.
+
 **0.9.2-16 2015-03-22**
 
 *   Fixed:

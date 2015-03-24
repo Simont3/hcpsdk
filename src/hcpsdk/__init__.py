@@ -574,8 +574,20 @@ class Connection(object):
                 self.__service_time1 = self.__service_time2 = time.time() - s_t
                 self.logger.log(logging.DEBUG, '{} Request for {} - service_time1 = {}'
                                 .format(method, url, self.__service_time1))
+
                 try:
                     self._response = self.__con.getresponse()
+                except (TimeoutError, socket.timeout) as e:
+                    if retries < self.__retries:
+                        retries += 1
+                        self.logger.log(logging.DEBUG, 'TimeoutError while getting response - retry # {}'
+                                        .format(retries))
+                        continue
+                    else:
+                        self.logger.log(logging.DEBUG, 'TimeoutError while getting response ({} retries), giving up'
+                                        .format(retries))
+                        self.close()
+                        raise HcpsdkTimeoutError('Timeout ({} retries) - {}'.format(retries, url))
                 except http.client.BadStatusLine as e:
                     # BadStatusLine most likely means that HCP has closed the connection.
                     # ('HTTP Persistent Connection Timeout Interval' < Connection.timeout)
