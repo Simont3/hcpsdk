@@ -1,6 +1,14 @@
 Release History
 ===============
 
+**0.9.2-18 2015-03-25**
+
+*   Fixed:
+
+    *hcpsdk.Connection.request()* accidentally quoted blanks in an URL as '+',
+    which is not valid for HCP. Replaced *urllib.parse.quote_plus()* by
+    *urllib.parse.quote()*.
+
 **0.9.2-17 2015-03-24**
 
 *   Fixed:

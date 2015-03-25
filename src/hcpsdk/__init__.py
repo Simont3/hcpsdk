@@ -32,7 +32,7 @@ except (AttributeError, NameError):
     SSL_NOVERIFY = None
 import socket
 import http.client
-from urllib.parse import urlencode, quote_plus
+from urllib.parse import urlencode, quote
 import logging
 import time
 from threading import Timer
@@ -445,7 +445,7 @@ class Connection(object):
             headers.update(self.__target.headers)
 
         # make sure that the URL and params are proper encoded
-        url = quote_plus(url, safe='/')
+        url = quote(url, safe='/')
         if params:
             url = url + '?' + urlencode(params, safe='+')
         self.logger.log(logging.DEBUG, 'URL = {}'.format(url))
