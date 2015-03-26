@@ -1,6 +1,15 @@
 Release History
 ===============
 
+**0.9.2-19 2015-03-26**
+
+*   Fixed:
+
+    *hcpsdk.Connection.request()*: changed behavior for the cases where we
+    receive one of ConnectionAbortedError, http.client.ResponseNotReady,
+    TimeoutError and socket.timeout. We now refresh the cached IP
+    addresses and setup a new connection.
+
 **0.9.2-18 2015-03-25**
 
 *   Fixed:

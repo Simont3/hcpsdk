@@ -478,6 +478,12 @@ class Connection(object):
                 # self.__service_time1 = self.__service_time2 = time.time() - s_t
                 # self.logger.log(logging.DEBUG, '{} Request for {} - service_time1 = {}'
                 #                 .format(method, url, self.__service_time1))
+            except ips.IpsError as e:
+                """
+                This is a trigger for the case that *hcpsdk.ips* isn't able to
+                resolve IP addresses - we simple forward it, as we can't resolve.
+                """
+                raise e
             except (http.client.NotConnected, AttributeError) as e:
                 """
                 This is a trigger for the case the Connection is not open
@@ -496,20 +502,28 @@ class Connection(object):
             except ConnectionAbortedError as e:
                 """
                 This is a trigger for the case that HCP aborts a connection for
-                whatever reason. We close the connection and try to open a new one
-                on the same IP.
+                whatever reason. It also serves to catch WinError 10053 on Windows,
+                which stands for a close caused by the OS.
+                We close the connection, force the target to refresh its address list
+                and retry with a new connection.
                 """
-                self.logger.exception('ConnectionAbortedError: {} Request for {} failed (retry)'
-                                .format(method, url))
-                self._fail = None
-                self.close()
-                initialretry = True
-                continue
+                self.logger.debug('ConnectionAbortedError: {} Request for {} failed ({})'
+                                  .format(method, url, e))
+                if retries < self.__retries:
+                    retries += 1
+                    retryonfailure = True
+                    self.logger.log(logging.DEBUG, 'ConnectionAbortedError - retry # {}'.format(retries))
+                    continue
+                else:
+                    self.logger.log(logging.DEBUG, 'ConnectionAbortedError ({} retries), giving up'
+                                    .format(retries))
+                    self.close()
+                    raise HcpsdkTimeoutError('ConnectionAbortedError (giving up after {} retries) - {}'.format(retries, url))
             except http.client.CannotSendRequest as e:
                 """
                 If this gets raised, the underlying connection seems to be in a state where
                 it can't handle a new request, yet.
-                We'll try it with the same aproach as with the ConnectionAbortedError...
+                We'll try it with the same approach as with the ConnectionAbortedError...
                 """
                 self.logger.exception('http.client.CannotSendRequest: {} Request for {} failed (retry)'
                                       .format(method, url))
@@ -521,14 +535,26 @@ class Connection(object):
                 """
                 If this gets raised, the underlying connection seems to be in a state where
                 it can't handle a new request, yet.
-                We'll try it with the same aproach as with the ConnectionAbortedError...
+                We'll try it with the same approach as with the ConnectionAbortedError...
                 """
-                self.logger.exception('http.client.ResponseNotReady: {} Request for {} failed (retry)'
-                                      .format(method, url))
-                self._fail = None
-                self.close()
-                initialretry = True
-                continue
+                # self.logger.exception('http.client.ResponseNotReady: {} Request for {} failed (retry)'
+                #                       .format(method, url))
+                # self._fail = None
+                # self.close()
+                # initialretry = True
+                # continue
+                self.logger.debug('http.client.ResponseNotReady: {} Request for {} failed ({})'
+                                  .format(method, url, e))
+                if retries < self.__retries:
+                    retries += 1
+                    retryonfailure = True
+                    self.logger.log(logging.DEBUG, 'http.client.ResponseNotReady - retry # {}'.format(retries))
+                    continue
+                else:
+                    self.logger.log(logging.DEBUG, 'http.client.ResponseNotReady ({} retries), giving up'
+                                    .format(retries))
+                    self.close()
+                    raise HcpsdkTimeoutError('http.client.ResponseNotReady (giving up after {} retries) - {}'.format(retries, url))
 
             except ssl.SSLError as e:
                 """
@@ -543,8 +569,9 @@ class Connection(object):
                 We will retry in this case (if retries have been asked for). If we fail
                 we close the underlying connection.
                 """
+                self.logger.debug('TimeoutError: {} Request for {} failed ({})'
+                                  .format(method, url, e))
                 if retries < self.__retries:
-                    self.close()
                     retries += 1
                     retryonfailure = True
                     self.logger.log(logging.DEBUG, 'TimeoutError - retry # {}'.format(retries))
