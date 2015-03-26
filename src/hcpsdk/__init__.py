@@ -564,7 +564,7 @@ class Connection(object):
                 self.logger.log(logging.DEBUG, 'ssl.SSLError: {}'.format(str(e)))
                 self.close()
                 raise HcpsdkCertificateError(str(e))
-            except (TimeoutError, socket.timeout):
+            except (TimeoutError, socket.timeout) as e:
                 """
                 We will retry in this case (if retries have been asked for). If we fail
                 we close the underlying connection.

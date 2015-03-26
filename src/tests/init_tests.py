@@ -26,7 +26,7 @@ sys.path.insert(0, os.path.abspath('..'))
 import hcpsdk
 
 # primary HCP
-P_HCP       = 'hcp.snomis.local'
+P_HCP       = 'hcp1.snomis.local'
 P_ADMIN     = 'admin.' + P_HCP
 P_TENANT    = 'm.' + P_HCP
 P_NS_GOOD   = 'n1.' + P_TENANT

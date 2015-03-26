@@ -1,6 +1,12 @@
 Release History
 ===============
 
+**0.9.2-20 2015-03-26**
+
+*   Fixed:
+
+    fixed/added testcases
+
 **0.9.2-19 2015-03-26**
 
 *   Fixed:
