@@ -24,6 +24,7 @@ import sys
 import os.path
 sys.path.insert(0, os.path.abspath('..'))
 import hcpsdk
+from hcpsdk.ips import IpsError
 import unittest
 import ssl
 import socket
@@ -131,8 +132,6 @@ class TestHcpsdk_03_Access_Fail(unittest.TestCase):
         Read a file
         """
         self.r = self.con.GET(self.T_HCPFILE)
-        print('test_6_10_get:', self.con.response_status,
-              self.con.response_reason)
         self.assertEqual(self.r.status, 404)
 
 
@@ -151,6 +150,17 @@ class TestHcpsdk_10_Errors(unittest.TestCase):
         r = self.con.DELETE(self.T_HCPFILE)
         self.con.close()
         del self.hcptarget
+
+    def test_10_09_IpsError(self):
+        """
+        Ingest a file while forcing an error
+        """
+        T_BUF = '0123456789ABCDEF' * 64
+        r = self.con.PUT(self.T_HCPFILE, T_BUF)
+        self.assertEqual(r.status, 201)
+
+        self.con._fail = IpsError
+        self.assertRaises(IpsError, self.con.HEAD, self.T_HCPFILE)
 
     def test_10_10_ConnectionAbortedError(self):
         """
@@ -199,6 +209,29 @@ class TestHcpsdk_10_Errors(unittest.TestCase):
         self.con._fail = http.client.ResponseNotReady
         r = self.con.HEAD(self.T_HCPFILE)
         self.assertEqual(r.status, 200)
+
+    def test_10_14_HcpsdkCertificateError(self):
+        """
+        Ingest a file while forcing an error
+        """
+        T_BUF = '0123456789ABCDEF' * 64
+        r = self.con.PUT(self.T_HCPFILE, T_BUF)
+        self.assertEqual(r.status, 201)
+
+        self.con._fail = ssl.SSLError
+        self.assertRaises(hcpsdk.HcpsdkCertificateError, self.con.HEAD, self.T_HCPFILE)
+
+    def test_10_15_httpclientHTTPException(self):
+        """
+        Ingest a file while forcing an error
+        """
+        T_BUF = '0123456789ABCDEF' * 64
+        r = self.con.PUT(self.T_HCPFILE, T_BUF)
+        self.assertEqual(r.status, 201)
+
+        self.con._fail = http.client.HTTPException
+        self.assertRaises(hcpsdk.HcpsdkError, self.con.HEAD, self.T_HCPFILE)
+
 
 
 if __name__ == '__main__':

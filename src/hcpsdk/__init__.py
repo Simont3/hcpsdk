@@ -437,6 +437,8 @@ class Connection(object):
                         auto-prepared header
         :return:        the original *Response* object received from
                         *http.client.HTTP[s]Connection.requests()*.
+        :raises:        one of the *hcpsdk.Hcpsdk[..]Error*\ s or
+                        *hcpsdk.ips.IpsError* in case an IP address cache refresh failed
         """
         self._cancel_idletimer()  # 1st, cancel the idletimer
         if not headers:
@@ -461,6 +463,7 @@ class Connection(object):
                     self.__target.ipaddrqry.refresh()
                     self.__con = self._connect()
                 if initialretry:
+                    self.close()
                     self.__con = self._connect()
                     initialretry = False
 
@@ -468,22 +471,20 @@ class Connection(object):
                 if self._fail:
                     __e = self._fail
                     self._fail = None
-                    raise __e
+                    raise __e('test case')
                 ####################
 
                 self.logger.log(logging.DEBUG, '{} About to request for {}'
                                 .format(method, url))
                 s_t = time.time()
                 self.__con.request(method, url, body=body, headers=headers)
-                # self.__service_time1 = self.__service_time2 = time.time() - s_t
-                # self.logger.log(logging.DEBUG, '{} Request for {} - service_time1 = {}'
-                #                 .format(method, url, self.__service_time1))
             except ips.IpsError as e:
                 """
                 This is a trigger for the case that *hcpsdk.ips* isn't able to
                 resolve IP addresses - we simple forward it, as we can't resolve.
                 """
-                raise e
+                self._fail = None
+                raise
             except (http.client.NotConnected, AttributeError) as e:
                 """
                 This is a trigger for the case the Connection is not open
@@ -491,6 +492,7 @@ class Connection(object):
                 time). So, we open up a new Connection and start over by calling
                 our self again...
                 """
+                self._fail = None
                 if not initialretry:
                     self.logger.log(logging.DEBUG, 'Connection needs to be opened')
                     initialretry = True
@@ -507,6 +509,7 @@ class Connection(object):
                 We close the connection, force the target to refresh its address list
                 and retry with a new connection.
                 """
+                self._fail = None
                 self.logger.debug('ConnectionAbortedError: {} Request for {} failed ({})'
                                   .format(method, url, e))
                 if retries < self.__retries:
@@ -525,10 +528,9 @@ class Connection(object):
                 it can't handle a new request, yet.
                 We'll try it with the same approach as with the ConnectionAbortedError...
                 """
+                self._fail = None
                 self.logger.exception('http.client.CannotSendRequest: {} Request for {} failed (retry)'
                                       .format(method, url))
-                self._fail = None
-                self.close()
                 initialretry = True
                 continue
             except http.client.ResponseNotReady as e:
@@ -537,12 +539,7 @@ class Connection(object):
                 it can't handle a new request, yet.
                 We'll try it with the same approach as with the ConnectionAbortedError...
                 """
-                # self.logger.exception('http.client.ResponseNotReady: {} Request for {} failed (retry)'
-                #                       .format(method, url))
-                # self._fail = None
-                # self.close()
-                # initialretry = True
-                # continue
+                self._fail = None
                 self.logger.debug('http.client.ResponseNotReady: {} Request for {} failed ({})'
                                   .format(method, url, e))
                 if retries < self.__retries:
@@ -554,13 +551,15 @@ class Connection(object):
                     self.logger.log(logging.DEBUG, 'http.client.ResponseNotReady ({} retries), giving up'
                                     .format(retries))
                     self.close()
-                    raise HcpsdkTimeoutError('http.client.ResponseNotReady (giving up after {} retries) - {}'.format(retries, url))
+                    raise HcpsdkTimeoutError('http.client.ResponseNotReady (giving up after {} retries) - {}'
+                                             .format(retries, url))
 
             except ssl.SSLError as e:
                 """
                 This is a blocking issue - will *not* retry and will close the
                 underlying connection.
                 """
+                self._fail = None
                 self.logger.log(logging.DEBUG, 'ssl.SSLError: {}'.format(str(e)))
                 self.close()
                 raise HcpsdkCertificateError(str(e))
@@ -569,6 +568,7 @@ class Connection(object):
                 We will retry in this case (if retries have been asked for). If we fail
                 we close the underlying connection.
                 """
+                self._fail = None
                 self.logger.debug('TimeoutError: {} Request for {} failed ({})'
                                   .format(method, url, e))
                 if retries < self.__retries:
@@ -586,6 +586,7 @@ class Connection(object):
                 Again, there might be no recovery from this, so we close the underlying
                 connection and give up.
                 """
+                self._fail = None
                 self.logger.exception('unexpected HTTPException')
                 self.close()
                 raise HcpsdkError(str(e))
@@ -594,6 +595,7 @@ class Connection(object):
                 Again, there might be no recovery from this, so we close the underlying
                 connection and give up.
                 """
+                self._fail = None
                 self.logger.exception('unexpected Exception')
                 self.close()
                 raise HcpsdkError(str(e))

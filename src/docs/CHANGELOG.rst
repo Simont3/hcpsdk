@@ -1,6 +1,13 @@
 Release History
 ===============
 
+**0.9.2-21 2015-03-28**
+
+*   Fixed:
+
+    Tuned the exception handling in *hcpsdk.request()*
+    fixed/added testcases
+
 **0.9.2-20 2015-03-26**
 
 *   Fixed:
