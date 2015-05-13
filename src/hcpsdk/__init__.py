@@ -404,7 +404,7 @@ class Connection(object):
             con = http.client.HTTPConnection(self.__address, port=self.__target.port,
                                              timeout=self.__timeout)
             self.__connect_time = time.time() - c_t
-        self.logger.log(logging.DEBUG, 'Connection open: IP {} ({}) - connect_time: {}'
+        self.logger.log(logging.DEBUG, 'Connection open: IP {} ({}) - connect_time: {:0.17f}'
                         .format(self.__address, self.__target.fqdn, self.__connect_time))
 
         if self.__debuglevel:
@@ -601,7 +601,7 @@ class Connection(object):
                 raise HcpsdkError(str(e))
             else:
                 self.__service_time1 = self.__service_time2 = time.time() - s_t
-                self.logger.log(logging.DEBUG, '{} Request for {} - service_time1 = {}'
+                self.logger.log(logging.DEBUG, '{} Request for {} - service_time1&2 = {:0.17f}'
                                 .format(method, url, self.__service_time1))
 
                 try:
@@ -637,6 +637,9 @@ class Connection(object):
                                                  .format(retries, url))
                 except Exception as e:
                     self.logger.exception(str(e))
+                else:
+                    self.logger.log(logging.DEBUG, '{} Request for {} - after getResponse(): service_time2 = {:0.17f}'
+                                    .format(method, url, self.__service_time2))
 
             self._set_idletimer()
             return self._response
@@ -726,9 +729,9 @@ class Connection(object):
             self.logger.log(logging.DEBUG, msg)
             raise HcpsdkError(msg)
         else:
-            self.logger.log(logging.DEBUG, '(partial?) read: service_time1 = {} secs'
-                            .format(self.__service_time1))
             self.__service_time2 += self.__service_time1
+            self.logger.log(logging.DEBUG, '(partial?) read: service_time1/2 = {:0.17f}/{:0.17f} secs'
+                            .format(self.__service_time1, self.__service_time2))
             return buf
 
     def __getattr__(self, item):

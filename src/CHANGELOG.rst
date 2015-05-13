@@ -1,6 +1,30 @@
 Release History
 ===============
 
+**0.9.2-25 2015-05-13**
+
+*   Added:
+
+    One more debug message right after getResponse()
+
+**0.9.2-24 2015-05-13**
+
+*   Fixed:
+
+    Added output of service_time2 to debug messages
+
+**0.9.2-23 2015-05-13**
+
+*   Fixed:
+
+    Output of service times in debug messages set to 17 digits
+
+**0.9.2-22 2015-05-13**
+
+*   Fixed:
+
+    Output of service times in debug messages are more precise, now
+
 **0.9.2-21 2015-03-28**
 
 *   Fixed:
