@@ -1,6 +1,14 @@
 Release History
 ===============
 
+**0.9.2-27 2015-05-19**
+
+*   Fixed:
+
+    *hcpsdk.Connection.request()* is now aware of ResponseNotReady being
+    raised during *http.client.HTTPConnection.getresponse()* and retries
+    appropriately.
+
 **0.9.2-26 2015-05-19**
 
 *   Fixed:

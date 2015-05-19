@@ -635,6 +635,26 @@ class Connection(object):
                                         .format(retries))
                         raise HcpsdkTimeoutError('HCP most likely closed the connection ({} retries) - {}'
                                                  .format(retries, url))
+                except http.client.ResponseNotReady as e:
+                    """
+                    If this gets raised, the underlying connection seems to be in a state where
+                    it can't handle a new request, yet.
+                    We'll try it with the same approach as with the ConnectionAbortedError...
+                    """
+                    self._fail = None
+                    self.logger.debug('http.client.ResponseNotReady: {} getresponse() for {} failed ({})'
+                                      .format(method, url, e))
+                    if retries < self.__retries:
+                        retries += 1
+                        retryonfailure = True
+                        self.logger.log(logging.DEBUG, 'http.client.ResponseNotReady - retry # {}'.format(retries))
+                        continue
+                    else:
+                        self.logger.log(logging.DEBUG, 'http.client.ResponseNotReady ({} retries), giving up'
+                                        .format(retries))
+                        self.close()
+                        raise HcpsdkTimeoutError('http.client.ResponseNotReady (giving up after {} retries) - {}'
+                                                 .format(retries, url))
                 except Exception as e:
                     self.logger.exception(str(e))
                 else:
