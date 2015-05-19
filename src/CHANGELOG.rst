@@ -1,6 +1,13 @@
 Release History
 ===============
 
+**0.9.2-26 2015-05-19**
+
+*   Fixed:
+
+    Corrected the behaviour of the 'all' parameter in
+    hcpsdk.namespace.listaccessiblens()
+
 **0.9.2-25 2015-05-13**
 
 *   Added:

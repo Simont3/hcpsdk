@@ -101,9 +101,9 @@ class Info(object):
         # setup Target URL and apply parameters
         url = '/proc'
         if not all:
-            params = None
-        else:
             params = {'single': 'true'}
+        else:
+            params = None
 
         try:
             con = hcpsdk.Connection(self.target, debuglevel=self.debuglevel)
