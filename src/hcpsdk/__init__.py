@@ -735,6 +735,8 @@ class Connection(object):
         :return:    the requested number of bytes; fewer (or zero) bytes signal
                     end of transfer, which means that the Connection is ready
                     for another Request.
+        :raises:    HcpsdkTimeoutError in case a socket.timeout was catched,
+                    HcpsdkError in all other cases.
         """
         s_t = time.time()
         try:
@@ -744,6 +746,10 @@ class Connection(object):
             msg = 'faulty read: {}'.format(str(e))
             self.logger.log(logging.DEBUG, msg)
             raise HcpsdkError(msg)
+        except socket.timeout as e:
+            msg = 'read: {}'.format(str(e))
+            self.logger.log(logging.DEBUG, msg)
+            raise HcpsdkTimeoutError(msg)
         except (http.client.IncompleteRead, OSError) as e:
             msg = 'read error: {}'.format(str(e))
             self.logger.log(logging.DEBUG, msg)

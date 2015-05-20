@@ -1,6 +1,13 @@
 Release History
 ===============
 
+**0.9.2-28 2015-05-20**
+
+*   Fixed:
+
+    If a socket.timeout is raised in *hcpsdk.Connection.read()*, re-raise
+    it as *hcpsdk.HcpsdkTimeoutError*.
+
 **0.9.2-27 2015-05-19**
 
 *   Fixed:
