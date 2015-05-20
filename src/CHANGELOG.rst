@@ -1,6 +1,13 @@
 Release History
 ===============
 
+**0.9.2-29 2015-05-20**
+
+*   Fixed:
+
+    Proper handling of http.client.CannotSendRequest in
+    *Connection.request()*
+
 **0.9.2-28 2015-05-20**
 
 *   Fixed:

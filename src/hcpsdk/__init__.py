@@ -529,10 +529,18 @@ class Connection(object):
                 We'll try it with the same approach as with the ConnectionAbortedError...
                 """
                 self._fail = None
-                self.logger.exception('http.client.CannotSendRequest: {} Request for {} failed (retry)'
-                                      .format(method, url))
-                initialretry = True
-                continue
+                self.logger.log(logging.DEBUG, 'CannotSendRequest: {} Request for {} failed ({})'
+                                .format(method, url, e))
+                if retries < self.__retries:
+                    retries += 1
+                    initialretry = True
+                    self.logger.log(logging.DEBUG, 'CannotSendRequest - retry # {}'.format(retries))
+                    continue
+                else:
+                    self.logger.log(logging.DEBUG, 'CannotSendRequest ({} retries), giving up'
+                                    .format(retries))
+                    self.close()
+                    raise HcpsdkTimeoutError('CannotSendRequest (giving up after {} retries) - {}'.format(retries, url))
             except http.client.ResponseNotReady as e:
                 """
                 If this gets raised, the underlying connection seems to be in a state where
@@ -735,8 +743,8 @@ class Connection(object):
         :return:    the requested number of bytes; fewer (or zero) bytes signal
                     end of transfer, which means that the Connection is ready
                     for another Request.
-        :raises:    HcpsdkTimeoutError in case a socket.timeout was catched,
-                    HcpsdkError in all other cases.
+        :raises:    *HcpsdkTimeoutError* in case a socket.timeout was catched,
+                    *HcpsdkError* in all other cases.
         """
         s_t = time.time()
         try:
