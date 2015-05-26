@@ -8,6 +8,11 @@
 statistics. The **hcpsdk.Target** object must have been instantiated with a
 :term:`Namespace` :term:`FQDN`.
 
+.. Warning::
+
+    Using this class with HCP prior to version 6 will deliver partial or no
+    results when **hcpsdk.Target** is configured for the :term:`Default Namespace`.
+
 Classes
 ^^^^^^^
 

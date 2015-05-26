@@ -5,7 +5,9 @@ Release History
 
 *   Fixed:
 
-    pip installer pre-requisites
+    * pip installer pre-requisites
+    * Documentation for *hcpsdk.namespace*: added hint about HCP version
+      availability.
 
 **0.9.2-29 2015-05-20**
 
