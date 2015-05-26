@@ -20,6 +20,7 @@
 # IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
 # CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
+import sys
 from base64 import b64encode
 from hashlib import md5
 # As of Python 3.4.3, http.client.HTTPSconnection() will default to verify
@@ -39,7 +40,15 @@ from threading import Timer
 
 # noinspection PyProtectedMember
 from .version import _Version
-from . import ips
+
+# If we install using pip, we run into an error if we don't have
+# dnspython3 installed; that's why we accept the ImportError here.
+try:
+    from . import ips
+except ImportError as e:
+    print('ImportError: {} - install dnspython3'.format(e),
+          file=sys.stderr)
+
 from . import namespace
 from . import mapi
 from . import pathbuilder
