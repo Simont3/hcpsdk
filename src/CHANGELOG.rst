@@ -1,6 +1,12 @@
 Release History
 ===============
 
+**0.9.2-31 2015-05-26**
+
+*   Fixed:
+
+    * pip installer pre-requisites
+
 **0.9.2-30 2015-05-24**
 
 *   Fixed:
