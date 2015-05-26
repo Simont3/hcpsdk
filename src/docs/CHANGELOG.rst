@@ -1,6 +1,66 @@
 Release History
 ===============
 
+**0.9.2-30 2015-05-26**
+
+*   Fixed:
+
+    Documentation for *hcpsdk.namespace*: added hint about HCP version
+    availability.
+
+**0.9.2-29 2015-05-20**
+
+*   Fixed:
+
+    Proper handling of http.client.CannotSendRequest in
+    *Connection.request()*
+
+**0.9.2-28 2015-05-20**
+
+*   Fixed:
+
+    If a socket.timeout is raised in *hcpsdk.Connection.read()*, re-raise
+    it as *hcpsdk.HcpsdkTimeoutError*.
+
+**0.9.2-27 2015-05-19**
+
+*   Fixed:
+
+    *hcpsdk.Connection.request()* is now aware of ResponseNotReady being
+    raised during *http.client.HTTPConnection.getresponse()* and retries
+    appropriately.
+
+**0.9.2-26 2015-05-19**
+
+*   Fixed:
+
+    Corrected the behaviour of the 'all' parameter in
+    hcpsdk.namespace.listaccessiblens()
+
+**0.9.2-25 2015-05-13**
+
+*   Added:
+
+    One more debug message right after getResponse()
+
+**0.9.2-24 2015-05-13**
+
+*   Fixed:
+
+    Added output of service_time2 to debug messages
+
+**0.9.2-23 2015-05-13**
+
+*   Fixed:
+
+    Output of service times in debug messages set to 17 digits
+
+**0.9.2-22 2015-05-13**
+
+*   Fixed:
+
+    Output of service times in debug messages are more precise, now
+
 **0.9.2-21 2015-03-28**
 
 *   Fixed:
