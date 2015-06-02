@@ -483,7 +483,7 @@ class Connection(object):
                     raise __e('test case')
                 ####################
 
-                self.logger.log(logging.DEBUG, '{} About to request for {}'
+                self.logger.log(logging.DEBUG, '{}: About to request for {}'
                                 .format(method, url))
                 s_t = time.time()
                 self.__con.request(method, url, body=body, headers=headers)
@@ -580,7 +580,7 @@ class Connection(object):
                 self.logger.log(logging.DEBUG, 'ssl.SSLError: {}'.format(str(e)))
                 self.close()
                 raise HcpsdkCertificateError(str(e))
-            except (TimeoutError, socket.timeout) as e:
+            except (TimeoutError, socket.timeout, BrokenPipeError) as e:
                 """
                 We will retry in this case (if retries have been asked for). If we fail
                 we close the underlying connection.
@@ -623,7 +623,7 @@ class Connection(object):
 
                 try:
                     self._response = self.__con.getresponse()
-                except (TimeoutError, socket.timeout) as e:
+                except (TimeoutError, socket.timeout, BrokenPipeError) as e:
                     if retries < self.__retries:
                         retries += 1
                         self.logger.log(logging.DEBUG, 'TimeoutError while getting response - retry # {}'
@@ -673,7 +673,7 @@ class Connection(object):
                         raise HcpsdkTimeoutError('http.client.ResponseNotReady (giving up after {} retries) - {}'
                                                  .format(retries, url))
                 except Exception as e:
-                    self.logger.exception(str(e))
+                    self.logger.exception('Exception not catched in hcpsdk.__init__: {}'.format(str(e)))
                 else:
                     self.logger.log(logging.DEBUG, '{} Request for {} - after getResponse(): service_time2 = {:0.17f}'
                                     .format(method, url, self.__service_time2))

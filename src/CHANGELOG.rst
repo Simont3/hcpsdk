@@ -1,6 +1,13 @@
 Release History
 ===============
 
+**0.9.2-32 2015-06-02**
+
+*   Added:
+
+    * Now catching BrokenPipeError during *hcpsdk.Connection.request()*,
+      leading to as many retries as requested for the connection.
+
 **0.9.2-31 2015-05-26**
 
 *   Fixed:
