@@ -1,6 +1,13 @@
 Release History
 ===============
 
+**0.9.2-35 2015-06-23**
+
+*   Changed:
+
+    * Removed some of the annoying debug messages stating idleTimer
+      stopped/started
+
 **0.9.2-34 2015-06-23**
 
 *   Added:

@@ -379,7 +379,7 @@ class Connection(object):
         self._cancel_idletimer()  # as a prevention, cancel a running timer
         self.idletimer = Timer(self.__idletime, self.__cancel_idletimer)
         self.idletimer.start()
-        self.logger.log(logging.DEBUG, 'idletimer started: {}'.format(self.idletimer))
+        # self.logger.log(logging.DEBUG, 'idletimer started: {}'.format(self.idletimer))
 
     def _cancel_idletimer(self):
         """
@@ -387,11 +387,11 @@ class Connection(object):
         """
         if self.idletimer:
             self.idletimer.cancel()
-            self.logger.log(logging.DEBUG, 'idletimer canceled: {}'.format(self.idletimer))
+            # self.logger.log(logging.DEBUG, 'idletimer canceled: {}'.format(self.idletimer))
             self.idletimer = None
-        else:
-            self.logger.log(logging.DEBUG,
-                            'tried to cancel a non-existing idletimer (pretty OK)'.format(self.idletimer))
+        # else:
+        #     self.logger.log(logging.DEBUG,
+        #                     'tried to cancel a non-existing idletimer (pretty OK)'.format(self.idletimer))
 
     def __cancel_idletimer(self):
         """
