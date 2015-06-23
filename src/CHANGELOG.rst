@@ -1,6 +1,13 @@
 Release History
 ===============
 
+**0.9.2-33 2015-06-23**
+
+*   Added:
+
+    * Now showing the number of bytes read in debug output in
+      *hcpsdk.Connection.read()*
+
 **0.9.2-32 2015-06-02**
 
 *   Added:

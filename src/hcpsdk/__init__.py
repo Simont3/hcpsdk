@@ -148,6 +148,7 @@ class BaseAuthorization(object):
 
         :return:    a dict holding the necessary headers
         """
+        return self.headers
 
     def _refreshauthorization(self):
         """
@@ -161,7 +162,7 @@ class BaseAuthorization(object):
         :return:    a dict holding the necessary headers
         :raises:    HcpsdkError
         """
-        pass
+        return self.headers
 
     def _getheaders(self):
         """
@@ -247,10 +248,14 @@ class Target(object):
         self.__sslcontext = sslcontext
         self.__headers = {'Host': self.__fqdn}
         self.__port = port
-        if self.__port in SSL_PORTS:
-            self.__ssl = True
-        else:
-            self.__ssl = False
+        self.__ssl = self.__port in SSL_PORTS
+
+        # TODO: remove after test
+        # if self.__port in SSL_PORTS:
+        #     self.__ssl = True
+        # else:
+        #     self.__ssl = False
+
         self.interface = interface
         self.replica = None  # placeholder for a replica's *Target* object
         self.replica_strategy = replica_strategy
@@ -773,8 +778,13 @@ class Connection(object):
             raise HcpsdkError(msg)
         else:
             self.__service_time2 += self.__service_time1
-            self.logger.log(logging.DEBUG, '(partial?) read: service_time1/2 = {:0.17f}/{:0.17f} secs'
-                            .format(self.__service_time1, self.__service_time2))
+            readsize = len(buf)
+            if readsize:
+                self.logger.log(logging.DEBUG, '(partial?) read {} bytes: service_time1/2 = {:0.17f}/{:0.17f} secs'
+                                .format(readsize. self.__service_time1, self.__service_time2))
+            else:
+                self.logger.log(logging.DEBUG, 'final read: service_time1/2 = {:0.17f}/{:0.17f} secs'
+                                .format(self.__service_time1, self.__service_time2))
             return buf
 
     def __getattr__(self, item):
