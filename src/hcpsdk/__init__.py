@@ -781,7 +781,7 @@ class Connection(object):
             readsize = len(buf)
             if readsize:
                 self.logger.log(logging.DEBUG, '(partial?) read {} bytes: service_time1/2 = {:0.17f}/{:0.17f} secs'
-                                .format(readsize. self.__service_time1, self.__service_time2))
+                                .format(readsize, self.__service_time1, self.__service_time2))
             else:
                 self.logger.log(logging.DEBUG, 'final read: service_time1/2 = {:0.17f}/{:0.17f} secs'
                                 .format(self.__service_time1, self.__service_time2))
