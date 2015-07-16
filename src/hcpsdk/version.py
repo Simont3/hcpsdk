@@ -28,7 +28,7 @@ class _Version(object):
     release = 0
     major = 9
     minor = 2
-    build = 35
+    build = 36
 
     fullversion = '{}.{}.{}-{}'.format(release, major, minor, build)
 

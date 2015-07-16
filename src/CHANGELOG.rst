@@ -1,6 +1,13 @@
 Release History
 ===============
 
+**0.9.2-36 2015-07-15**
+
+*   Changed:
+
+    * Disabled character '+' as save when urlencoding parameters in
+      *hcpsdk.Connection.request()*
+
 **0.9.2-35 2015-06-23**
 
 *   Changed:
