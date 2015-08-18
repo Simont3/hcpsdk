@@ -1,6 +1,19 @@
 Release History
 ===============
 
+**0.9.2-37 2015-08-18**
+
+*   Changed:
+
+    * Handle OSError by retry-ing the call in
+      *hcpsdk.Connection.request()*
+    * *Connection.close()* now clears the underlying socket
+      reference
+    * *Connection.close()* no more generates debug message if the
+      connection wasn't open.
+    * repr(*hcpsdk.Target*) and repr(*hcpsdk.Connection*) now returns
+      the memory address of the respecive object for debug purposes.
+
 **0.9.2-36 2015-07-15**
 
 *   Changed:

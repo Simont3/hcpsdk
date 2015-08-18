@@ -316,6 +316,9 @@ class Target(object):
         else:
             raise AttributeError
 
+    def __repr__(self):
+        return "<{} class at {}>".format(Target.__name__, id(self))
+
     def __str__(self):
         return "<{} class initialized for {}>".format(Target.__name__, self.__fqdn)
 
@@ -639,8 +642,9 @@ class Connection(object):
                                         .format(retries))
                         self.close()
                         raise HcpsdkTimeoutError('Timeout ({} retries) - {}'.format(retries, url))
-                except http.client.BadStatusLine as e:
+                except (OSError, http.client.BadStatusLine) as e:
                     # BadStatusLine most likely means that HCP has closed the connection.
+                    # Same for OSError 9
                     # ('HTTP Persistent Connection Timeout Interval' < Connection.timeout)
                     # So, we close the connection here and trigger a retry...
                     self.close()
@@ -648,15 +652,15 @@ class Connection(object):
                         retries += 1
                         retryonfailure = True
                         self.logger.log(logging.DEBUG,
-                                        'HCP most likely closed the connection - retry # {}'
-                                        .format(retries))
+                                        'HCP most likely closed the connection ({}) - retry # {}'
+                                        .format(str(e), retries))
                         continue
                     else:
                         self.logger.log(logging.DEBUG,
-                                        'HCP most likely closed the connection ({} retries, giving up)'
-                                        .format(retries))
-                        raise HcpsdkTimeoutError('HCP most likely closed the connection ({} retries) - {}'
-                                                 .format(retries, url))
+                                        'HCP most likely closed the connection ({} - {} retries, giving up)'
+                                        .format(str(e), retries))
+                        raise HcpsdkTimeoutError('HCP most likely closed the connection ({} - {} retries) - {}'
+                                                 .format(str(e), retries, url))
                 except http.client.ResponseNotReady as e:
                     """
                     If this gets raised, the underlying connection seems to be in a state where
@@ -832,12 +836,16 @@ class Connection(object):
             try:
                 self._cancel_idletimer()
                 self.__con.close()
+                self.__con = None
+                self.logger.log(logging.DEBUG, 'Connection object closed: IP {} ({})'
+                                .format(self.__address, self.__target.fqdn))
             except Exception as e:
                 self.logger.exception('Connection object close failed: IP {} ({})'
                                 .format(self.__address, self.__target.fqdn))
 
-        self.logger.log(logging.DEBUG, 'Connection object closed: IP {} ({})'
-                        .format(self.__address, self.__target.fqdn))
+
+    def __repr__(self):
+        return "<{} class at {}>".format(Connection.__name__, id(self))
 
     def __str__(self):
         return ("<{} class initialized for fqdn {} @ {}>".format(Connection.__name__,
