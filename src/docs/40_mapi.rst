@@ -10,6 +10,8 @@
 Classes
 ^^^^^^^
 
+.. _hcpsdk_mapi_replication:
+
 .. autoclass:: Replication
 
    **Class constants:**

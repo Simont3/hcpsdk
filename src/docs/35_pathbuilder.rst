@@ -42,6 +42,8 @@ Benefits are:
 Classes
 -------
 
+.. _hcpsdk_pathbuilder_pathbuilder:
+
 .. automodule:: hcpsdk.pathbuilder
    :synopsis: Create an unique object name path
    :members:

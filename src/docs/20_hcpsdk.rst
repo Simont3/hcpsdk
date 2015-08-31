@@ -50,6 +50,8 @@ Classes
 .. autoclass:: DummyAuthorization
    :members:
 
+.. _hcpsdk_target:
+
 .. autoclass:: Target
    :members:
 
@@ -106,6 +108,8 @@ Classes
       The replica Target, if available (an *hcpsdk.Target* object or None).
 
    **Class methods:**
+
+.. _hcpsdk_connection:
 
 .. autoclass:: Connection
    :members:

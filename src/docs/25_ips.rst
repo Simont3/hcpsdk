@@ -10,6 +10,8 @@ Used by *hcpsdk* internally; exposed here as it might be useful alone.
 Classes
 ^^^^^^^
 
+.. _hcpsdk_ips_circle:
+
 .. autoclass:: Circle
    :members:
 

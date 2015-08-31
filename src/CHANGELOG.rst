@@ -1,6 +1,12 @@
 Release History
 ===============
 
+**0.9.2-38 2015-08-31**
+
+*   Added:
+
+    * Added documentation about thread-safety.
+
 **0.9.2-37 2015-08-18**
 
 *   Changed:

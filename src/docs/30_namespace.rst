@@ -16,6 +16,8 @@ statistics. The **hcpsdk.Target** object must have been instantiated with a
 Classes
 ^^^^^^^
 
+.. _hcpsdk_namespace_info:
+
 .. autoclass:: Info
 
    .. automethod:: nsstatistics
