@@ -236,8 +236,8 @@ class Target(object):
         :param sslcontext:          the context used to handle https requests; defaults to
                                     no certificate verification
         :param interface:           the HCP interface to use (I_NATIVE)
-        :param replica_fqdn:        the replica HCP's FQDN (not yet implemented)
-        :param replica_strategy:    ORed combination of the RS_* modes
+        :param replica_fqdn:        the replica HCP's FQDN
+        :param replica_strategy:    OR'ed combination of the RS_* modes
         :raises:                    *ips.IpsError* if DNS query fails, *HcpsdkError* in all
                                     other fault cases
         """
@@ -249,12 +249,6 @@ class Target(object):
         self.__headers = {'Host': self.__fqdn}
         self.__port = port
         self.__ssl = self.__port in SSL_PORTS
-
-        # TODO: remove after test
-        # if self.__port in SSL_PORTS:
-        #     self.__ssl = True
-        # else:
-        #     self.__ssl = False
 
         self.interface = interface
         self.replica = None  # placeholder for a replica's *Target* object

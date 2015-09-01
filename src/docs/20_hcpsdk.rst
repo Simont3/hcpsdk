@@ -1,5 +1,5 @@
 :mod:`hcpsdk` --- object access
-============================================
+===============================
 
 .. automodule:: hcpsdk
    :synopsis: Framework for HCP access.

@@ -14,6 +14,7 @@ Contents:
     15_state_of_implementation
     17_installation
     18_threadsafety
+    19_replication
     20_hcpsdk
     22_https
     25_ips

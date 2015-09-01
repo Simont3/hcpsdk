@@ -1,6 +1,12 @@
 Release History
 ===============
 
+**0.9.3-0 2015-09-01**
+
+*   Added:
+
+    * Support for replication target HCP
+
 **0.9.2-38 2015-08-31**
 
 *   Added:
