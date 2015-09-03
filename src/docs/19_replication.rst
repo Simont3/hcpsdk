@@ -1,5 +1,5 @@
-Working with replicated HCP systems
-===================================
+Replicated HCP systems
+======================
 
 HCP features replication of ingested objects to one or more other HCP
 systems:

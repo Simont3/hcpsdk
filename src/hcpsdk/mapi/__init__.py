@@ -20,15 +20,68 @@
 # IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
 # CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
+from datetime import date
 import xml.etree.ElementTree as Et
 import logging
 
 import hcpsdk
 
 
-__all__ = ['ReplicationSettingsError', 'Replication']
+__all__ = ['Logs', 'ReplicationSettingsError', 'Replication']
 
 logging.getLogger('hcpsdk.mapi').addHandler(logging.NullHandler())
+
+
+class Logs(object):
+    """
+    Access to HCP internal logfiles (ACCESS, SYSTEM, SERVICE, APPLICATION)
+    """
+
+    L_ACCESS = 'ACCESS' # http access logs
+    L_SYSTEM = 'SYSTEM' #
+    L_SERVICE = 'SERVICE' #
+    L_APPLICATION = 'APPLICATION' #
+
+    def __init__(self, target, debuglevel=0):
+        """
+        :param target:      an hcpsdk.Target object
+        :param debuglevel:  0..9 (used in *http.client*)
+        """
+        self.target = target
+        self.debuglevel = debuglevel
+        self.connect_time = 0.0
+        self.service_time = 0.0
+        self.logger = logging.getLogger('hcpsdk.mapi.Logs')
+
+    def prepare(self, startdate=None, enddate=None, snodes=[]):
+        """
+        :param startdate:   1st day to collect (as a *datetime.date* object)
+        :param enddate:     last day to collect (as a *datetime.date* object)
+        :param snodes:      list of S-series nodes to collect from
+        """
+        self.startdate = startdate or date(1970,1,1)
+        self.enddate = enddate or date.today()
+
+        self.logger.debug('preparing logs for {}/{}/{} to {}/{}/{}'
+                          .format(self.startdate.year, self.startdate.month,
+                                  self.startdate.day, self.enddate.year,
+                                  self.enddate.month, self.enddate.day))
+
+        # Here we will call HCP to prepare the logs
+        prepare_xml = '<logPrepare>\n' \
+                      '  <startDate>{:02}/{:02}/{:04}</startDate>\n' \
+                      '  <endDate>{:02}/{:02}/{:04}</endDate>\n' \
+                      '  <snodes>{}</snodes>\n' \
+                      '</logPrepare>\n'\
+                        .format(self.startdate.month, self.startdate.day,
+                                self.startdate.year, self.enddate.month,
+                                self.enddate.day, self.enddate.year,
+                                ','.join(snodes))
+
+        return(self.startdate, self.enddate, prepare_xml)
+
+
+
 
 
 class ReplicationSettingsError(Exception):
@@ -69,7 +122,7 @@ class Replication(object):
         self.debuglevel = debuglevel
         self.connect_time = 0.0
         self.service_time = 0.0
-        self.logger = logging.getLogger('hcpsdk.ips.Circle')
+        self.logger = logging.getLogger('hcpsdk.mapi.Replication')
 
     def getreplicationsettings(self):
         """
