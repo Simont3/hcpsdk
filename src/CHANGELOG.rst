@@ -5,7 +5,12 @@ Release History
 
 *   Added:
 
-    * Support for replication target HCP
+    * Added log download support to the mapi module
+    * (Support for replication target HCP)
+
+*   Changed:
+
+    * Corrected the documentation built for Exceptions
 
 **0.9.2-38 2015-08-31**
 

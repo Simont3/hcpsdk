@@ -65,48 +65,80 @@ version = _Version()
 
 class HcpsdkError(Exception):
     """
-    Subclasses that define an __init__ must call Exception.__init__
-    or define self.args.  Otherwise, str() will fail.
+    Raised on generic errors in **hcpsdk**.
     """
     def __init__(self, reason):
-        self.args = reason,
-        self.reason = reason
+        """
+        :param reason:  an error description
+        """
+        self.args = (reason,)
 
 
 class HcpsdkCantConnectError(HcpsdkError):
     """
-    Raised if we can't connect to the HCP node
+    Raised if a connection couldn't be established.
     """
     def __init__(self, reason):
-        self.args = reason,
-        self.reason = reason
+        """
+        :param reason:  an error description
+        """
+        self.args = (reason,)
 
 
 class HcpsdkTimeoutError(HcpsdkError):
     """
-    Raised if we have a timeout
+    Raised if a Connection timed out.
     """
     def __init__(self, reason):
-        self.args = reason,
-        self.reason = reason
+        """
+        :param reason:  an error description
+        """
+        self.args = (reason,)
 
 
 class HcpsdkCertificateError(HcpsdkError):
     """
-    Raised if we can't verify against the presented ssl certificate
+    Raised if the *SSL context* doesn't verify a certificate
+    presented by HCP.
     """
     def __init__(self, reason):
-        self.args = reason,
-        self.reason = reason
+        """
+        :param reason:  an error description
+        """
+        self.args = (reason,)
 
 
 class HcpsdkReplicaInitError(HcpsdkError):
     """
-    Raised if we can't setup the internal *Target* for the replica HCP
+    Raised if the setup of the internal *Target* for the replica HCP failed
+    (typically, this is a name resolution problem). **If
+    this exception is raised, the primary Target's init failed, too.**
+    You'll need to retry!
     """
     def __init__(self, reason):
-        self.args = reason,
-        self.reason = reason
+        """
+        :param reason:  an error description
+        """
+        self.args = (reason,)
+
+
+class HcpsdkPortError(HcpsdkError):
+    """
+    Raised if the Target is initialized with an invalid port.
+    """
+    def __init__(self, reason):
+        """
+        :param reason:  an error description
+        """
+        self.args = (reason,)
+
+# Port constants
+P_HTTP = 80
+P_HTTPS = 443
+P_MGMT = 8000
+P_SEARCH = 8888
+P_MAPI = 9090
+
 
 # Interface constants
 I_DUMMY = 'I_DUMMY'
@@ -845,4 +877,21 @@ class Connection(object):
         return ("<{} class initialized for fqdn {} @ {}>".format(Connection.__name__,
                                                                  self.__target.fqdn,
                                                                  self.__address))
+
+
+# helper functions
+def checkport(target, port):
+    """
+    Check if an *hcpsdk.Target()* object is initialized with the correct port.
+
+    :param target:  the *hcpsdk.Target()* object to check
+    :param port:    the needed port
+    :returns:       nothing
+    :raises:        *hcpsdk.HcpsdkPortError* in case the port is invalid
+    """
+    logger = logging.getLogger(__name__ )
+
+    if target.port != port:
+        raise HcpsdkPortError('Target initialized for port {}, not {}'
+                              .format(target.port, port))
 

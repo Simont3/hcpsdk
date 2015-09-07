@@ -36,12 +36,14 @@ logging.getLogger('hcpsdk.ips').addHandler(logging.NullHandler())
 
 class IpsError(Exception):
     """
-    Signal an error in 'ips' - typically a name resolution problem.
+    Signal an error in *hcpsdk.ips* - typically a name resolution problem.
     """
 
     def __init__(self, reason):
-        self.args = reason,
-        self.reason = reason
+        """
+        :param reason:  an error description
+        """
+        self.args = (reason,)
 
 
 # noinspection PyTypeChecker

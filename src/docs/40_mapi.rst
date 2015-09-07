@@ -6,10 +6,10 @@
 
 **hcpsdk.mapi** provides access to selected :term:`MAPI` functions.
 
-.. Tip::
-
-   HCP needs to have the Management API (MAPI) enabled to make use
+*  HCP needs to have the Management API (MAPI) enabled to make use
    of the classes in this module.
+*  The *hcpsdk.Target()* object used needs to be initialized with
+   *port=hcpsdk.P_MAPI*.
 
 
 Classes
@@ -18,6 +18,11 @@ Classes
 .. _hcpsdk_mapi_logs:
 
 .. autoclass:: Logs
+
+   .. Note::
+
+      To be able to use this class, HCP needs to run at least
+      **version 7.2**.
 
    **Class constants:**
 
@@ -55,21 +60,14 @@ Classes
 
    .. automethod:: prepare
 
-      .. attribute:: returned dictionary (example):
-
-         ::
-
-            {'allowTenantsToMonitorNamespaces': 'true',
-             'enableDNSFailover': 'true',
-             'enableDomainAndCertificateSynchronization': 'true',
-             'network': '[hcp_system]'}
-
-
-
-
 .. _hcpsdk_mapi_replication:
 
 .. autoclass:: Replication
+
+   .. Note::
+
+      To be able to use this class, HCP needs to run at least
+      **version 7.0**.
 
    **Class constants:**
 
@@ -185,10 +183,6 @@ Exceptions
 ^^^^^^^^^^
 
 .. autoexception:: ReplicationSettingsError
-
-   .. attribute:: reason
-
-      An error description.
 
 
 Example

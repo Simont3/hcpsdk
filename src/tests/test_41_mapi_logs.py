@@ -30,11 +30,6 @@ import init_tests as it
 
 class TestHcpsdk_41_1_Mapi_Logs(unittest.TestCase):
     def setUp(self):
-        # self.T_NS_GOOD = "admin.hcp1.snomis.local"
-        # self.T_USER = "service"
-        # self.T_PASSWORD = "service01"
-        # self.T_AUTH = hcpsdk.NativeAuthorization(self.T_USER, self.T_PASSWORD)
-        # self.T_PORT = 9090
         self.hcptarget = hcpsdk.Target(it.P_ADMIN, it.P_ADMAUTH,
                                        port=it.P_MAPIPORT, dnscache=it.P_DNSCACHE)
         self.logs = hcpsdk.mapi.Logs(self.hcptarget)
@@ -49,7 +44,7 @@ class TestHcpsdk_41_1_Mapi_Logs(unittest.TestCase):
         """
         print('test_1_10_logs_prepare:')
         l = self.logs.prepare()
-        pprint(l)
+        pprint(l, indent=4)
         self.assertTrue(l[0] == date(1970,1,1))
         self.assertTrue(l[1] == date.today())
 
@@ -61,5 +56,25 @@ class TestHcpsdk_41_1_Mapi_Logs(unittest.TestCase):
         l = self.logs.prepare(startdate=date.today() - timedelta(days=10),
                               enddate=date.today() - timedelta(days=1),
                               snodes=['s01','s02','s03'])
-        pprint(l)
+        pprint(l, indent=4)
         self.assertTrue(l[1] - l[0] == timedelta(days=9))
+
+    def test_1_12_logs_prepare(self):
+        """
+        Test if ValueError is raised on false paramaters
+        """
+        print('test_1_12_logs_prepare:')
+        with self.assertRaises(ValueError):
+             l = self.logs.prepare(startdate='10/10/2014',
+                                   enddate='12/31/2099')
+        print('\tstartdate: pass')
+        with self.assertRaises(ValueError):
+             l = self.logs.prepare(startdate=date.today()-timedelta(days=10),
+                                   enddate='12/31/2099')
+        print('\tenddate: pass')
+        with self.assertRaises(ValueError):
+             l = self.logs.prepare(startdate=date.today()-timedelta(days=10),
+                                   enddate=date.today() - timedelta(days=1),
+                                   snodes=('s01','s02','s03'))
+        print('\tsnodes: pass')
+

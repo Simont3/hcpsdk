@@ -46,39 +46,61 @@ class Logs(object):
         """
         :param target:      an hcpsdk.Target object
         :param debuglevel:  0..9 (used in *http.client*)
+        :raises:            *hcpsdk.HcpsdkPortError* in case *target* is
+                            initialized with an incorrect port for use by
+                            this class.
         """
+        hcpsdk.checkport(target, hcpsdk.P_MAPI)
         self.target = target
         self.debuglevel = debuglevel
         self.connect_time = 0.0
         self.service_time = 0.0
         self.logger = logging.getLogger('hcpsdk.mapi.Logs')
+        self.prepare_xml = None
+
+        try:
+            con = hcpsdk.Connection(self.target, debuglevel=self.debuglevel)
+        except Exception as e:
+            raise hcpsdk.HcpsdkError(str(e))
+
 
     def prepare(self, startdate=None, enddate=None, snodes=[]):
         """
         :param startdate:   1st day to collect (as a *datetime.date* object)
         :param enddate:     last day to collect (as a *datetime.date* object)
         :param snodes:      list of S-series nodes to collect from
+        :returns:           (datetime.date(startdate), datetime.date(enddate),
+                            str(prepared XML))
+        :raises:            ValueError
         """
-        self.startdate = startdate or date(1970,1,1)
-        self.enddate = enddate or date.today()
+        if startdate and type(startdate) != date:
+            raise ValueError('startdate not of type(datetime.date)')
+        else:
+            self.startdate = startdate or date(1970,1,1)
+        if enddate and type(enddate) != date:
+            raise ValueError('enddate not of type(datetime.date)')
+        else:
+            self.enddate = enddate or date.today()
+        if type(snodes) != list:
+            raise ValueError('snodes not of type(list)')
 
         self.logger.debug('preparing logs for {}/{}/{} to {}/{}/{}'
                           .format(self.startdate.year, self.startdate.month,
                                   self.startdate.day, self.enddate.year,
                                   self.enddate.month, self.enddate.day))
 
-        # Here we will call HCP to prepare the logs
-        prepare_xml = '<logPrepare>\n' \
-                      '  <startDate>{:02}/{:02}/{:04}</startDate>\n' \
-                      '  <endDate>{:02}/{:02}/{:04}</endDate>\n' \
-                      '  <snodes>{}</snodes>\n' \
-                      '</logPrepare>\n'\
-                        .format(self.startdate.month, self.startdate.day,
-                                self.startdate.year, self.enddate.month,
-                                self.enddate.day, self.enddate.year,
-                                ','.join(snodes))
+        # Prepare the XML command file
+        self.prepare_xml = '<logPrepare>\n' \
+                           '  <startDate>{:02}/{:02}/{:04}</startDate>\n' \
+                           '  <endDate>{:02}/{:02}/{:04}</endDate>\n' \
+                           '  <snodes>{}</snodes>\n' \
+                           '</logPrepare>\n'\
+                            .format(self.startdate.month, self.startdate.day,
+                                    self.startdate.year, self.enddate.month,
+                                    self.enddate.day, self.enddate.year,
+                                    ','.join(snodes))
 
-        return(self.startdate, self.enddate, prepare_xml)
+        return(self.startdate, self.enddate, self.prepare_xml)
 
 
 
@@ -92,8 +114,10 @@ class ReplicationSettingsError(Exception):
     """
 
     def __init__(self, reason):
-        self.args = reason,
-        self.reason = reason
+        """
+        :param reason: An error description
+        """
+        self.args = (reason,)
 
 
 class Replication(object):
@@ -118,6 +142,7 @@ class Replication(object):
         :param target:      an hcpsdk.Target object
         :param debuglevel:  0..9 (used in *http.client*)
         """
+        hcpsdk.checkport(target, hcpsdk.P_MAPI)
         self.target = target
         self.debuglevel = debuglevel
         self.connect_time = 0.0

@@ -33,11 +33,15 @@ logging.getLogger('hcpsdk.pathbuilder').addHandler(logging.NullHandler())
 
 
 class PathBuilderError(Exception):
-    # Subclasses that define an __init__ must call Exception.__init__
-    # or define self.args.  Otherwise, str() will fail.
+    """
+    Used to signal an error during unique object name generation or object
+    name to path mapping.
+    """
     def __init__(self, reason):
-        self.args = reason,
-        self.reason = reason
+        """
+        :param reason:  an error description
+        """
+        self.args = (reason,)
 
 
 class PathBuilder(object):
