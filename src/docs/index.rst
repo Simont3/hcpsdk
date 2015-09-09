@@ -20,7 +20,7 @@ Contents:
     25_ips
     30_namespace
     35_pathbuilder
-    40_mapi
+    40-0_mapi
     80_examples/examples
     98_license
     99_about

@@ -22,6 +22,7 @@
 
 from datetime import date
 import xml.etree.ElementTree as Et
+from collections import OrderedDict
 import logging
 
 import hcpsdk
@@ -30,6 +31,19 @@ import hcpsdk
 __all__ = ['Logs', 'ReplicationSettingsError', 'Replication']
 
 logging.getLogger('hcpsdk.mapi').addHandler(logging.NullHandler())
+
+
+class LogsNotReadyError(Exception):
+    """
+    Raised by *Logs.download()* in case there are no logs ready to be
+    downloaded.
+    """
+
+    def __init__(self, reason):
+        """
+        :param reason: An error description
+        """
+        self.args = (reason,)
 
 
 class Logs(object):
@@ -66,12 +80,15 @@ class Logs(object):
 
     def prepare(self, startdate=None, enddate=None, snodes=[]):
         """
+        Command HCP to prepare logs from *startdate* to *enddate* for
+        later download.
+
         :param startdate:   1st day to collect (as a *datetime.date* object)
         :param enddate:     last day to collect (as a *datetime.date* object)
         :param snodes:      list of S-series nodes to collect from
         :returns:           (datetime.date(startdate), datetime.date(enddate),
                             str(prepared XML))
-        :raises:            ValueError
+        :raises:            *ValueError* or one of the
         """
         if startdate and type(startdate) != date:
             raise ValueError('startdate not of type(datetime.date)')
@@ -101,6 +118,55 @@ class Logs(object):
                                     ','.join(snodes))
 
         return(self.startdate, self.enddate, self.prepare_xml)
+
+    def status(self):
+        """
+        Query HCP for the status of the request log download.
+
+        :returns:   a *collection.OrderedDict*:
+                    ::
+
+                        {
+                         readyForStreaming: bool,
+                         streamingInProgress: bool,
+                         started: bool,
+                         error: bool,
+                         content: list # one or more of: L_ACCESS, L_SYSTEM,
+                                       # L_SERVICE, L_APPLICATION)
+                        }
+        """
+        self.logger.debug('status query issued')
+
+        # Test code:
+
+        # request to HCP goes here, we'll receive a XML structure:
+        xml = '<logDownloadStatus>' \
+              '    <readyForStreaming>true</readyForStreaming>' \
+              '    <streamingInProgress>false</streamingInProgress>' \
+              '    <started>true</started> <error>false</error>' \
+              '    <content>ACCESS,SYSTEM</content>' \
+              '</logDownloadStatus>'
+
+        stat = OrderedDict()
+        for child in Et.fromstringlist(xml):
+            if child.text == 'true':
+                stat[child.tag] = True
+            elif child.text == 'false':
+                stat[child.tag] = False
+            else:
+                stat[child.tag] = child.text.split(',')
+
+        self.logger.debug(stat)
+
+        return stat
+
+    def download(self):
+        """
+        Download the requested logs.
+
+        :returns:   an open file handle for a temporary file, positioned at
+                    byte 0 containing the downloaded (zipped) logs.
+        """
 
 
 

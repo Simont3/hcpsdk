@@ -25,6 +25,7 @@ from pprint import pprint
 
 import hcpsdk
 from datetime import date, timedelta
+from collections import OrderedDict
 import init_tests as it
 
 
@@ -77,4 +78,15 @@ class TestHcpsdk_41_1_Mapi_Logs(unittest.TestCase):
                                    enddate=date.today() - timedelta(days=1),
                                    snodes=('s01','s02','s03'))
         print('\tsnodes: pass')
+
+    def test_1_20_logs_status(self):
+        """
+        Test if we get a dict from status()
+        """
+        print('test_1_20_logs_status:')
+        l = self.logs.prepare(startdate=date.today()-timedelta(days=10),
+                              enddate=date.today() - timedelta(days=1))
+        stat = self.logs.status()
+        pprint(stat, indent=4)
+        self.assertTrue(type(stat) == OrderedDict)
 
