@@ -31,11 +31,12 @@ import init_tests as it
 
 class TestHcpsdk_41_1_Mapi_Logs(unittest.TestCase):
     def setUp(self):
-        self.hcptarget = hcpsdk.Target(it.P_ADMIN, it.P_ADMAUTH,
-                                       port=it.P_MAPIPORT, dnscache=it.P_DNSCACHE)
+        self.hcptarget = hcpsdk.Target(it.L_ADMIN, it.L_ADMAUTH,
+                                       port=it.L_MAPIPORT, dnscache=it.L_DNSCACHE)
         self.logs = hcpsdk.mapi.Logs(self.hcptarget)
 
     def tearDown(self):
+        self.logs.close()
         del self.hcptarget
 
     def test_1_10_logs_prepare(self):

@@ -1,5 +1,5 @@
-MAPI - Logfile download
-=======================
+MAPI - Log Resources
+====================
 
 .. automodule:: hcpsdk.mapi
    :synopsis: Access to selected Management API (:term:`MAPI`) functionality.
@@ -14,8 +14,8 @@ The usage pattern is this:
    *  *download()* the logs
    *  save the zip'ed logs or process them, what ever is needed.
 
-There is also a convenience function that does the first three steps for
-you.
+There is a convenience function available that does everything in a single
+step.
 
 
 Classes
@@ -67,6 +67,11 @@ Classes
    .. automethod:: prepare
 
    .. automethod:: status
+
+   .. automethod:: download
+
+   .. automethod:: close
+
 
 
 Exceptions

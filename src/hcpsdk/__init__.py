@@ -260,8 +260,7 @@ class Target(object):
         """
         :param fqdn:                ([namespace.]tenant.hcp.loc)
         :param authorization:       an instance of one of BaseAuthorization's subclasses
-        :param port:                port number (443, 8000 and 9090 are seen as ports
-                                    using ssl)
+        :param port:                one of the port constants (*hcpsdk.P_**)
         :param dnscache:            if True, use the system resolver (which **might** do
                                     local caching), else use an internal resolver,
                                     bypassing any cache available

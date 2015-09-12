@@ -73,7 +73,7 @@ class Logs(object):
         self.prepare_xml = None
 
         try:
-            con = hcpsdk.Connection(self.target, debuglevel=self.debuglevel)
+            self.con = hcpsdk.Connection(self.target, debuglevel=self.debuglevel)
         except Exception as e:
             raise hcpsdk.HcpsdkError(str(e))
 
@@ -137,28 +137,28 @@ class Logs(object):
         """
         self.logger.debug('status query issued')
 
-        # Test code:
+        try:
+            self.con.GET('/mapi/logs')
+        except Exception as e:
+            self.logger.error(e)
 
-        # request to HCP goes here, we'll receive a XML structure:
-        xml = '<logDownloadStatus>' \
-              '    <readyForStreaming>true</readyForStreaming>' \
-              '    <streamingInProgress>false</streamingInProgress>' \
-              '    <started>true</started> <error>false</error>' \
-              '    <content>ACCESS,SYSTEM</content>' \
-              '</logDownloadStatus>'
+        if self.con.response_status != 200:
+            return(None)
+        else:
+            xml = self.con.read().decode()
+            print('xml=', xml)
+            stat = OrderedDict()
+            for child in Et.fromstringlist(xml):
+                if child.text == 'true':
+                    stat[child.tag] = True
+                elif child.text == 'false':
+                    stat[child.tag] = False
+                else:
+                    stat[child.tag] = child.text.split(',')
 
-        stat = OrderedDict()
-        for child in Et.fromstringlist(xml):
-            if child.text == 'true':
-                stat[child.tag] = True
-            elif child.text == 'false':
-                stat[child.tag] = False
-            else:
-                stat[child.tag] = child.text.split(',')
+            self.logger.debug(stat)
 
-        self.logger.debug(stat)
-
-        return stat
+            return stat
 
     def download(self):
         """
@@ -167,6 +167,12 @@ class Logs(object):
         :returns:   an open file handle for a temporary file, positioned at
                     byte 0 containing the downloaded (zipped) logs.
         """
+
+    def close(self):
+        """
+        Close the used *hcpsdk.Connection()*.
+        """
+        self.con.close()
 
 
 
