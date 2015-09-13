@@ -26,6 +26,7 @@ from pprint import pprint
 import hcpsdk
 from datetime import date, timedelta
 from collections import OrderedDict
+import _io
 import init_tests as it
 
 
@@ -41,44 +42,37 @@ class TestHcpsdk_41_1_Mapi_Logs(unittest.TestCase):
 
     def test_1_10_logs_prepare(self):
         """
-        Test if the full date range is used when called w/o start- and
-        endtime.
+        Test various good/bad parameters
         """
         print('test_1_10_logs_prepare:')
+
         l = self.logs.prepare()
         pprint(l, indent=4)
         self.assertTrue(l[0] == date(1970,1,1))
         self.assertTrue(l[1] == date.today())
+        print('\tno date parameters: pass')
 
-    def test_1_11_logs_prepare(self):
-        """
-        Test if fixed start- and endtime are given.
-        """
-        print('test_1_11_logs_prepare:')
         l = self.logs.prepare(startdate=date.today() - timedelta(days=10),
                               enddate=date.today() - timedelta(days=1),
                               snodes=['s01','s02','s03'])
         pprint(l, indent=4)
         self.assertTrue(l[1] - l[0] == timedelta(days=9))
+        print('\tpast 10 days: pass')
 
-    def test_1_12_logs_prepare(self):
-        """
-        Test if ValueError is raised on false paramaters
-        """
-        print('test_1_12_logs_prepare:')
         with self.assertRaises(ValueError):
              l = self.logs.prepare(startdate='10/10/2014',
                                    enddate='12/31/2099')
-        print('\tstartdate: pass')
+        print('\t\tstartdate: pass')
         with self.assertRaises(ValueError):
              l = self.logs.prepare(startdate=date.today()-timedelta(days=10),
                                    enddate='12/31/2099')
-        print('\tenddate: pass')
+        print('\t\tenddate: pass')
         with self.assertRaises(ValueError):
              l = self.logs.prepare(startdate=date.today()-timedelta(days=10),
                                    enddate=date.today() - timedelta(days=1),
                                    snodes=('s01','s02','s03'))
-        print('\tsnodes: pass')
+        print('\t\tsnodes: pass')
+        print('\tfalse paramaters: pass')
 
     def test_1_20_logs_status(self):
         """
@@ -91,3 +85,27 @@ class TestHcpsdk_41_1_Mapi_Logs(unittest.TestCase):
         pprint(stat, indent=4)
         self.assertTrue(type(stat) == OrderedDict)
 
+    def test_1_30_logs_download(self):
+        """
+        Test if we fail when giving a none-file object to download
+        """
+        print('test_1_30_logs_download:')
+        self.logs.prepare(startdate=date.today()-timedelta(days=10),
+                          enddate=date.today() - timedelta(days=1))
+        with self.assertRaises(hcpsdk.mapi.LogsError):
+            fhdl = self.logs.download(5)
+        print('\tinvalid file parameter: pass')
+
+        #fhdl = self.logs.download()
+        self.assertTrue(type(self.logs.download()) == _io.BufferedRandom)
+        print('\tno file parameter: pass')
+
+    def test_1_40_logs_cancel(self):
+        """
+        Test if we get a dict from status()
+        """
+        print('test_1_40_logs_cancel:')
+        self.logs.prepare(startdate=date.today() - timedelta(days=10),
+                              enddate=date.today() - timedelta(days=1),
+                              snodes=['s01','s02','s03'])
+        self.assertTrue(self.logs.cancel() == True)

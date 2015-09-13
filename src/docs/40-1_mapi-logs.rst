@@ -13,6 +13,7 @@ The usage pattern is this:
    *  check the *status()* until *readyForStreaming* is True, then
    *  *download()* the logs
    *  save the zip'ed logs or process them, what ever is needed.
+   *  *close()* the underlying *Connection()* object
 
 There is a convenience function available that does everything in a single
 step.
@@ -70,12 +71,16 @@ Classes
 
    .. automethod:: download
 
+   .. automethod:: cancel
+
    .. automethod:: close
 
 
 
 Exceptions
 ^^^^^^^^^^
+
+.. autoexception:: LogsError
 
 .. autoexception:: LogsNotReadyError
 

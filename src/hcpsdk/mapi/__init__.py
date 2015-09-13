@@ -23,6 +23,8 @@
 from datetime import date
 import xml.etree.ElementTree as Et
 from collections import OrderedDict
+from tempfile import TemporaryFile
+import _io # needed to check type of file parameter in Logs.download()
 import logging
 
 import hcpsdk
@@ -33,12 +35,21 @@ __all__ = ['Logs', 'ReplicationSettingsError', 'Replication']
 logging.getLogger('hcpsdk.mapi').addHandler(logging.NullHandler())
 
 
-class LogsNotReadyError(Exception):
+class LogsError(Exception):
+    """
+    Base Exception used by the *hcpsdk.mapi.Logs()* class.
+    """
+    def __init__(self, reason):
+        """
+        :param reason: An error description
+        """
+        self.args = (reason,)
+
+class LogsNotReadyError(LogsError):
     """
     Raised by *Logs.download()* in case there are no logs ready to be
     downloaded.
     """
-
     def __init__(self, reason):
         """
         :param reason: An error description
@@ -146,7 +157,6 @@ class Logs(object):
             return(None)
         else:
             xml = self.con.read().decode()
-            print('xml=', xml)
             stat = OrderedDict()
             for child in Et.fromstringlist(xml):
                 if child.text == 'true':
@@ -160,13 +170,52 @@ class Logs(object):
 
             return stat
 
-    def download(self):
+    def download(self, file=None):
         """
         Download the requested logs.
 
-        :returns:   an open file handle for a temporary file, positioned at
-                    byte 0 containing the downloaded (zipped) logs.
+        :param file:    a filehandle open for binary read/write or *None*,
+                        in which case a (hidden) temporary file will be
+                        created
+        :returns:       the filehandle holding the received logs, positioned
+                        at byte 0.
+        :raises:        *LogsError* in case *file*'s mode isn't open for
+                        binary write
         """
+        __allowedfilemodes = ['w+b', 'r+b']
+
+        # make sure we have a file handle open for binary read/write
+        if not file:
+            self.file = TemporaryFile('w+b')
+        elif type(file) != _io.BufferedRandom:
+            raise LogsError('file must be a valid file object, not "{}"'
+                            .format(type(file)))
+        elif file.mode not in __allowedfilemodes:
+            raise LogsError('file mode must be one of {}, not "{}"'
+                            .format(__allowedfilemodes, file.mode))
+
+        return self.file
+
+    def cancel(self):
+        """
+        Cancel a log request.
+
+        :returns:   *True* if cancel was successfull
+        :raises:    *LogsError* in case the cancel failed
+        """
+        self.logger.debug('cancel log request issued')
+
+        try:
+            self.con.POST('/mapi/logs', params={'cancel': ''})
+        except Exception as e:
+            self.logger.error(e)
+            raise LogsError(e)
+
+        if self.con.response_status == 200:
+            return True
+        else:
+            raise LogsError('cancel failed ({})'
+                            .format(self.con.response_status))
 
     def close(self):
         """
