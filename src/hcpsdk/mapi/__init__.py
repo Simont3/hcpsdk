@@ -20,12 +20,17 @@
 # IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
 # CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
+# for debug purposes
+import sys
+import time
+
 from datetime import date
 import xml.etree.ElementTree as Et
 from collections import OrderedDict
-from tempfile import TemporaryFile
+from tempfile import TemporaryFile, NamedTemporaryFile
 import _io # needed to check type of file parameter in Logs.download()
 import logging
+from pprint import pprint
 
 import hcpsdk
 
@@ -49,6 +54,17 @@ class LogsNotReadyError(LogsError):
     """
     Raised by *Logs.download()* in case there are no logs ready to be
     downloaded.
+    """
+    def __init__(self, reason):
+        """
+        :param reason: An error description
+        """
+        self.args = (reason,)
+
+class LogsInProgessError(LogsError):
+    """
+    Raised by *Logs.download()* in case the log download is already
+    in progress.
     """
     def __init__(self, reason):
         """
@@ -128,7 +144,25 @@ class Logs(object):
                                     self.enddate.day, self.enddate.year,
                                     ','.join(snodes))
 
-        return(self.startdate, self.enddate, self.prepare_xml)
+        try:
+            self.con.POST('/mapi/logs/prepare', body=self.prepare_xml)
+        except Exception as e:
+            self.logger.error(e)
+            raise LogsError(e)
+        else:
+            self.con.read()
+            if self.con.response_status == 200:
+                return(self.startdate, self.enddate, self.prepare_xml)
+            elif self.con.response_status == 400:
+                    # self.con.getheader('X-HCP-ErrorMessage', default='?')\
+                    #         .startswith('A log download'):
+                raise LogsInProgessError(self.con.getheader('X-HCP-ErrorMessage',
+                                                            default='?'))
+            else:
+                raise LogsError('prepare failed ({} - {})'
+                                .format(self.con.response_status,
+                                        self.con.getheader('X-HCP-ErrorMessage',
+                                                           default='?')))
 
     def status(self):
         """
@@ -152,49 +186,97 @@ class Logs(object):
             self.con.GET('/mapi/logs')
         except Exception as e:
             self.logger.error(e)
-
-        if self.con.response_status != 200:
-            return(None)
+            print('error in status():', e, file=sys.stderr)
         else:
             xml = self.con.read().decode()
-            stat = OrderedDict()
-            for child in Et.fromstringlist(xml):
-                if child.text == 'true':
-                    stat[child.tag] = True
-                elif child.text == 'false':
-                    stat[child.tag] = False
-                else:
-                    stat[child.tag] = child.text.split(',')
+            # print(self.con.response_status, self.con.response_reason,
+            #       file=sys.stderr)
+            # pprint(self.con.getheaders(), stream=sys.stderr)
+            # print('xml=', xml, file=sys.stderr)
+            time.sleep(.5)
 
-            self.logger.debug(stat)
+            if self.con.response_status != 200:
+                return(None)
+            else:
+                stat = OrderedDict()
+                for child in Et.fromstringlist(xml):
+                    if child.text == 'true':
+                        stat[child.tag] = True
+                    elif child.text == 'false':
+                        stat[child.tag] = False
+                    else:
+                        stat[child.tag] = child.text.split(',')
 
-            return stat
+                self.logger.debug(stat)
 
-    def download(self, file=None):
+                return stat
+
+    def download(self, hdl=None, nodes=[], logs=[], hidden=True):
         """
         Download the requested logs.
 
-        :param file:    a filehandle open for binary read/write or *None*,
-                        in which case a (hidden) temporary file will be
-                        created
-        :returns:       the filehandle holding the received logs, positioned
-                        at byte 0.
-        :raises:        *LogsError* in case *file*'s mode isn't open for
-                        binary write
+        :param hdl:     a file (or file-like) handle open for binary
+                        read/write or *None*, in which case a temporary file
+                        will be created
+        :parm nodes:    list of node-IDs (int)
+        :param logs:    list of logs (*L_**)
+        :param hidden:  the temporary file created will be hidden if possible
+                        (see `tempfile.TemporaryFile()
+                        <https://docs.python.org/3/library/tempfile.html#tempfile.TemporaryFile>`_)
+        :returns:       the file handle holding the received logs,
+                        positioned at byte 0.
+        :raises:        *LogsError* or *LogsNotReadyError*
         """
-        __allowedfilemodes = ['w+b', 'r+b']
 
         # make sure we have a file handle open for binary read/write
-        if not file:
-            self.file = TemporaryFile('w+b')
-        elif type(file) != _io.BufferedRandom:
-            raise LogsError('file must be a valid file object, not "{}"'
-                            .format(type(file)))
-        elif file.mode not in __allowedfilemodes:
-            raise LogsError('file mode must be one of {}, not "{}"'
-                            .format(__allowedfilemodes, file.mode))
+        if not hdl:
+            if hidden:
+                self.hdl = TemporaryFile('w+b')
+            else:
+                self.hdl = NamedTemporaryFile('w+b')
+        else:
+            self.hdl = hdl
 
-        return self.file
+        # check if the logs are ready for download
+        if not self.status()['readyForStreaming']:
+            raise LogsNotReadyError('not ready for streaming')
+
+        # create the XML command structire
+        str_nodes = str_logs = ''
+        if nodes:
+            str_nodes = ','.join(nodes)
+        if logs:
+            str_logs = ','.join(logs)
+
+        xml = '<?xml version=1.0" encoding="UTF-8" standalone="yes"?>\n' \
+              '    <logdownload>\n' \
+              '    <nodes>{}</nodes>\n' \
+              '    <content>{}</content>\n' \
+              '</logdownload>'.format(str_nodes, str_logs)
+
+        # download the logs
+        try:
+            self.con.POST('/mapi/logs/download', body=xml)
+        except Exception as e:
+            self.logger.error(e)
+
+        if self.con.response_status == 200:
+            numbytes = 0
+            try:
+                while True:
+                    d = self.con.read(amt=2**16)
+                    numbytes += len(d)
+                    print('\r{}'.format(numbytes), end='')
+                    if d:
+                        self.hdl.write(d)
+                    else:
+                        print()
+                        break
+            except Exception as e:
+                raise LogsError(e)
+
+        self.hdl.seek(0)
+        return self.hdl
 
     def cancel(self):
         """
@@ -210,8 +292,11 @@ class Logs(object):
         except Exception as e:
             self.logger.error(e)
             raise LogsError(e)
+        else:
+            self.con.read() # cleanup
 
         if self.con.response_status == 200:
+            pprint(self.con.getheaders())
             return True
         else:
             raise LogsError('cancel failed ({})'

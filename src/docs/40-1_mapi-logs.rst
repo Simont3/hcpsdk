@@ -84,6 +84,7 @@ Exceptions
 
 .. autoexception:: LogsNotReadyError
 
+.. autoexception:: LogsInProgessError
 
 Example
 ^^^^^^^
