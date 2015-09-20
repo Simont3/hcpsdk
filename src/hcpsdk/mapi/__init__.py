@@ -188,6 +188,7 @@ class Logs(object):
             self.logger.error(e)
             print('error in status():', e, file=sys.stderr)
         else:
+            self.logger.debug('response headers: {}'.format(self.con.getheaders()))
             xml = self.con.read().decode()
             # print(self.con.response_status, self.con.response_reason,
             #       file=sys.stderr)
@@ -207,11 +208,12 @@ class Logs(object):
                     else:
                         stat[child.tag] = child.text.split(',')
 
-                self.logger.debug(stat)
+                # self.logger.debug(stat)
 
                 return stat
 
-    def download(self, hdl=None, nodes=[], logs=[], hidden=True):
+    def download(self, hdl=None, nodes=[], snodes= [], logs=[],
+                 progresshook=None, hidden=True):
         """
         Download the requested logs.
 
@@ -219,7 +221,11 @@ class Logs(object):
                         read/write or *None*, in which case a temporary file
                         will be created
         :parm nodes:    list of node-IDs (int)
+        :parm snodes:   list of S-node names (str)
         :param logs:    list of logs (*L_**)
+        :param progresshook:    a function taking a single argument (the #
+                                of bytes received) that will be called after
+                                each chunk of bytes downloaded
         :param hidden:  the temporary file created will be hidden if possible
                         (see `tempfile.TemporaryFile()
                         <https://docs.python.org/3/library/tempfile.html#tempfile.TemporaryFile>`_)
@@ -242,31 +248,41 @@ class Logs(object):
             raise LogsNotReadyError('not ready for streaming')
 
         # create the XML command structire
-        str_nodes = str_logs = ''
+        str_nodes = str_snodes = str_logs = ''
         if nodes:
             str_nodes = ','.join(nodes)
+        if snodes:
+            str_snodes = ','.join(snodes)
         if logs:
             str_logs = ','.join(logs)
 
         xml = '<?xml version=1.0" encoding="UTF-8" standalone="yes"?>\n' \
-              '    <logdownload>\n' \
+              '<logdownload>\n' \
               '    <nodes>{}</nodes>\n' \
+              '    <snodes>{}</snodes>\n' \
               '    <content>{}</content>\n' \
-              '</logdownload>'.format(str_nodes, str_logs)
+              '</logdownload>'.format(str_nodes, str_snodes, str_logs).encode()
 
+        self.logger.debug('dl_xml: {}'.format(xml))
         # download the logs
         try:
-            self.con.POST('/mapi/logs/download', body=xml)
+            self.con.POST('/mapi/logs/download', body=xml,
+                          headers={'Accept': '*/*',
+                                   'Content': 'text/xml'})
         except Exception as e:
             self.logger.error(e)
+            raise LogsError(e)
+        else:
+            self.logger.debug('returned headers: {}'.format(self.con.getheaders()))
 
         if self.con.response_status == 200:
             numbytes = 0
             try:
                 while True:
-                    d = self.con.read(amt=2**16)
+                    d = self.con.read(amt=2**18)
                     numbytes += len(d)
-                    print('\r{}'.format(numbytes), end='')
+                    if progresshook:
+                        progresshook(numbytes)
                     if d:
                         self.hdl.write(d)
                     else:

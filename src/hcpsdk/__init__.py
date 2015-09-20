@@ -423,10 +423,12 @@ class Connection(object):
 
     def __cancel_idletimer(self):
         """
-        Cancel an active Connection keep-alive timer - called if timer has passed
+        Cancel an active Connection keep-alive timer - auto-called if timer
+        has passed
         """
         if self.idletimer:
             self.idletimer.cancel()
+            self.close()
             self.logger.log(logging.DEBUG, 'idletimer timed out: {}'.format(self.idletimer))
             self.idletimer = None
 
