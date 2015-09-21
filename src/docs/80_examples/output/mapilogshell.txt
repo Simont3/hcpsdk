@@ -1,0 +1,29 @@
+HCP Log Download Shell.   Type help or ? to list commands.
+
+==> logs access
+==> what
+selected nodes:  176
+selected snodes: none
+selected logs:   ACCESS
+==> prepare
+prepare initiated
+
+==> status
+{'readyForStreaming': True,
+ 'streamingInProgress': False,
+ 'error': False,
+ 'started': True,
+ 'content': ['ACCESS', 'SYSTEM', 'SERVICE', 'APPLICATION']}
+
+==> download logs.zip
+downloading for nodes: 176
+               snodes: none
+                 logs: ACCESS
+
+received: 24.93 kB
+download finished
+==> cancel
+cancel done
+
+==> quit
+Bye...

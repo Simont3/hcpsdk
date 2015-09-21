@@ -12,7 +12,7 @@ Release History
 
     * Corrected the documentation built for Exceptions
     * fixed a bug that prevented internal connections to be closed when
-      idletime fired
+      idletimer fired
 
 **0.9.2-38 2015-08-31**
 

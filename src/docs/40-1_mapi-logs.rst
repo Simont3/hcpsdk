@@ -95,4 +95,14 @@ Exceptions
 Example
 ^^^^^^^
 
-**TBD**
+The following example code creates a simple command processor that allows to
+prepare and download logs from HCP.
+
+    .. include:: 80_examples/code/mapilogshell.py
+       :literal:
+
+Output
+^^^^^^
+
+   .. include:: 80_examples/output/mapilogshell.txt
+      :literal:

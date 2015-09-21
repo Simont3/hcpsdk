@@ -140,13 +140,11 @@ class LogsShell(cmd.Cmd):
             print('debug disabled')
 
     def emptyline(self):
+        'run the status command if no command is given'
         return self.onecmd('status')
-        # if self.lastcmd in ['status']:
-        #     return self.onecmd(self.lastcmd)
-        # else:
-        #     print('no-op')
 
     def close(self):
+        'close the underlying *hcpsdk.Logs()* object'
         l.close()
 
 
@@ -160,7 +158,6 @@ def showdownloadprogress(nBytes):
                     nBytes = nBytes / 1024
                     i = i + 1
     print("\rreceived: {0:.2f} {1:}".format(nBytes, sz[i]), end='')
-
 
 
 if __name__ == '__main__':
