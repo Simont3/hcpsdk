@@ -256,19 +256,18 @@ class Logs(object):
         if logs:
             str_logs = ','.join(logs)
 
-        xml = '<?xml version=1.0" encoding="UTF-8" standalone="yes"?>\n' \
-              '<logdownload>\n' \
+        xml = '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>\n' \
+              '<logDownload>\n' \
               '    <nodes>{}</nodes>\n' \
               '    <snodes>{}</snodes>\n' \
               '    <content>{}</content>\n' \
-              '</logdownload>'.format(str_nodes, str_snodes, str_logs).encode()
+              '</logDownload>'.format(str_nodes, str_snodes, str_logs).encode()
 
         self.logger.debug('dl_xml: {}'.format(xml))
         # download the logs
         try:
-            self.con.POST('/mapi/logs/download', body=xml,
-                          headers={'Accept': '*/*',
-                                   'Content': 'text/xml'})
+            self.con.POST('/mapi/logs/download', body=xml)
+#                          headers={'Content-type': 'application/xml'})
         except Exception as e:
             self.logger.error(e)
             raise LogsError(e)
