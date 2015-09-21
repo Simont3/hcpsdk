@@ -63,7 +63,13 @@ Classes
          These are logs from all the HCP specific services such as the JVM,
          the volume manager, storman etc.
 
+      .. attribute:: L_ALL
+
+         A list containing all other L_* log types.
+
    **Class methodes:**
+
+   .. automethod:: mark
 
    .. automethod:: prepare
 

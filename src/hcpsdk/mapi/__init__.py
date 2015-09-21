@@ -82,6 +82,7 @@ class Logs(object):
     L_SYSTEM = 'SYSTEM' #
     L_SERVICE = 'SERVICE' #
     L_APPLICATION = 'APPLICATION' #
+    L_ALL = [L_ACCESS, L_SYSTEM, L_SERVICE, L_APPLICATION]
 
     def __init__(self, target, debuglevel=0):
         """
@@ -104,6 +105,29 @@ class Logs(object):
         except Exception as e:
             raise hcpsdk.HcpsdkError(str(e))
 
+    def mark(self, message):
+        """
+        Mark HCPs internal log with a message.
+
+        :param message: the message to be logged
+        :raises:        *LogsError*
+        """
+        if not message:
+            raise LogsError('log message required')
+
+        try:
+            self.con.POST('/mapi/logs', params={'mark': message})
+        except Exception as e:
+            self.logger.error(e)
+            raise LogsError(e)
+        else:
+            self.con.read()
+            if self.con.response_status != 200:
+                raise LogsError('{} - {} ({})'
+                                .format(self.con.response_status,
+                                        self.con.response_reason,
+                                        self.con.getheader('X-HCP-ErrorMessage',
+                                                                    default='?')))
 
     def prepare(self, startdate=None, enddate=None, snodes=[]):
         """
@@ -113,9 +137,11 @@ class Logs(object):
         :param startdate:   1st day to collect (as a *datetime.date* object)
         :param enddate:     last day to collect (as a *datetime.date* object)
         :param snodes:      list of S-series nodes to collect from
-        :returns:           (datetime.date(startdate), datetime.date(enddate),
-                            str(prepared XML))
-        :raises:            *ValueError* or one of the
+        :returns:           a tuple of datetime.date(startdate),
+                            datetime.date(enddate) and
+                            str(prepared XML)
+        :raises:            *ValueError* arguments are invalid or one of the
+                            *LogsError* if an operation failed
         """
         if startdate and type(startdate) != date:
             raise ValueError('startdate not of type(datetime.date)')
@@ -154,13 +180,15 @@ class Logs(object):
             if self.con.response_status == 200:
                 return(self.startdate, self.enddate, self.prepare_xml)
             elif self.con.response_status == 400:
-                    # self.con.getheader('X-HCP-ErrorMessage', default='?')\
-                    #         .startswith('A log download'):
-                raise LogsInProgessError(self.con.getheader('X-HCP-ErrorMessage',
-                                                            default='?'))
+                raise LogsInProgessError('{} - {} ({})'
+                                         .format(self.con.response_status,
+                                                 self.con.response_reason,
+                                                 self.con.getheader('X-HCP-ErrorMessage',
+                                                                    default='?')))
             else:
-                raise LogsError('prepare failed ({} - {})'
+                raise LogsError('{} - {} ({})'
                                 .format(self.con.response_status,
+                                        self.con.response_reason,
                                         self.con.getheader('X-HCP-ErrorMessage',
                                                            default='?')))
 
@@ -186,7 +214,7 @@ class Logs(object):
             self.con.GET('/mapi/logs')
         except Exception as e:
             self.logger.error(e)
-            print('error in status():', e, file=sys.stderr)
+            print('error in status(): {}'.format(e))
         else:
             self.logger.debug('response headers: {}'.format(self.con.getheaders()))
             xml = self.con.read().decode()
@@ -197,7 +225,7 @@ class Logs(object):
             time.sleep(.5)
 
             if self.con.response_status != 200:
-                return(None)
+                return None
             else:
                 stat = OrderedDict()
                 for child in Et.fromstringlist(xml):
@@ -207,9 +235,6 @@ class Logs(object):
                         stat[child.tag] = False
                     else:
                         stat[child.tag] = child.text.split(',')
-
-                # self.logger.debug(stat)
-
                 return stat
 
     def download(self, hdl=None, nodes=[], snodes= [], logs=[],
@@ -220,9 +245,9 @@ class Logs(object):
         :param hdl:     a file (or file-like) handle open for binary
                         read/write or *None*, in which case a temporary file
                         will be created
-        :parm nodes:    list of node-IDs (int)
-        :parm snodes:   list of S-node names (str)
-        :param logs:    list of logs (*L_**)
+        :param nodes:   list of node-IDs (int), all if empty
+        :param snodes: list of S-node names (str), none if empty
+        :param logs:    list of logs (*L_**), all if empty
         :param progresshook:    a function taking a single argument (the #
                                 of bytes received) that will be called after
                                 each chunk of bytes downloaded
@@ -243,36 +268,39 @@ class Logs(object):
         else:
             self.hdl = hdl
 
-        # check if the logs are ready for download
-        if not self.status()['readyForStreaming']:
-            raise LogsNotReadyError('not ready for streaming')
-
         # create the XML command structire
         str_nodes = str_snodes = str_logs = ''
         if nodes:
             str_nodes = ','.join(nodes)
+        else:
+            str_nodes = ','.join([x.split('.')[3] for x in self.target.addresses])
         if snodes:
             str_snodes = ','.join(snodes)
         if logs:
             str_logs = ','.join(logs)
+        else:
+            str_logs = ','.join(Logs.L_ALL)
 
-        xml = '<?xml version=1.0" encoding="UTF-8" standalone="yes"?>\n' \
-              '<logdownload>\n' \
+        xml = '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>\n' \
+              '<logDownload>\n' \
               '    <nodes>{}</nodes>\n' \
               '    <snodes>{}</snodes>\n' \
               '    <content>{}</content>\n' \
-              '</logdownload>'.format(str_nodes, str_snodes, str_logs).encode()
+              '</logDownload>'.format(str_nodes, str_snodes, str_logs).encode()
 
         self.logger.debug('dl_xml: {}'.format(xml))
+
         # download the logs
         try:
             self.con.POST('/mapi/logs/download', body=xml,
                           headers={'Accept': '*/*',
-                                   'Content': 'text/xml'})
+                                   'Content-Type': 'application/xml'})
         except Exception as e:
             self.logger.error(e)
             raise LogsError(e)
         else:
+            self.logger.debug('result: {} - {}'.format(self.con.response_status,
+                                                       self.con.response_reason))
             self.logger.debug('returned headers: {}'.format(self.con.getheaders()))
 
         if self.con.response_status == 200:
@@ -290,7 +318,15 @@ class Logs(object):
                         break
             except Exception as e:
                 raise LogsError(e)
-
+        else:
+            try:
+                self.con.read()
+            except Exception as e:
+                raise LogsError(e)
+            raise LogsError('{} - {} ({})'.format(self.con.response_status,
+                                                  self.con.response_reason,
+                                                  self.con.getheader('X-HCP-ErrorMessage',
+                                                                     './.')))
         self.hdl.seek(0)
         return self.hdl
 
@@ -301,7 +337,7 @@ class Logs(object):
         :returns:   *True* if cancel was successfull
         :raises:    *LogsError* in case the cancel failed
         """
-        self.logger.debug('cancel log request issued')
+        self.logger.debug('cancel request issued')
 
         try:
             self.con.POST('/mapi/logs', params={'cancel': ''})
@@ -312,15 +348,18 @@ class Logs(object):
             self.con.read() # cleanup
 
         if self.con.response_status == 200:
-            pprint(self.con.getheaders())
             return True
         else:
-            raise LogsError('cancel failed ({})'
-                            .format(self.con.response_status))
+            self.logger.debug('{} - {} (cancel failed)'
+                              .format(self.con.response_status,
+                                    self.con.response_reason))
+            raise LogsError('{} - {} (cancel failed)'
+                            .format(self.con.response_status,
+                                    self.con.response_reason))
 
     def close(self):
         """
-        Close the used *hcpsdk.Connection()*.
+        Close the underlying *hcpsdk.Connection()*.
         """
         self.con.close()
 

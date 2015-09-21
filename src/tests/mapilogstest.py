@@ -1,7 +1,6 @@
 
 import sys
 from pprint import pprint
-import time
 import logging
 import cmd
 import hcpsdk
@@ -23,9 +22,12 @@ class LogsShell(cmd.Cmd):
 
     def do_what(self, arg):
         'what - print what will be downloaded'
-        print('selected nodes:  {}'.format(self.nodes or 'all'))
-        print('selected snodes: {}'.format(self.snodes or 'all'))
-        print('selected logs:   {}'.format(self.logs or 'all'))
+        print('selected nodes:  {}'.format(' '.join(self.nodes) or \
+                                           ' '.join([x.split('.')[3]
+                                                     for x in l.target.addresses])))
+        print('selected snodes: {}'.format(' '.join(self.snodes) or 'none'))
+        print('selected logs:   {}'.format(' '.join(self.logs) or \
+                                           ' '.join(hcpsdk.mapi.Logs.L_ALL)))
 
     def do_status(self, arg):
         'status - query the log preparation state on HCP'
@@ -47,7 +49,13 @@ class LogsShell(cmd.Cmd):
         'nodes [node_id,]* - select the nodes to download logs from\n'\
         '                    nothing selects all nodes'
         if arg:
-            self.nodes = arg.split(',')
+            self.nodes = []
+            n = [x.split('.')[3] for x in l.target.addresses]
+            for x in arg.split(','):
+                if x in n:
+                    self.nodes.append(x)
+                else:
+                    print('invalid: {}'.format(x))
         else:
             self.nodes = []
 
@@ -63,7 +71,12 @@ class LogsShell(cmd.Cmd):
         'logs ([ACCESS|SYSTEM|SERVICE|APPLICATION],)* - select log types\n'\
         '                                               nothing selects all'
         if arg:
-            self.logs = arg.split(',')
+            self.logs = []
+            for x in [y.upper() for y in arg.split(',')]:
+                if x in hcpsdk.mapi.Logs.L_ALL:
+                    self.logs.append(x)
+                else:
+                    print('invalid: {}'.format(x))
         else:
             self.logs = []
 
@@ -77,9 +90,11 @@ class LogsShell(cmd.Cmd):
         print('downloading for nodes: {}\n'
               '               snodes: {}\n'
               '                 logs: {}\n'
-              .format(self.nodes or 'all',
-                      self.snodes or 'all (or none, if there are none)',
-                      self.logs or 'all'))
+              .format(' '.join(self.nodes) or \
+                      ' '.join([x.split('.')[3] for x in l.target.addresses]),
+                      ' '.join(self.snodes) or 'none',
+                      ' '.join(self.logs) or \
+                      ' '.join(hcpsdk.mapi.Logs.L_ALL)))
         try:
             with open(filename, 'w+b') as outhdl:
                 l.download(hdl=outhdl, nodes=self.nodes, snodes=self.snodes,
@@ -99,8 +114,14 @@ class LogsShell(cmd.Cmd):
             print('cancel done')
         print()
 
-    def do_test(self, args):
-        print(args)
+    def do_mark(self, arg):
+        'mark - mark HCPs log with a message'
+        try:
+            l.mark(arg)
+        except Exception as e:
+            print('mark failed: {}'.format(e))
+        else:
+            print('log marked')
 
     def do_quit(self, arg):
         'quit - exit the HCP Logs Shell'
