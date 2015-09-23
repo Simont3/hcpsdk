@@ -61,7 +61,7 @@ class LogsShell(cmd.Cmd):
 
     def do_snodes(self, arg):
         'snodes [snode_name,]* - select the S-nodes to download logs from\n'\
-        '                        nothing selects all nodes'
+        '                        nothing selects no S-nodes'
         if arg:
             self.snodes = arg.split(',')
         else:

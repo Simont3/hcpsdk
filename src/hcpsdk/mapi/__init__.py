@@ -160,15 +160,20 @@ class Logs(object):
                                   self.enddate.month, self.enddate.day))
 
         # Prepare the XML command file
+        if snodes:
+            xsnodes = '<snodes>' + ','.join(snodes) + '</snodes>'
+        else:
+            xsnodes = ''
         self.prepare_xml = '<logPrepare>\n' \
                            '  <startDate>{:02}/{:02}/{:04}</startDate>\n' \
                            '  <endDate>{:02}/{:02}/{:04}</endDate>\n' \
-                           '  <snodes>{}</snodes>\n' \
+                           '  {}\n' \
                            '</logPrepare>\n'\
                             .format(self.startdate.month, self.startdate.day,
                                     self.startdate.year, self.enddate.month,
                                     self.enddate.day, self.enddate.year,
-                                    ','.join(snodes))
+                                    xsnodes)
+        self.logger.debug('prepare_xml: {}'.format(self.prepare_xml))
 
         try:
             self.con.POST('/mapi/logs/prepare', body=self.prepare_xml)
@@ -176,6 +181,10 @@ class Logs(object):
             self.logger.error(e)
             raise LogsError(e)
         else:
+            self.logger.debug('result: {} - {}'.format(self.con.response_status,
+                                                       self.con.response_reason))
+            self.logger.debug('returned headers: {}'.format(self.con.getheaders()))
+
             self.con.read()
             if self.con.response_status == 200:
                 return(self.startdate, self.enddate, self.prepare_xml)
@@ -218,10 +227,6 @@ class Logs(object):
         else:
             self.logger.debug('response headers: {}'.format(self.con.getheaders()))
             xml = self.con.read().decode()
-            # print(self.con.response_status, self.con.response_reason,
-            #       file=sys.stderr)
-            # pprint(self.con.getheaders(), stream=sys.stderr)
-            # print('xml=', xml, file=sys.stderr)
             time.sleep(.5)
 
             if self.con.response_status != 200:
@@ -237,7 +242,7 @@ class Logs(object):
                         stat[child.tag] = child.text.split(',')
                 return stat
 
-    def download(self, hdl=None, nodes=[], snodes= [], logs=[],
+    def download(self, hdl=None, nodes=[], snodes=[], logs=[],
                  progresshook=None, hidden=True):
         """
         Download the requested logs.
@@ -246,7 +251,7 @@ class Logs(object):
                         read/write or *None*, in which case a temporary file
                         will be created
         :param nodes:   list of node-IDs (int), all if empty
-        :param snodes: list of S-node names (str), none if empty
+        :param snodes:  list of S-node names (str), none if empty
         :param logs:    list of logs (*L_**), all if empty
         :param progresshook:    a function taking a single argument (the #
                                 of bytes received) that will be called after
@@ -271,9 +276,9 @@ class Logs(object):
         # create the XML command structire
         str_nodes = str_snodes = str_logs = ''
         if nodes:
-            str_nodes = ','.join(nodes)
+            str_nodes = '<nodes>' + ','.join(nodes) + '</nodes>'
         else:
-            str_nodes = ','.join([x.split('.')[3] for x in self.target.addresses])
+            str_nodes = ''
         if snodes:
             str_snodes = ','.join(snodes)
         if logs:
@@ -283,7 +288,7 @@ class Logs(object):
 
         xml = '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>\n' \
               '<logDownload>\n' \
-              '    <nodes>{}</nodes>\n' \
+              '    {}\n' \
               '    <snodes>{}</snodes>\n' \
               '    <content>{}</content>\n' \
               '</logDownload>'.format(str_nodes, str_snodes, str_logs).encode()
