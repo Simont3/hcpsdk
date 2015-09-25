@@ -1,12 +1,11 @@
 Release History
 ===============
 
-**0.9.3-0 2015-09-01**
+**0.9.3-0 2015-09-25**
 
 *   Added:
 
-    * Added log download support to the mapi module
-    * (Support for replication target HCP)
+    * Added *mapi.Logs()*
 
 *   Changed:
 

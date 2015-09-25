@@ -4,6 +4,7 @@ from pprint import pprint
 import logging
 import cmd
 import hcpsdk
+from datetime import date, timedelta
 
 USR = 'service'
 PWD = 'service01'
@@ -19,9 +20,14 @@ class LogsShell(cmd.Cmd):
         self.nodes = []
         self.snodes = []
         self.logs = []
+        self.start = date.today() - timedelta(days=7)
+        self.end = date.today()
 
     def do_what(self, arg):
         'what - print what will be downloaded'
+        print('start date:      {}'.format(self.start.strftime('%Y/%m/%d')))
+        print('end date:        {}'.format(self.end.strftime('%Y/%m/%d')))
+
         print('selected nodes:  {}'.format(' '.join(self.nodes) or \
                                            ' '.join([x.split('.')[3]
                                                      for x in l.target.addresses])))
@@ -33,17 +39,21 @@ class LogsShell(cmd.Cmd):
         'status - query the log preparation state on HCP'
         log.debug('do_status() called')
         pprint(l.status())
-        print()
 
     def do_prepare(self, arg):
         'prepare - start log preparation on HCP'
         try:
-            l.prepare(snodes=self.snodes)
+            l.prepare(snodes=self.snodes, startdate=self.start,
+                      enddate=self.end)
         except Exception as e:
-            print('prepare: LogsInProgessError: {}'.format(e))
+            print('prepare failed: {}'.format(e))
         else:
-            print('prepare initiated')
-        print()
+            print('preparing for nodes: all\n'
+                  '             snodes: {}\n'
+                  '         date range: {} - {}'
+                  .format(' '.join(self.snodes) or 'none',
+                          self.start.strftime('%Y/%m/%d'),
+                          self.end.strftime('%Y/%m/%d')))
 
     def do_nodes(self, arg):
         'nodes [node_id,]* - select the nodes to download logs from\n'\
@@ -80,6 +90,22 @@ class LogsShell(cmd.Cmd):
         else:
             self.logs = []
 
+    def do_start(self, arg):
+        'start YYYY/MM/DD - select start date (default=a week ago)'
+        try:
+            d = arg.split('/')
+            self.start = date(int(d[0]),int(d[1]),int(d[2]))
+        except Exception as e:
+            print('invalid input - YYYY/MM/DD required...')
+
+    def do_end(self, arg):
+        'end YYYY/MM/DD - select end date (default=today)'
+        try:
+            d = arg.split('/')
+            self.end = date(int(d[0]),int(d[1]),int(d[2]))
+        except Exception as e:
+            print('invalid input - YYYY/MM/DD required...')
+
 
     def do_download(self, filename, ):
         'download <filename> - donwload logs and store into file <filename>'
@@ -90,11 +116,14 @@ class LogsShell(cmd.Cmd):
         print('downloading for nodes: {}\n'
               '               snodes: {}\n'
               '                 logs: {}\n'
+              '           date range: {} - {}\n'
               .format(' '.join(self.nodes) or \
                       ' '.join([x.split('.')[3] for x in l.target.addresses]),
                       ' '.join(self.snodes) or 'none',
                       ' '.join(self.logs) or \
-                      ' '.join(hcpsdk.mapi.Logs.L_ALL)))
+                      ' '.join(hcpsdk.mapi.Logs.L_ALL,),
+                      self.start.strftime('%Y/%m/%d'),
+                      self.end.strftime('%Y/%m/%d')))
         try:
             with open(filename, 'w+b') as outhdl:
                 l.download(hdl=outhdl, nodes=self.nodes, snodes=self.snodes,
@@ -112,7 +141,6 @@ class LogsShell(cmd.Cmd):
             print('cancel: {}'.format(e))
         else:
             print('cancel done')
-        print()
 
     def do_mark(self, arg):
         'mark - mark HCPs log with a message'
