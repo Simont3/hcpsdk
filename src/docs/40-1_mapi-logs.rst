@@ -7,6 +7,11 @@ MAPI - Log Resources
 This class allows to request internal logs from HCP, which will then prepare
 a zip-file to be downloaded later on.
 
+.. Note::
+
+   To be able to use this class, HCP needs to run at least
+   **version 7.2**.
+
 The usage pattern is this:
 
    *  *prepare()*
@@ -25,11 +30,6 @@ Classes
 .. _hcpsdk_mapi_logs:
 
 .. autoclass:: Logs
-
-   .. Note::
-
-      To be able to use this class, HCP needs to run at least
-      **version 7.2**.
 
    **Class constants:**
 
@@ -95,8 +95,9 @@ Exceptions
 Sample Code
 ^^^^^^^^^^^
 
-The following example code creates a simple command processor that allows to
-prepare and download logs from HCP.
+The following :download:`example code <80_examples/code/mapilogshell.py>`
+creates a simple command processor that allows to prepare and download logs
+from HCP.
 
     .. include:: 80_examples/code/mapilogshell.py
        :literal:

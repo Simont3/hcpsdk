@@ -7,6 +7,11 @@ MAPI - Replication management
 This class allows to query HCP for replication links, their settings and
 state. It also allows to trigger a replication link failover anf failback.
 
+.. Note::
+
+  To be able to use this class, HCP needs to run at least
+  **version 7.0**.
+
 
 Classes
 ^^^^^^^
@@ -14,11 +19,6 @@ Classes
 .. _hcpsdk_mapi_replication:
 
 .. autoclass:: Replication
-
-   .. Note::
-
-      To be able to use this class, HCP needs to run at least
-      **version 7.0**.
 
    **Class constants:**
 

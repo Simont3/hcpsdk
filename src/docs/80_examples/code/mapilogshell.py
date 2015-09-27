@@ -1,3 +1,24 @@
+# -*- coding: utf-8 -*-
+# The MIT License (MIT)
+#
+# Copyright (c) 2014-2015 Thorsten Simons (sw@snomis.de)
+#
+# Permission is hereby granted, free of charge, to any person obtaining a copy of
+# this software and associated documentation files (the "Software"), to deal in
+# the Software without restriction, including without limitation the rights to
+# use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of
+# the Software, and to permit persons to whom the Software is furnished to do so,
+# subject to the following conditions:
+#
+# The above copyright notice and this permission notice shall be included in all
+# copies or substantial portions of the Software.
+#
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS
+# FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR
+# COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER
+# IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
+# CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 import sys
 from pprint import pprint
@@ -24,7 +45,7 @@ class LogsShell(cmd.Cmd):
         self.end = date.today()
 
     def do_what(self, arg):
-        'what - print what will be downloaded'
+        'what - show what is selected for download'
         print('start date:      {}'.format(self.start.strftime('%Y/%m/%d')))
         print('end date:        {}'.format(self.end.strftime('%Y/%m/%d')))
 
@@ -36,12 +57,12 @@ class LogsShell(cmd.Cmd):
                                            ' '.join(hcpsdk.mapi.Logs.L_ALL)))
 
     def do_status(self, arg):
-        'status - query the log preparation state on HCP'
+        'status - query HCP for the log preparation status'
         log.debug('do_status() called')
         pprint(l.status())
 
     def do_prepare(self, arg):
-        'prepare - start log preparation on HCP'
+        'prepare - trigger HCP to prepare the logs for later download'
         try:
             l.prepare(snodes=self.snodes, startdate=self.start,
                       enddate=self.end)
@@ -57,7 +78,7 @@ class LogsShell(cmd.Cmd):
 
     def do_nodes(self, arg):
         'nodes [node_id,]* - select the nodes to download logs from\n'\
-        '                    nothing selects all nodes'
+        '                    (no argument selects all nodes)'
         if arg:
             self.nodes = []
             n = [x.split('.')[3] for x in l.target.addresses]
@@ -71,14 +92,14 @@ class LogsShell(cmd.Cmd):
 
     def do_snodes(self, arg):
         'snodes [snode_name,]* - select the S-nodes to download logs from\n'\
-        '                        nothing selects no S-nodes'
+        '                        (no argument disables S-Node log download)'
         if arg:
             self.snodes = arg.split(',')
         else:
             self.snodes = []
 
     def do_logs(self, arg):
-        'logs ([ACCESS|SYSTEM|SERVICE|APPLICATION],)* - select log types\n'\
+        'logs [ACCESS,|SYSTEM,|SERVICE,|APPLICATION]* - select log types\n'\
         '                                               nothing selects all'
         if arg:
             self.logs = []
@@ -91,7 +112,7 @@ class LogsShell(cmd.Cmd):
             self.logs = []
 
     def do_start(self, arg):
-        'start YYYY/MM/DD - select start date (default=a week ago)'
+        'start YYYY/MM/DD - select start date (default is a week ago)'
         try:
             d = arg.split('/')
             self.start = date(int(d[0]),int(d[1]),int(d[2]))
@@ -99,7 +120,7 @@ class LogsShell(cmd.Cmd):
             print('invalid input - YYYY/MM/DD required...')
 
     def do_end(self, arg):
-        'end YYYY/MM/DD - select end date (default=today)'
+        'end YYYY/MM/DD - select end date (default is today)'
         try:
             d = arg.split('/')
             self.end = date(int(d[0]),int(d[1]),int(d[2]))

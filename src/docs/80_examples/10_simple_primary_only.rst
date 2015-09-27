@@ -4,7 +4,7 @@ Simple object I/O without replica
 Code sample
 -----------
 
-This code sample shows basic usage of the SDK - ingest an object, retrieve
+This :download:`code sample <code/simple_primary_only.py>` shows basic usage of the SDK - ingest an object, retrieve
 its metadata, read and delete it. It also shows how to retrieve request timers
 and how to enable debug logging.
 

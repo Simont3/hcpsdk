@@ -1,16 +1,20 @@
 Release History
 ===============
 
-**0.9.3-0 2015-09-25**
+**0.9.3-0 2015-09-27**
 
 *   Added:
 
-    * Added *mapi.Logs()*
+    * Added access to the *logs* endpoint invented with HCP 7.2
+      (*hcpsdk.mapi.Logs()*)
 
 *   Changed:
 
-    * Corrected the documentation built for Exceptions
-    * fixed a bug that prevented internal connections to be closed when
+    * Splitted *hcpsdk.mapi* classes into separate packages (*logs* and
+      *replication*, yet), while maintaining accessibility through
+      *hcpsdk.mapi.Logs* and *hcpsdk.mapi.Replication*, respectively.
+    * Corrected the documentation buildout for Exceptions
+    * Fixed a bug that prevented internal connections to be closed when
       idletimer fired
 
 **0.9.2-38 2015-08-31**

@@ -31,4 +31,8 @@ State of Implementation
     is a bit limited today, but will be extended primarily on the authors needs.
     Available today:
 
-    *   Replication link information, link failover/failback.
+    *   Log file download (requires at least HCP 7.2)
+
+        ..  versionadded:: 0.9.3
+
+    *   Replication link information, link failover/failback (requires at leat HCP 7.0)
