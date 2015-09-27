@@ -24,12 +24,12 @@ import sys
 from pprint import pprint
 import logging
 import cmd
-import hcpsdk
 from datetime import date, timedelta
+import hcpsdk
 
-USR = 'service'
-PWD = 'service01'
-TGT = 'admin.hcp72.archivas.com'
+USR = 'user'
+PWD = 'password'
+TGT = 'admin.hcp72.snomis.local'
 PORT = 9090
 
 
@@ -212,7 +212,10 @@ def showdownloadprogress(nBytes):
 if __name__ == '__main__':
 
     auth = hcpsdk.NativeAuthorization(USR,PWD)
-    t = hcpsdk.Target(TGT, auth, port=PORT)
+    try:
+        t = hcpsdk.Target(TGT, auth, port=PORT)
+    except hcpsdk.ips.IpsError as e:
+        sys.exit('Can\'t resolve "{}"\n\t==> {}'.format(TGT, e))
     l = hcpsdk.mapi.Logs(t, debuglevel=0)
 
     # create console handler with a higher log level
