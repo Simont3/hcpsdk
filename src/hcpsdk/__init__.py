@@ -168,7 +168,6 @@ class BaseAuthorization(object):
         Calculate or acquire the authorization token (or whatever needed) to build the
         required authorization header(s).
         """
-        self.logger = logging.getLogger(__name__ + '__name__')
         self.headers = {}   # the headers that authorize a request
 
     def _createauthorization(self):
@@ -215,6 +214,7 @@ class DummyAuthorization(BaseAuthorization):
     """
     def __init__(self):
         super().__init__()
+        self.logger = logging.getLogger(__name__ + '.DummyAuthorization')
         self.headers = {'HCPSDK_DUMMY': 'DUMMY'}
         self.logger.debug('*I_DUMMY* dummy authorization initialized')
 
@@ -229,6 +229,7 @@ class NativeAuthorization(BaseAuthorization):
         :param password:    his password
         """
         super().__init__()
+        self.logger = logging.getLogger(__name__ + '.NativeAuthorization')
         self.headers = self._createauthorization(user, password)
         self.logger.debug('*I_NATIVE* authorization initialized for user: {}'
                           .format(user))
@@ -890,7 +891,7 @@ def checkport(target, port):
     :returns:       nothing
     :raises:        *hcpsdk.HcpsdkPortError* in case the port is invalid
     """
-    logger = logging.getLogger(__name__ )
+    logger = logging.getLogger(__name__)
 
     if target.port != port:
         raise HcpsdkPortError('Target initialized for port {}, not {}'

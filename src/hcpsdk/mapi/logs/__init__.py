@@ -87,12 +87,12 @@ class Logs(object):
                             initialized with an incorrect port for use by
                             this class.
         """
+        self.logger = logging.getLogger(__name__ + '.Logs')
         hcpsdk.checkport(target, hcpsdk.P_MAPI)
         self.target = target
         self.debuglevel = debuglevel
         self.connect_time = 0.0
         self.service_time = 0.0
-        self.logger = logging.getLogger('hcpsdk.mapi.Logs')
         self.prepare_xml = None
 
         try:
@@ -110,6 +110,7 @@ class Logs(object):
         if not message:
             raise LogsError('log message required')
 
+        self.logger.debug('mark log with "{}"'.format(message))
         try:
             self.con.POST('/mapi/logs', params={'mark': message})
         except Exception as e:
@@ -363,6 +364,7 @@ class Logs(object):
         """
         Close the underlying *hcpsdk.Connection()*.
         """
+        self.logger.debug('close Logs()')
         self.con.close()
 
 

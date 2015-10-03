@@ -1,7 +1,7 @@
 Release History
 ===============
 
-**0.9.3-0 2015-09-27**
+**0.9.3-0 2015-10-03**
 
 *   Added:
 
@@ -16,6 +16,8 @@ Release History
     * Corrected the documentation buildout for Exceptions
     * Fixed a bug that prevented internal connections to be closed when
       idletimer fired
+    * Fixed the logger initialization per class throughout the entire
+      code base
 
 **0.9.2-38 2015-08-31**
 

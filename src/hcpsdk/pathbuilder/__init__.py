@@ -58,7 +58,7 @@ class PathBuilder(object):
                             metadata annotation containing a tag with the
                             original filename of the object.
         """
-        self.logger = logging.getLogger(__name__)
+        self.logger = logging.getLogger(__name__ + '.PathBuilder')
         self.leadingpath = initialpath
         self.annotation = annotation
 

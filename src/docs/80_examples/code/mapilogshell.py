@@ -27,9 +27,9 @@ import cmd
 from datetime import date, timedelta
 import hcpsdk
 
-USR = 'user'
-PWD = 'password'
-TGT = 'admin.hcp72.snomis.local'
+USR = 'service'
+PWD = 'service01'
+TGT = 'admin.hcp72.archivas.com'
 PORT = 9090
 
 

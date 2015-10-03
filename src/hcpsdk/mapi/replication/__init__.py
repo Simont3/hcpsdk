@@ -66,12 +66,12 @@ class Replication(object):
         :param target:      an hcpsdk.Target object
         :param debuglevel:  0..9 (used in *http.client*)
         """
+        self.logger = logging.getLogger(__name__ + '.Replication')
         hcpsdk.checkport(target, hcpsdk.P_MAPI)
         self.target = target
         self.debuglevel = debuglevel
         self.connect_time = 0.0
         self.service_time = 0.0
-        self.logger = logging.getLogger('hcpsdk.mapi.Replication')
 
     def getreplicationsettings(self):
         """
