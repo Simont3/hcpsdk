@@ -147,8 +147,10 @@ class LogsShell(cmd.Cmd):
                       self.end.strftime('%Y/%m/%d')))
         try:
             with open(filename, 'w+b') as outhdl:
-                l.download(hdl=outhdl, nodes=self.nodes, snodes=self.snodes,
-                           logs=self.logs, progresshook=showdownloadprogress)
+                hdl, n = l.download(hdl=outhdl, nodes=self.nodes,
+                                    snodes=self.snodes, logs=self.logs,
+                                    progresshook=showdownloadprogress)
+                print('HCP suggested filename: {}'.format(n))
         except Exception as e:
             print('Error: {}'.format(e))
         else:

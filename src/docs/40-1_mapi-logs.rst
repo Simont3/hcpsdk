@@ -67,6 +67,13 @@ Classes
 
          A list containing all other L_* log types.
 
+   **Class attributes**
+
+   .. attribute:: suggestedfilename
+
+      When a *download* has been started, this attribute holds the filename
+      suggested by HCP.
+
    **Class methodes:**
 
    .. automethod:: mark

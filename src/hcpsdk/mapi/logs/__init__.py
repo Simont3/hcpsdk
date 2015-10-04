@@ -94,6 +94,7 @@ class Logs(object):
         self.connect_time = 0.0
         self.service_time = 0.0
         self.prepare_xml = None
+        self.suggestedfilename = '' # the filename suggested by HCP
 
         try:
             self.con = hcpsdk.Connection(self.target, debuglevel=self.debuglevel)
@@ -150,10 +151,9 @@ class Logs(object):
         if type(snodes) != list:
             raise ValueError('snodes not of type(list)')
 
-        self.logger.debug('preparing logs for {}/{}/{} to {}/{}/{}'
-                          .format(self.startdate.year, self.startdate.month,
-                                  self.startdate.day, self.enddate.year,
-                                  self.enddate.month, self.enddate.day))
+        self.logger.debug('preparing logs for {} to {}'
+                          .format(self.startdate.isoformat(),
+                                  self.enddate.isoformat()))
 
         # Prepare the XML command file
         if snodes:
@@ -170,7 +170,7 @@ class Logs(object):
                                     self.startdate.year, self.enddate.month,
                                     self.enddate.day, self.enddate.year,
                                     xsnodes)
-        self.logger.debug('prepare_xml: {}'.format(self.prepare_xml))
+        # self.logger.debug('prepare_xml: {}'.format(self.prepare_xml))
 
         try:
             self.con.POST('/mapi/logs/prepare', body=self.prepare_xml,
@@ -257,8 +257,9 @@ class Logs(object):
         :param hidden:  the temporary file created will be hidden if possible
                         (see `tempfile.TemporaryFile()
                         <https://docs.python.org/3/library/tempfile.html#tempfile.TemporaryFile>`_)
-        :returns:       the file handle holding the received logs,
-                        positioned at byte 0.
+        :returns:       a 2-tuple: the file handle holding the received logs,
+                        positioned at byte 0 and the filename suggested by
+                        HCP
         :raises:        *LogsError* or *LogsNotReadyError*
         """
 
@@ -305,6 +306,8 @@ class Logs(object):
             self.logger.debug('result: {} - {}'.format(self.con.response_status,
                                                        self.con.response_reason))
             self.logger.debug('returned headers: {}'.format(self.con.getheaders()))
+            suggestedfilename = self.con.getheader('Content-Disposition',
+                                                   'name=no-name').split('=')[1]
 
         if self.con.response_status == 200:
             numbytes = 0
@@ -351,6 +354,7 @@ class Logs(object):
             self.con.read() # cleanup
 
         if self.con.response_status == 200:
+            self.suggestedfilename = ''
             return True
         else:
             self.logger.debug('{} - {} (cancel failed)'
@@ -365,6 +369,7 @@ class Logs(object):
         Close the underlying *hcpsdk.Connection()*.
         """
         self.logger.debug('close Logs()')
+        self.suggestedfilename = ''
         self.con.close()
 
 
