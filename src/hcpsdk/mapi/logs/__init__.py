@@ -214,6 +214,7 @@ class Logs(object):
                          content: list # one or more of: L_ACCESS, L_SYSTEM,
                                        # L_SERVICE, L_APPLICATION)
                         }
+        :raises:    re-raises whatever is raised below
         """
         self.logger.debug('status query issued')
 
@@ -221,7 +222,7 @@ class Logs(object):
             self.con.GET('/mapi/logs')
         except Exception as e:
             self.logger.error(e)
-            print('error in status(): {}'.format(e))
+            raise
         else:
             self.logger.debug('response headers: {}'.format(self.con.getheaders()))
             xml = self.con.read().decode()
@@ -320,7 +321,6 @@ class Logs(object):
                     if d:
                         self.hdl.write(d)
                     else:
-                        print()
                         break
             except Exception as e:
                 raise LogsError(e)

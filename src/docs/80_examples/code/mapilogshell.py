@@ -27,10 +27,10 @@ import cmd
 from datetime import date, timedelta
 import hcpsdk
 
-USR = 'service'
-PWD = 'service01'
+USR = 'logmon'
+PWD = 'logmon01'
 TGT = 'admin.hcp72.archivas.com'
-PORT = 9090
+PORT = hcpsdk.P_MAPI
 
 
 class LogsShell(cmd.Cmd):
@@ -59,7 +59,10 @@ class LogsShell(cmd.Cmd):
     def do_status(self, arg):
         'status - query HCP for the log preparation status'
         log.debug('do_status() called')
-        pprint(l.status())
+        try:
+            pprint(l.status())
+        except Exception as e:
+            print(e)
 
     def do_prepare(self, arg):
         'prepare - trigger HCP to prepare the logs for later download'
@@ -161,7 +164,7 @@ class LogsShell(cmd.Cmd):
         try:
             l.cancel()
         except Exception as e:
-            print('cancel: {}'.format(e))
+            print('cancel failed: {}'.format(e))
         else:
             print('cancel done')
 
@@ -187,7 +190,7 @@ class LogsShell(cmd.Cmd):
             log.debug('debug enabled')
             print('debug enabled')
         else:
-            log.setLevel(logging.INFO)
+            log.setLevel(logging.CRITICAL)
             print('debug disabled')
 
     def emptyline(self):
@@ -222,12 +225,12 @@ if __name__ == '__main__':
 
     # create console handler with a higher log level
     sh = logging.StreamHandler(sys.stderr)
-    sh.setLevel(logging.DEBUG)
     fh = logging.Formatter("[%(levelname)-8s]: %(message)s")
     sh.setFormatter(fh)
     log = logging.getLogger()
     log.addHandler(sh)
-    log.setLevel(logging.INFO)
+    # this makes the logger silent, until *debug* has activated
+    log.setLevel(logging.CRITICAL)
 
 
     LogsShell().cmdloop()

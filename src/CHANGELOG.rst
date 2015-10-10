@@ -18,6 +18,7 @@ Release History
       idletimer fired
     * Fixed the logger initialization per class throughout the entire
       code base
+    * Added exception handling for *ConnectionRefusedError*
 
 **0.9.2-38 2015-08-31**
 

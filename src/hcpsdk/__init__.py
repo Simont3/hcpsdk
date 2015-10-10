@@ -530,6 +530,14 @@ class Connection(object):
                 """
                 self._fail = None
                 raise
+            except ConnectionRefusedError as e:
+                '''
+                This is a trigger for the case that we were able to get an
+                IP address, but a connection to it was actively refused.
+                '''
+                self.close()
+                raise HcpsdkError('Unable to connect ({})'
+                                  .format(str(e)))
             except (http.client.NotConnected, AttributeError) as e:
                 """
                 This is a trigger for the case the Connection is not open
