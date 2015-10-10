@@ -1,12 +1,14 @@
 Release History
 ===============
 
-**0.9.3-0 2015-10-03**
+**0.9.3-0 2015-10-10**
 
 *   Added:
 
     * Added access to the *logs* endpoint invented with HCP 7.2
       (*hcpsdk.mapi.Logs()*)
+    * Provide an example script, based on cmd.cmd() to manually explore the
+      log download MAPI. See documentation.
 
 *   Changed:
 
