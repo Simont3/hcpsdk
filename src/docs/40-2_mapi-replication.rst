@@ -1,10 +1,16 @@
-:mod:`hcpsdk.mapi` --- MAPI access
-==================================
+MAPI - Replication management
+=============================
 
 .. automodule:: hcpsdk.mapi
    :synopsis: Access to selected Management API (:term:`MAPI`) functionality.
 
-**hcpsdk.mapi** provides access to selected :term:`MAPI` functions.
+This class allows to query HCP for replication links, their settings and
+state. It also allows to trigger a replication link failover anf failback.
+
+.. Note::
+
+  To be able to use this class, HCP needs to run at least
+  **version 7.0**.
 
 
 Classes
@@ -128,10 +134,6 @@ Exceptions
 ^^^^^^^^^^
 
 .. autoexception:: ReplicationSettingsError
-
-   .. attribute:: reason
-
-      An error description.
 
 
 Example

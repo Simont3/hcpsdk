@@ -40,11 +40,11 @@ class Info(object):
         :param target:      an **hcpsdk.Target** object
         :param debuglevel:  0..9 (propagated to *http.client*)
         """
+        self.logger = logging.getLogger(__name__ + '.Info')
         self.target = target
         self.debuglevel = debuglevel
         self.connect_time = 0.0
         self.service_time = 0.0
-        self.logger = logging.getLogger('hcpsdk.namespace.info')
 
     def nsstatistics(self):
         """

@@ -49,9 +49,6 @@ Focus
 For using **hcpsdk** with the :term:`Default Namespace <Default Namespace>`,
 see :doc:`Appendix 1 <A0_appendixes/A1_apdx1_defns>`.
 
-Using the **hcpsdk.mapi.replication** class needs functionality
-invented with HCP version 7.
-
 
 Coding for HCP
 --------------

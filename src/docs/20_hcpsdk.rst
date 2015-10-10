@@ -1,5 +1,5 @@
 :mod:`hcpsdk` --- object access
-============================================
+===============================
 
 .. automodule:: hcpsdk
    :synopsis: Framework for HCP access.
@@ -33,29 +33,37 @@ Setup is easy (:ref:`see example below <hcpsdk_example>`):
         Don't forget to close *Connection* objects when finished with them!
 
 
-Methods
-^^^^^^^
+Helper Functions
+^^^^^^^^^^^^^^^^
 
 .. py:method:: version()
 
    Return the full version of the HCPsdk (|release|).
 
+.. autofunction:: checkport
 
-Classes
-^^^^^^^
+Constants
+^^^^^^^^^
 
-.. autoclass:: NativeAuthorization
-   :members:
+**Ports**
 
-.. autoclass:: DummyAuthorization
-   :members:
+   .. attribute:: P_HTTP
 
-.. _hcpsdk_target:
+      Port 80 - insecure Namespace access
 
-.. autoclass:: Target
-   :members:
+   .. attribute:: P_HTTPS
 
-   **Class constants:**
+      Port 443 - secure Namespace access
+
+   .. attribute:: P_SEARCH
+
+      Port 8888 - search facility
+
+   .. attribute:: P_MAPI
+
+      Port 9090 - Management API access
+
+**Interfaces**
 
    .. attribute:: I_NATIVE
 
@@ -64,6 +72,8 @@ Classes
    .. attribute:: I_DUMMY
 
       HCP's http dialect for access to HCPs :term:`Default Namespace <Default Namespace>`.
+
+**Replica strategy modes**
 
    .. attribute:: RS_READ_ALLOWED
 
@@ -80,6 +90,22 @@ Classes
    .. attribute:: RS_WRITE_ON_FAILOVER
 
       Allow write to replica when failed over
+
+
+Classes
+^^^^^^^
+
+.. autoclass:: NativeAuthorization
+   :members:
+
+.. autoclass:: DummyAuthorization
+   :members:
+
+.. _hcpsdk_target:
+
+.. autoclass:: Target
+   :members:
+
 
    **Read-only class attributes:**
 
@@ -155,47 +181,15 @@ Exceptions
 
 .. autoexception:: HcpsdkError
 
-   Used to signal a generic error in **hcpsdk**.
-
-   .. attribute:: reason
-
-      An error description.
-
 .. autoexception:: HcpsdkCantConnectError
-
-   Used to signal that a connection couldn't be established.
-
-   .. attribute:: reason
-
-      An error description.
 
 .. autoexception:: HcpsdkTimeoutError
 
-   Used to signal a Connection timeout.
-
-   .. attribute:: reason
-
-      An error description.
-
 .. autoexception:: HcpsdkCertificateError
 
-   Raised if the *SSL context* could doesn't verify a certificate
-   presented by HCP.
-
-   .. attribute:: reason
-
-      An error description.
+.. autoexception:: HcpsdkPortError
 
 .. autoexception:: HcpsdkReplicaInitError
-
-   Used to signal that the Target for a replica HCP couldn't be
-   initialized (typically, this is a name resolution problem). **If
-   this exception is raised, the primary Target's init failed, too.**
-   You'll need to retry!
-
-   .. attribute:: reason
-
-      An error description.
 
 
 .. _hcpsdk_example:

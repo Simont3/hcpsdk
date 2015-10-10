@@ -14,12 +14,13 @@ Contents:
     15_state_of_implementation
     17_installation
     18_threadsafety
+    19_replication
     20_hcpsdk
     22_https
     25_ips
     30_namespace
     35_pathbuilder
-    40_mapi
+    40-0_mapi
     80_examples/examples
     98_license
     99_about

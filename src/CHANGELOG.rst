@@ -1,6 +1,27 @@
 Release History
 ===============
 
+**0.9.3-0 2015-10-10**
+
+*   Added:
+
+    * Added access to the *logs* endpoint invented with HCP 7.2
+      (*hcpsdk.mapi.Logs()*)
+    * Provide an example script, based on cmd.cmd() to manually explore the
+      log download MAPI. See documentation.
+
+*   Changed:
+
+    * Splitted *hcpsdk.mapi* classes into separate packages (*logs* and
+      *replication*, yet), while maintaining accessibility through
+      *hcpsdk.mapi.Logs* and *hcpsdk.mapi.Replication*, respectively.
+    * Corrected the documentation buildout for Exceptions
+    * Fixed a bug that prevented internal connections to be closed when
+      idletimer fired
+    * Fixed the logger initialization per class throughout the entire
+      code base
+    * Added exception handling for *ConnectionRefusedError*
+
 **0.9.2-38 2015-08-31**
 
 *   Added:

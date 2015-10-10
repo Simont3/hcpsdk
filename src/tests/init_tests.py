@@ -64,3 +64,26 @@ R_AUTH      = hcpsdk.NativeAuthorization(R_USER, R_PASSWORD)
 R_ADMUSER   = "service"
 R_ADMPWD    = "service01"
 R_ADMAUTH      = hcpsdk.NativeAuthorization(R_ADMUSER, R_ADMPWD)
+
+
+# primary HCP for mapi.Logs() tests
+L_HCP       = 'hcp72.archivas.com'
+L_ADMIN     = 'admin.' + L_HCP
+L_TENANT    = 'm.' + L_HCP
+L_NS_GOOD   = 'n1.' + L_TENANT
+L_NS_BAD    = "this_wont_work.at-all"
+L_PORT      = 80
+L_SSLPORT   = 443
+L_ADMINPORT = 8000
+L_MAPIPORT  = 9090
+L_DNSCACHE  = True
+
+L_USER      = "n"
+L_PASSWORD  = "n01"
+L_AUTH      = hcpsdk.NativeAuthorization(L_USER, L_PASSWORD)
+
+L_ADMUSER   = "service"
+L_ADMPWD    = "service01"
+L_ADMAUTH      = hcpsdk.NativeAuthorization(L_ADMUSER, L_ADMPWD)
+
+

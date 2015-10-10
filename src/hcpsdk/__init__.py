@@ -65,48 +65,80 @@ version = _Version()
 
 class HcpsdkError(Exception):
     """
-    Subclasses that define an __init__ must call Exception.__init__
-    or define self.args.  Otherwise, str() will fail.
+    Raised on generic errors in **hcpsdk**.
     """
     def __init__(self, reason):
-        self.args = reason,
-        self.reason = reason
+        """
+        :param reason:  an error description
+        """
+        self.args = (reason,)
 
 
 class HcpsdkCantConnectError(HcpsdkError):
     """
-    Raised if we can't connect to the HCP node
+    Raised if a connection couldn't be established.
     """
     def __init__(self, reason):
-        self.args = reason,
-        self.reason = reason
+        """
+        :param reason:  an error description
+        """
+        self.args = (reason,)
 
 
 class HcpsdkTimeoutError(HcpsdkError):
     """
-    Raised if we have a timeout
+    Raised if a Connection timed out.
     """
     def __init__(self, reason):
-        self.args = reason,
-        self.reason = reason
+        """
+        :param reason:  an error description
+        """
+        self.args = (reason,)
 
 
 class HcpsdkCertificateError(HcpsdkError):
     """
-    Raised if we can't verify against the presented ssl certificate
+    Raised if the *SSL context* doesn't verify a certificate
+    presented by HCP.
     """
     def __init__(self, reason):
-        self.args = reason,
-        self.reason = reason
+        """
+        :param reason:  an error description
+        """
+        self.args = (reason,)
 
 
 class HcpsdkReplicaInitError(HcpsdkError):
     """
-    Raised if we can't setup the internal *Target* for the replica HCP
+    Raised if the setup of the internal *Target* for the replica HCP failed
+    (typically, this is a name resolution problem). **If
+    this exception is raised, the primary Target's init failed, too.**
+    You'll need to retry!
     """
     def __init__(self, reason):
-        self.args = reason,
-        self.reason = reason
+        """
+        :param reason:  an error description
+        """
+        self.args = (reason,)
+
+
+class HcpsdkPortError(HcpsdkError):
+    """
+    Raised if the Target is initialized with an invalid port.
+    """
+    def __init__(self, reason):
+        """
+        :param reason:  an error description
+        """
+        self.args = (reason,)
+
+# Port constants
+P_HTTP = 80
+P_HTTPS = 443
+P_MGMT = 8000
+P_SEARCH = 8888
+P_MAPI = 9090
+
 
 # Interface constants
 I_DUMMY = 'I_DUMMY'
@@ -136,7 +168,6 @@ class BaseAuthorization(object):
         Calculate or acquire the authorization token (or whatever needed) to build the
         required authorization header(s).
         """
-        self.logger = logging.getLogger(__name__ + '__name__')
         self.headers = {}   # the headers that authorize a request
 
     def _createauthorization(self):
@@ -183,6 +214,7 @@ class DummyAuthorization(BaseAuthorization):
     """
     def __init__(self):
         super().__init__()
+        self.logger = logging.getLogger(__name__ + '.DummyAuthorization')
         self.headers = {'HCPSDK_DUMMY': 'DUMMY'}
         self.logger.debug('*I_DUMMY* dummy authorization initialized')
 
@@ -197,6 +229,7 @@ class NativeAuthorization(BaseAuthorization):
         :param password:    his password
         """
         super().__init__()
+        self.logger = logging.getLogger(__name__ + '.NativeAuthorization')
         self.headers = self._createauthorization(user, password)
         self.logger.debug('*I_NATIVE* authorization initialized for user: {}'
                           .format(user))
@@ -228,16 +261,15 @@ class Target(object):
         """
         :param fqdn:                ([namespace.]tenant.hcp.loc)
         :param authorization:       an instance of one of BaseAuthorization's subclasses
-        :param port:                port number (443, 8000 and 9090 are seen as ports
-                                    using ssl)
+        :param port:                one of the port constants (*hcpsdk.P_**)
         :param dnscache:            if True, use the system resolver (which **might** do
                                     local caching), else use an internal resolver,
                                     bypassing any cache available
         :param sslcontext:          the context used to handle https requests; defaults to
                                     no certificate verification
         :param interface:           the HCP interface to use (I_NATIVE)
-        :param replica_fqdn:        the replica HCP's FQDN (not yet implemented)
-        :param replica_strategy:    ORed combination of the RS_* modes
+        :param replica_fqdn:        the replica HCP's FQDN
+        :param replica_strategy:    OR'ed combination of the RS_* modes
         :raises:                    *ips.IpsError* if DNS query fails, *HcpsdkError* in all
                                     other fault cases
         """
@@ -249,12 +281,6 @@ class Target(object):
         self.__headers = {'Host': self.__fqdn}
         self.__port = port
         self.__ssl = self.__port in SSL_PORTS
-
-        # TODO: remove after test
-        # if self.__port in SSL_PORTS:
-        #     self.__ssl = True
-        # else:
-        #     self.__ssl = False
 
         self.interface = interface
         self.replica = None  # placeholder for a replica's *Target* object
@@ -398,10 +424,12 @@ class Connection(object):
 
     def __cancel_idletimer(self):
         """
-        Cancel an active Connection keep-alive timer - called if timer has passed
+        Cancel an active Connection keep-alive timer - auto-called if timer
+        has passed
         """
         if self.idletimer:
             self.idletimer.cancel()
+            self.close()
             self.logger.log(logging.DEBUG, 'idletimer timed out: {}'.format(self.idletimer))
             self.idletimer = None
 
@@ -502,6 +530,14 @@ class Connection(object):
                 """
                 self._fail = None
                 raise
+            except ConnectionRefusedError as e:
+                '''
+                This is a trigger for the case that we were able to get an
+                IP address, but a connection to it was actively refused.
+                '''
+                self.close()
+                raise HcpsdkError('Unable to connect ({})'
+                                  .format(str(e)))
             except (http.client.NotConnected, AttributeError) as e:
                 """
                 This is a trigger for the case the Connection is not open
@@ -851,4 +887,21 @@ class Connection(object):
         return ("<{} class initialized for fqdn {} @ {}>".format(Connection.__name__,
                                                                  self.__target.fqdn,
                                                                  self.__address))
+
+
+# helper functions
+def checkport(target, port):
+    """
+    Check if an *hcpsdk.Target()* object is initialized with the correct port.
+
+    :param target:  the *hcpsdk.Target()* object to check
+    :param port:    the needed port
+    :returns:       nothing
+    :raises:        *hcpsdk.HcpsdkPortError* in case the port is invalid
+    """
+    logger = logging.getLogger(__name__)
+
+    if target.port != port:
+        raise HcpsdkPortError('Target initialized for port {}, not {}'
+                              .format(target.port, port))
 

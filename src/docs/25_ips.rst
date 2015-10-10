@@ -57,8 +57,4 @@ Exceptions
 
 .. autoexception:: IpsError
 
-   .. attribute:: reason
-
-      An error description.
-
 

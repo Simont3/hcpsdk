@@ -54,10 +54,3 @@ Exceptions
 
 .. autoexception:: PathBuilderError
 
-    Used to signal an error during unique object name generation or object
-    name to path mapping.
-
-   .. attribute:: reason
-
-      An error description.
-
