@@ -1,6 +1,8 @@
 MAPI - Log Resources
 ====================
 
+.. versionadded:: 0.9.3
+
 .. automodule:: hcpsdk.mapi
    :synopsis: Access to selected Management API (:term:`MAPI`) functionality.
 

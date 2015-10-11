@@ -6,9 +6,12 @@
 
 **hcpsdk.mapi** provides access to selected :term:`MAPI` functions.
 
-*  HCP needs to have the Management API (MAPI) enabled to make use
+.. Note::
+
+   HCP needs to have the Management API (MAPI) enabled to make use
    of the classes in this module.
-*  The *hcpsdk.Target()* object used needs to be initialized with
+
+   The *hcpsdk.Target()* object used needs to be initialized with
    *port=hcpsdk.P_MAPI*.
 
 ..  toctree::
