@@ -1,6 +1,12 @@
 Release History
 ===============
 
+**0.9.3-3 2015-10-12**
+
+*   Changed:
+
+    * Fixed a bug in setup.py to enable pip install on Windows
+
 **0.9.3-2 2015-10-12**
 
 *   Changed:
