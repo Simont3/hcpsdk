@@ -8,28 +8,26 @@ connections.
 
 It's that easy:
 
-    ::
+    >>> import hcpsdk
 
-        >>> import hcpsdk
+    >>> # initialize an *Authorization* object
+    >>> auth = hcpsdk.NativeAuthorization('user', 'password')
 
-        >>> # initialize an *Authorization* object
-        >>> auth = hcpsdk.NativeAuthorization('user', 'password')
+    >>> # initialize a *Target* object
+    >>> t = hcpsdk.Target("namespace.tenant.hcp.your.domain",
+                          auth, port=443)
 
-        >>> # initialize a *Target* object
-        >>> t = hcpsdk.Target("namespace.tenant.hcp.your.domain",
-                              auth, port=443)
+    >>> # initialize a Connection to the `Target``
+    >>> c = hcpsdk.Connection(t)
 
-        >>> # initialize a Connection to the `Target``
-        >>> c = hcpsdk.Connection(t)
-
-        >>> # do something with the connection...
-        >>> r = c.GET('/rest/your_file.txt')
-        >>> c.response_status, c.response_reason
-        (200, 'OK')
-        >>> r.read()
-        b'some data...'
-        >>>
-        >>> c.close()
+    >>> # do something with the connection...
+    >>> r = c.GET('/rest/your_file.txt')
+    >>> c.response_status, c.response_reason
+    (200, 'OK')
+    >>> r.read()
+    b'some data...'
+    >>>
+    >>> c.close()
 
 
 Features
@@ -48,7 +46,7 @@ Features
 Documentation
 -------------
 
-Hosted at `readthedocs.org <http://hcpsdk.readthedocs.org>`_
+Hosted at [readthedocs.org](http://hcpsdk.readthedocs.org)
 
 
 Dependencies
@@ -56,10 +54,9 @@ Dependencies
 
 **hcpsdk** depends on these packages:
 
-    *   `dnspython3 <http://www.dnspython.org>`_ -  Used for non-cached name
+* [dnspython3](http://www.dnspython.org) -  Used for non-cached name
         resolution when bypassing the system's resolver.
-
-    *   `sphinx <http://sphinx-doc.org>`_ -  Used for local documentation
+* [sphinx](http://sphinx-doc.org) -  Used for local documentation
         builds from source code and \*.rst files.
 
 Installation
@@ -67,29 +64,31 @@ Installation
 
 Install hcpsdk by running:
 
-    ``pip install hcpsdk``
+    $ pip install hcpsdk
 
-    -or-
+-or-
 
-    * get the source from `GitHub <https://github.com/Simont3/hcpsdk/archive/master.zip>`_
-    * unzip the archive
-    * run ``python setup.py install``
+get the source from
+  [GitHub](https://github.com/Simont3/hcpsdk/archive/master.zip), unzip the archive and run:
+    
+    $ python setup.py install
 
-    -or-
+-or-
 
-    * Fork at `Github <https://github.com/Simont3/hcpsdk>`_
+fork at [Github](https://github.com/Simont3/hcpsdk)
 
 Contribute
 ----------
 
-- Issue Tracker: `<https://github.com/simont3/hcpsdk/issues>`_
-- Source Code: `<https://github.com/Simont3/hcpsdk>`_
+* [Issue Tracker](https://github.com/simont3/hcpsdk/issues)
+* [Source Code](https://github.com/Simont3/hcpsdk)
 
 Support
 -------
 
 If you find any bugs, please let us know via the Issue Tracker;
-if you have comments or suggestions, send an email to `<sw@snomis.de>`_
+if you have comments or suggestions, send an email to
+[sw@snomis.de](mailto:sw@snomis.de)
 
 License
 -------
