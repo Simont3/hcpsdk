@@ -1,6 +1,12 @@
 Release History
 ===============
 
+**0.9.3-5 2015-10-20**
+
+*   Changed:
+
+    * removed alabaster from the list of dependencies for source installs
+
 **0.9.3-4 2015-10-12**
 
 **0.9.3-3 2015-10-12**
