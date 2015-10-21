@@ -20,23 +20,18 @@
 # IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
 # CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
+import time
 
-class _Version(object):
-    """
-    Defines version and build for the HCPsdk.
-    """
-    release = 0
-    major = 9
-    minor = 4
-    build = 0
+from datetime import date
+import xml.etree.ElementTree as Et
+from collections import OrderedDict
+from tempfile import TemporaryFile, NamedTemporaryFile
+import logging
+import hcpsdk
 
-    fullversion = '{}.{}.{}-{}'.format(release, major, minor, build)
 
-    # noinspection PyUnusedLocal
-    def __call__(self, *args, **kwargs):
-        return self.__str__()
+__all__ = []
 
-    def __str__(self):
-        return _Version.fullversion
+logging.getLogger('hcpsdk.mapi.chargeback').addHandler(logging.NullHandler())
 
 
