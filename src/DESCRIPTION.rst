@@ -1,4 +1,3 @@
-
 HCPsdk
 ======
 
@@ -37,11 +36,8 @@ Features
 --------
 
 - Handles HCP as a target object
-- Replica-aware (replica can be part of a target object)
-- Various strategies on how to use a replica
 - Connection objects, while tied to a target object, allow
-  access to HCP through the various http/REST dialects
-  (native, HS3, HSwift)
+  access to HCP through HCPs native http/REST dialect
 - Higher level modules provide easy access to namespace
   statistics and some MAPI functionality, along with
   the ability to create unique object names / paths
@@ -49,13 +45,10 @@ Features
 Dependencies
 ------------
 
-**hcpsdk** depends on these packages:
+**hcpsdk** depends on these package(s):
 
     *   `dnspython3 <http://www.dnspython.org>`_ -  Used for non-cached name
         resolution when bypassing the system's resolver.
-
-    *   `sphinx <http://sphinx-doc.org>`_ -  Used for local documentation
-        builds from source code and \*.rst files.
 
 Documentation
 -------------
@@ -71,24 +64,24 @@ Install hcpsdk by running:
 
     -or-
 
-    * get the source from `GitHub <https://github.com/Simont3/hcpsdk/archive/master.zip>`_
+    * get the source from `GitHub <https://github.com/simont3/hcpsdk/archive/master.zip>`_
     * unzip the archive
     * run ``python setup.py install``
 
     -or-
 
-    * Fork at `Github <https://github.com/Simont3/hcpsdk>`_
+    * Fork at `Github <https://github.com/simont3/hcpsdk>`_
 
 Contribute
 ----------
 
 - Issue Tracker: `<https://github.com/simont3/hcpsdk/issues>`_
-- Source Code: `<https://github.com/Simont3/hcpsdk>`_
+- Source Code: `<https://github.com/simont3/hcpsdk>`_
 
 Support
 -------
 
-If you find any bugs, please let us know via the Issue Tracker;
+If you find any bugs, please let me know via the Issue Tracker;
 if you have comments or suggestions, send an email to `<sw@snomis.de>`_
 
 License
