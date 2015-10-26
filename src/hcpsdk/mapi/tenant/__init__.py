@@ -20,19 +20,18 @@
 # IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
 # CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-from datetime import datetime
-from io import StringIO
 import logging
 import hcpsdk
 
 
-__all__ = ['ChargebackError', 'ChargeBack']
+__all__ = ['TenantError', 'Tenant']
 
-logging.getLogger('hcpsdk.mapi.chargeback').addHandler(logging.NullHandler())
+logging.getLogger('hcpsdk.mapi.tenant').addHandler(logging.NullHandler())
 
-class ChargebackError(Exception):
+
+class TenantError(Exception):
     """
-    Base Exception used by the *hcpsdk.mapi.Chargeback()* class.
+    Base Exception used by the *hcpsdk.mapi.Tenant()* class.
     """
     def __init__(self, reason):
         """
@@ -41,58 +40,30 @@ class ChargebackError(Exception):
         self.args = (reason,)
 
 
-class ChargeBack(object):
-    '''
-    Access to HCP chargeback reports
-    '''
-
-    C_TOTAL = 'total'
-    C_DAY = 'day'
-    C_HOUR = 'hour'
-    C_ALL = [C_TOTAL, C_DAY, C_HOUR]
+class Tenant(object):
+    """
+    Access to Tenant resources
+    """
 
     def __init__(self, target, debuglevel=0):
-        '''
+        """
         :param target:      an hcpsdk.Target object
         :param debuglevel:  0..9 (used in *http.client*)
-        '''
-        self.logger = logging.getLogger(__name__ + '.Chargeback')
+        :raises:            *hcpsdk.HcpsdkPortError* in case *target* is
+                            initialized with an incorrect port for use by
+                            this class.
+        """
+        self.logger = logging.getLogger(__name__ + '.Tenant')
         hcpsdk.checkport(target, hcpsdk.P_MAPI)
         self.target = target
         self.debuglevel = debuglevel
         self.connect_time = 0.0
         self.service_time = 0.0
+        self.prepare_xml = None
+        self.suggestedfilename = '' # the filename suggested by HCP
 
         try:
             self.con = hcpsdk.Connection(self.target, debuglevel=self.debuglevel)
         except Exception as e:
             raise hcpsdk.HcpsdkError(str(e))
 
-
-    def request(self, start=None, end=None, intervall=C_TOTAL):
-        '''
-        Request a chargeback report for
-        :param start:       starttime (a datetime object)
-        :param end:         endtime (a datetime object)
-        :param intervall:   one out of [C_TOTAL, C_DAY, C_HOUR]
-        :return:
-        '''
-        if start and type(start) != datetime:
-            raise ValueError('start not of type(datetime.datetime)')
-        else:
-            self.start = start or datetime(1970,month=1,day=1,
-                                           hour=0,minute=0,second=0)
-        if end and type(end) != datetime:
-            raise ValueError('end not of type(datetime.datetime)')
-        else:
-            self.end = end or datetime.now()
-        if intervall not in ChargeBack.C_ALL:
-            raise ValueError('interval not in {}'.format(ChargeBack.C_ALL))
-        else:
-            self.intervall = intervall
-
-
-
-
-        # ToDo: remove test code
-        return('{}')
