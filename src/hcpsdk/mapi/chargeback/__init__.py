@@ -20,7 +20,8 @@
 # IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
 # CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-from datetime import datetime
+from datetime import datetime, timedelta
+from time import strftime
 from io import StringIO
 import logging
 import hcpsdk
@@ -46,12 +47,19 @@ class ChargeBack(object):
     Access to HCP chargeback reports
     '''
 
-    C_TOTAL = 'total'
-    C_DAY = 'day'
-    C_HOUR = 'hour'
-    C_ALL = [C_TOTAL, C_DAY, C_HOUR]
+    # the granularity modes allowed for chargeback collection
+    CBG_DAY = 'day'
+    CBG_HOUR = 'hour'
+    CBG_TOTAL = 'total'
+    CBG_ALL = [CBG_DAY, CBG_HOUR, CBG_TOTAL]
 
-    def __init__(self, target, debuglevel=0):
+    # the output formats available
+    CBM_CSV = 'text/csv'
+    CBM_JSON = 'application/json'
+    CBM_XML = 'application/xml'
+    CBM_ALL = [CBM_CSV, CBM_JSON, CBM_XML]
+
+    def __init__(self, target, debuglevel=9):
         '''
         :param target:      an hcpsdk.Target object
         :param debuglevel:  0..9 (used in *http.client*)
@@ -69,30 +77,70 @@ class ChargeBack(object):
             raise hcpsdk.HcpsdkError(str(e))
 
 
-    def request(self, start=None, end=None, intervall=C_TOTAL):
+    def request(self, tenant=None, start=None, end=None,
+                granularity=CBG_TOTAL, fmt=CBM_JSON):
         '''
         Request a chargeback report for
+        :param tenant:      the *Tenant* to collect from
         :param start:       starttime (a datetime object)
         :param end:         endtime (a datetime object)
-        :param intervall:   one out of [C_TOTAL, C_DAY, C_HOUR]
-        :return:
+        :param granularity: one out of CBG_ALL
+        :param fmt:         output format, one out of CBM_ALL
+        :return:            a StringIO object containing the report
         '''
+        if not tenant:
+            raise ValueError('no tenant given')
+        else:
+            self.tenant = tenant
         if start and type(start) != datetime:
             raise ValueError('start not of type(datetime.datetime)')
         else:
-            self.start = start or datetime(1970,month=1,day=1,
-                                           hour=0,minute=0,second=0)
+            self.start = start or datetime.now() - timedelta(days=180)
         if end and type(end) != datetime:
             raise ValueError('end not of type(datetime.datetime)')
         else:
             self.end = end or datetime.now()
-        if intervall not in ChargeBack.C_ALL:
-            raise ValueError('interval not in {}'.format(ChargeBack.C_ALL))
+        if granularity not in ChargeBack.CBG_ALL:
+            raise ValueError('granularity not in {}'
+                             .format(ChargeBack.CBG_ALL))
         else:
-            self.intervall = intervall
+            self.granularity = granularity
+        if fmt not in ChargeBack.CBM_ALL:
+            raise ValueError('fmt not in {}'.format(ChargeBack.CBM_ALL))
+        else:
+            self.fmt = fmt
 
+        self.logger.debug('request for {} ({} - {}), {}, {}'
+                          .format(self.tenant,
+                                  self.start.isoformat(),
+                                  self.end.isoformat(),
+                                  self.granularity, self.fmt))
 
+        try:
+            self.con.GET('/mapi/tenants/{}/chargebackReport'.format(self.tenant),
+                         params={'start': self.start.strftime('%Y-%m-%dT%H:%M:%S')+strftime('%z'),
+                                 'end': self.end.strftime('%Y-%m-%dT%H:%M:%S')+strftime('%z'),
+                                 'granularity': self.granularity},
+                         headers={'Accept': self.fmt})
+        except Exception as e:
+            self.logger.error(e)
+            raise ChargebackError(e)
+        else:
+            self.logger.debug('result: {} - {}'.format(self.con.response_status,
+                                                       self.con.response_reason))
+            self.logger.debug('returned headers: {}'.format(self.con.getheaders()))
 
+            if self.con.response_status == 200:
+                return(self.con.read())
+            else:
+                raise ChargebackError('{} - {} ({})'
+                                      .format(self.con.response_status,
+                                              self.con.response_reason,
+                                              self.con.getheader('X-HCP-ErrorMessage',
+                                                                 default='?')))
 
-        # ToDo: remove test code
-        return('{}')
+    def close(self):
+        '''
+        Close the underlying *hcpsdk.Connection* object
+        '''
+        self.con.close()

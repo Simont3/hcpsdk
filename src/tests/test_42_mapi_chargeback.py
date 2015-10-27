@@ -21,7 +21,10 @@
 # CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 import unittest
+import logging
+import sys
 from pprint import pprint
+import json
 
 import hcpsdk
 from datetime import datetime
@@ -30,6 +33,15 @@ import init_tests as it
 
 class TestHcpsdk_41_1_Mapi_Chargeback(unittest.TestCase):
     def setUp(self):
+        # create console handler with a higher log level
+        sh = logging.StreamHandler(sys.stderr)
+        fh = logging.Formatter("[%(levelname)-8s]: %(message)s")
+        sh.setFormatter(fh)
+        log = logging.getLogger()
+        log.addHandler(sh)
+        # this makes the logger silent, until *debug* has activated
+        log.setLevel(logging.DEBUG)
+
         self.hcptarget = hcpsdk.Target(it.L_ADMIN, it.L_ADMAUTH,
                                        port=it.L_MAPIPORT, dnscache=it.L_DNSCACHE)
         self.cb = hcpsdk.mapi.ChargeBack(self.hcptarget)
@@ -44,10 +56,15 @@ class TestHcpsdk_41_1_Mapi_Chargeback(unittest.TestCase):
         """
         print('test_1_10_chargeback_tenant_totals:')
 
-        l = self.cb.request(start=datetime(1970), end=datetime.now(),
-                            intervall=hcpsdk.mapi.ChargeBack.C_TOTAL)
-        pprint(l, indent=4)
+        l = self.cb.request(tenant='m', end=datetime.now(),
+                            granularity=hcpsdk.mapi.ChargeBack.CBG_TOTAL,
+                            fmt=hcpsdk.mapi.ChargeBack.CBM_JSON
+                            )
 
+        print()
+        print(json.dumps(l, indent=4))
+
+        self.assertTrue(type(l) == bytes)
 
 
 
