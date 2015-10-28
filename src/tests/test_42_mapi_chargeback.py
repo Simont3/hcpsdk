@@ -25,6 +25,7 @@ import logging
 import sys
 from pprint import pprint
 import json
+from _io import StringIO
 
 import hcpsdk
 from datetime import datetime
@@ -33,13 +34,11 @@ import init_tests as it
 
 class TestHcpsdk_41_1_Mapi_Chargeback(unittest.TestCase):
     def setUp(self):
-        # create console handler with a higher log level
         sh = logging.StreamHandler(sys.stderr)
         fh = logging.Formatter("[%(levelname)-8s]: %(message)s")
         sh.setFormatter(fh)
         log = logging.getLogger()
         log.addHandler(sh)
-        # this makes the logger silent, until *debug* has activated
         log.setLevel(logging.DEBUG)
 
         self.hcptarget = hcpsdk.Target(it.L_ADMIN, it.L_ADMAUTH,
@@ -57,40 +56,12 @@ class TestHcpsdk_41_1_Mapi_Chargeback(unittest.TestCase):
         print('test_1_10_chargeback_tenant_totals:')
 
         l = self.cb.request(tenant='m', end=datetime.now(),
-                            granularity=hcpsdk.mapi.ChargeBack.CBG_TOTAL,
+                            granularity=hcpsdk.mapi.ChargeBack.CBG_DAY,
                             fmt=hcpsdk.mapi.ChargeBack.CBM_JSON
                             )
 
         print()
-        print(json.dumps(l, indent=4))
+        print(type(l))
+        pprint(json.load(l), indent=4)
 
-        self.assertTrue(type(l) == bytes)
-
-
-
-        # self.assertTrue(l[0] == date(1970,1,1))
-        # self.assertTrue(l[1] == date.today())
-        # print('\tno date parameters: pass')
-        #
-        # l = self.logs.prepare(startdate=date.today() - timedelta(days=10),
-        #                       enddate=date.today() - timedelta(days=1),
-        #                       snodes=['s01','s02','s03'])
-        # pprint(l, indent=4)
-        # self.assertTrue(l[1] - l[0] == timedelta(days=9))
-        # print('\tpast 10 days: pass')
-        #
-        # with self.assertRaises(ValueError):
-        #      l = self.logs.prepare(startdate='10/10/2014',
-        #                            enddate='12/31/2099')
-        # print('\t\tstartdate: pass')
-        # with self.assertRaises(ValueError):
-        #      l = self.logs.prepare(startdate=date.today()-timedelta(days=10),
-        #                            enddate='12/31/2099')
-        # print('\t\tenddate: pass')
-        # with self.assertRaises(ValueError):
-        #      l = self.logs.prepare(startdate=date.today()-timedelta(days=10),
-        #                            enddate=date.today() - timedelta(days=1),
-        #                            snodes=('s01','s02','s03'))
-        # print('\t\tsnodes: pass')
-        # print('\tfalse paramaters: pass')
-        #
+        self.assertTrue(type(l) == StringIO)

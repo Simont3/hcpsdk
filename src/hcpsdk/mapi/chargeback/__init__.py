@@ -86,7 +86,8 @@ class ChargeBack(object):
         :param end:         endtime (a datetime object)
         :param granularity: one out of CBG_ALL
         :param fmt:         output format, one out of CBM_ALL
-        :return:            a StringIO object containing the report
+        :return:            a file-like object in text-mode containing the
+                            report
         '''
         if not tenant:
             raise ValueError('no tenant given')
@@ -120,7 +121,8 @@ class ChargeBack(object):
             self.con.GET('/mapi/tenants/{}/chargebackReport'.format(self.tenant),
                          params={'start': self.start.strftime('%Y-%m-%dT%H:%M:%S')+strftime('%z'),
                                  'end': self.end.strftime('%Y-%m-%dT%H:%M:%S')+strftime('%z'),
-                                 'granularity': self.granularity},
+                                 'granularity': self.granularity,
+                                 'prettyprint': 'true'},
                          headers={'Accept': self.fmt})
         except Exception as e:
             self.logger.error(e)
@@ -131,7 +133,9 @@ class ChargeBack(object):
             self.logger.debug('returned headers: {}'.format(self.con.getheaders()))
 
             if self.con.response_status == 200:
-                return(self.con.read())
+                ret = StringIO(initial_value=self.con.read().decode())
+                ret.seek(0)
+                return ret
             else:
                 raise ChargebackError('{} - {} ({})'
                                       .format(self.con.response_status,
