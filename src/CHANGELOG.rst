@@ -1,6 +1,13 @@
 Release History
 ===============
 
+**0.9.4-0 2015-XX-XX**
+
+*   Added:
+
+    *   added *hcpsdk.mapi.chargeback*
+    *   added trademarks to documentation
+
 **0.9.3-6 2015-10-20**
 
 **0.9.3-5 2015-10-20**

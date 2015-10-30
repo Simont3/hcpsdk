@@ -28,7 +28,7 @@ import json
 from _io import StringIO
 
 import hcpsdk
-from datetime import datetime
+from datetime import datetime, timedelta
 import init_tests as it
 
 
@@ -39,7 +39,7 @@ class TestHcpsdk_41_1_Mapi_Chargeback(unittest.TestCase):
         sh.setFormatter(fh)
         log = logging.getLogger()
         log.addHandler(sh)
-        log.setLevel(logging.DEBUG)
+        log.setLevel(logging.INFO)
 
         self.hcptarget = hcpsdk.Target(it.L_ADMIN, it.L_ADMAUTH,
                                        port=it.L_MAPIPORT, dnscache=it.L_DNSCACHE)
@@ -49,19 +49,56 @@ class TestHcpsdk_41_1_Mapi_Chargeback(unittest.TestCase):
         self.cb.close()
         del self.hcptarget
 
-    def test_1_10_chargeback_tenant_totals(self):
+    def test_1_10_chargeback_tenant_totals_json(self):
         """
         Check if we can load all Tenants totals
         """
-        print('test_1_10_chargeback_tenant_totals:')
+        print('test_1_10_chargeback_tenant_totals_json:')
 
-        l = self.cb.request(tenant='m', end=datetime.now(),
-                            granularity=hcpsdk.mapi.ChargeBack.CBG_DAY,
+        l = self.cb.request(tenant='m', start=datetime.now()-timedelta(days=10),
+                            end=datetime.now(),
+                            granularity=hcpsdk.mapi.ChargeBack.CBG_TOTAL,
                             fmt=hcpsdk.mapi.ChargeBack.CBM_JSON
                             )
 
         print()
         print(type(l))
         pprint(json.load(l), indent=4)
+
+        self.assertTrue(type(l) == StringIO)
+
+    def test_1_20_chargeback_tenant_totals_xml(self):
+        """
+        Check if we can load all Tenants totals
+        """
+        print('test_1_20_chargeback_tenant_totals_xml:')
+
+        l = self.cb.request(tenant='m', start=datetime.now()-timedelta(days=10),
+                            end=datetime.now(),
+                            granularity=hcpsdk.mapi.ChargeBack.CBG_TOTAL,
+                            fmt=hcpsdk.mapi.ChargeBack.CBM_XML
+                            )
+
+        print()
+        print(type(l))
+        pprint(l.read(), indent=4)
+
+        self.assertTrue(type(l) == StringIO)
+
+    def test_1_30_chargeback_tenant_totals_csv(self):
+        """
+        Check if we can load all Tenants totals
+        """
+        print('test_1_30_chargeback_tenant_totals_csv:')
+
+        l = self.cb.request(tenant='m', start=datetime.now()-timedelta(days=10),
+                            end=datetime.now(),
+                            granularity=hcpsdk.mapi.ChargeBack.CBG_TOTAL,
+                            fmt=hcpsdk.mapi.ChargeBack.CBM_CSV
+                            )
+
+        print()
+        print(type(l))
+        pprint(l.read(), indent=4)
 
         self.assertTrue(type(l) == StringIO)
