@@ -1,4 +1,3 @@
-
 HCPsdk
 ======
 
@@ -49,13 +48,9 @@ Features
 Dependencies
 ------------
 
-**hcpsdk** depends on these packages:
+**hcpsdk** depends on `dnspython3 <http://www.dnspython.org>`_, which is used
+for non-cached name resolution when bypassing the system's resolver.
 
-    *   `dnspython3 <http://www.dnspython.org>`_ -  Used for non-cached name
-        resolution when bypassing the system's resolver.
-
-    *   `sphinx <http://sphinx-doc.org>`_ -  Used for local documentation
-        builds from source code and \*.rst files.
 
 Documentation
 -------------

@@ -1,7 +1,7 @@
 Release History
 ===============
 
-**0.9.3-8 2015-11-08**
+**0.9.3-9 2015-11-08**
 
 *   Documentation fixes
 
