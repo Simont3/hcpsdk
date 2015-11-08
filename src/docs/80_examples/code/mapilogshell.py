@@ -72,10 +72,11 @@ class LogsShell(cmd.Cmd):
         except Exception as e:
             print('prepare failed: {}'.format(e))
         else:
-            print('preparing for nodes: all\n'
+            print('preparing for nodes: {}\n'
                   '             snodes: {}\n'
                   '         date range: {} - {}'
-                  .format(' '.join(self.snodes) or 'none',
+                  .format(' '.join(self.nodes) or 'all',
+                          ' '.join(self.snodes) or 'none',
                           self.start.strftime('%Y/%m/%d'),
                           self.end.strftime('%Y/%m/%d')))
 
@@ -153,7 +154,7 @@ class LogsShell(cmd.Cmd):
                 hdl, n = l.download(hdl=outhdl, nodes=self.nodes,
                                     snodes=self.snodes, logs=self.logs,
                                     progresshook=showdownloadprogress)
-                print('HCP suggested filename: {}'.format(n))
+                print('\nHCP suggested filename: {}'.format(n))
         except Exception as e:
             print('Error: {}'.format(e))
         else:

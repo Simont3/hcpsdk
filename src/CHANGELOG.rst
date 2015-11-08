@@ -1,6 +1,13 @@
 Release History
 ===============
 
+**0.9.3-7 2015-11-08**
+
+*   Changed:
+
+    *   fixed return value of *mapi.log.download()*
+    *   made output of *mapilogshell.py* more precise
+
 **0.9.3-6 2015-10-20**
 
 **0.9.3-5 2015-10-20**

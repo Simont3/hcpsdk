@@ -170,7 +170,7 @@ class Logs(object):
                                     self.startdate.year, self.enddate.month,
                                     self.enddate.day, self.enddate.year,
                                     xsnodes)
-        # self.logger.debug('prepare_xml: {}'.format(self.prepare_xml))
+        self.logger.debug('prepare_xml: {}'.format(self.prepare_xml))
 
         try:
             self.con.POST('/mapi/logs/prepare', body=self.prepare_xml,
@@ -334,7 +334,7 @@ class Logs(object):
                                                   self.con.getheader('X-HCP-ErrorMessage',
                                                                      './.')))
         self.hdl.seek(0)
-        return self.hdl
+        return (self.hdl, suggestedfilename)
 
     def cancel(self):
         """
