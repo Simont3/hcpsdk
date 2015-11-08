@@ -6,7 +6,7 @@ from Python3. It handles name resolution, multiple sessions spread across all
 available HCP nodes, persistent connections and recovery from failing
 connections.
 
-It's that easy:
+It's that easy::
 
     >>> import hcpsdk
 
@@ -55,10 +55,11 @@ Dependencies
 **hcpsdk** depends on [dnspython3](http://www.dnspython.org), which is used for
 non-cached name resolution when bypassing the system's resolver.
 
+
 Installation
 ------------
 
-Install hcpsdk by running:
+Install hcpsdk by running::
 
     $ pip install hcpsdk
 
@@ -66,7 +67,7 @@ Install hcpsdk by running:
 
 get the source from
   [GitHub](https://github.com/Simont3/hcpsdk/archive/master.zip), unzip the
-  archive and run:
+  archive and run::
     
     $ python setup.py install
 
