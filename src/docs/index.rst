@@ -5,10 +5,9 @@ HCP SDK provides a rather simple environment to access an Hitachi Content
 Platform (HCP) from Python3. It's intended to be an exemplary implementation
 of an optimal medium-level connector to HCP.
 
-Contents:
-
 ..  toctree::
-    :maxdepth: 3
+    :maxdepth: 2
+    :caption: Table of Contents
 
     05_preface
     15_state_of_implementation
@@ -19,7 +18,7 @@ Contents:
     25_ips
     30_namespace
     35_pathbuilder
-    40-0_mapi
+    40_mapi
     80_examples/examples
     98_license
     99_about

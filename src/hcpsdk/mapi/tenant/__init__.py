@@ -21,10 +21,11 @@
 # CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 import logging
+from json import loads
 import hcpsdk
 
 
-__all__ = ['TenantError', 'Tenant']
+__all__ = ['TenantError', 'tenants', 'Tenant']
 
 logging.getLogger('hcpsdk.mapi.tenant').addHandler(logging.NullHandler())
 
@@ -40,14 +41,50 @@ class TenantError(Exception):
         self.args = (reason,)
 
 
+def tenants(target, debuglevel=0):
+    """
+    Gets a list of existing Tenants within an *hcpsdk.Target* object
+
+    :param target:      an hcpsdk.Target object
+    :param debuglevel:  0..9 (used in *http.client*)
+    :returns:           a list of *hcpsdk.Tenant* objects
+    :raises:            *hcpsdk.HcpsdkPortError* in case *target* is
+                        initialized with an incorrect port for use by
+                        this class.
+    """
+    logger = logging.getLogger(__name__ + '.tenants')
+    hcpsdk.checkport(target, hcpsdk.P_MAPI)
+
+    try:
+        con = hcpsdk.Connection(target, debuglevel=debuglevel)
+    except Exception as e:
+        raise hcpsdk.HcpsdkError(str(e))
+
+    try:
+        con.GET('/mapi/tenants', headers={'Accept': 'application/json'})
+    except Exception as e:
+        raise TenantError('list all Tenants failed: {}'.format(e))
+    else:
+        if con.response_status == 200:
+            tl = []
+            for t in loads(con.read().decode())['name']:
+                print(t)
+                tl.append(Tenant(target, t, debuglevel=debuglevel))
+            return tl
+        else:
+            raise TenantError('unable to list Tenants ({} - {}'
+                              .format(con.response_status, con.response_reason))
+
+
 class Tenant(object):
     """
     Access to Tenant resources
     """
 
-    def __init__(self, target, debuglevel=0):
+    def __init__(self, target, name, debuglevel=0):
         """
         :param target:      an hcpsdk.Target object
+        :param name:        the Tenants name
         :param debuglevel:  0..9 (used in *http.client*)
         :raises:            *hcpsdk.HcpsdkPortError* in case *target* is
                             initialized with an incorrect port for use by

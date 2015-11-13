@@ -17,8 +17,9 @@
 ..  toctree::
     :maxdepth: 2
 
-    40-3_mapi-chargeback
-    40-1_mapi-logs
-    40-2_mapi-replication
+    40_mapi/40-3_mapi-chargeback
+    40_mapi/40-1_mapi-logs
+    40_mapi/40-2_mapi-replication
+    40_mapi/40-4-mapi-tenant
 
 

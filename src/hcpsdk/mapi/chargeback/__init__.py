@@ -27,7 +27,7 @@ import logging
 import hcpsdk
 
 
-__all__ = ['ChargebackError', 'ChargeBack']
+__all__ = ['ChargebackError', 'Chargeback']
 
 logging.getLogger('hcpsdk.mapi.chargeback').addHandler(logging.NullHandler())
 
@@ -42,7 +42,7 @@ class ChargebackError(Exception):
         self.args = (reason,)
 
 
-class ChargeBack(object):
+class Chargeback(object):
     '''
     Access to HCP chargeback reports
     '''

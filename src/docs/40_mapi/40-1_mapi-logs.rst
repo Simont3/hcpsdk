@@ -22,9 +22,6 @@ The usage pattern is this:
    *  save the zip'ed logs or process them, what ever is needed.
    *  *close()* the underlying *Connection()* object
 
-There is a convenience function available that does everything in a single
-step.
-
 
 Classes
 ^^^^^^^
@@ -104,15 +101,15 @@ Exceptions
 Sample Code
 ^^^^^^^^^^^
 
-The following :download:`example code <80_examples/code/mapilogshell.py>`
+The following :download:`example code <../80_examples/code/mapilogshell.py>`
 creates a simple command processor that allows to prepare and download logs
 from HCP.
 
-    .. include:: 80_examples/code/mapilogshell.py
+    .. include:: ../80_examples/code/mapilogshell.py
        :literal:
 
 Sample Output
 ^^^^^^^^^^^^^
 
-   .. include:: 80_examples/output/mapilogshell.txt
+   .. include:: ../80_examples/output/mapilogshell.txt
       :literal:
