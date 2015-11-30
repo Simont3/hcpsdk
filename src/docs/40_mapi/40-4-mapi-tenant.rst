@@ -1,35 +1,39 @@
 MAPI - Tenant Resources
 =======================
 
-.. versionadded:: 0.9.4
+..  versionadded:: 0.9.4
 
-.. automodule:: hcpsdk.mapi
-   :synopsis: Access to selected Management API (:term:`MAPI`) functionality.
+..  automodule:: hcpsdk.mapi
+    :synopsis: Access to selected Management API (:term:`MAPI`) functionality.
 
 This class allows to work with the *Tenant* resources in HCP.
 
 
 Methods
 ^^^^^^^
-.. py:function:: tenants
+..  autofunction:: listtenants
 
 
 
 Classes
 ^^^^^^^
 
-.. _hcpsdk_mapi_tenant:
+..  _hcpsdk_mapi_tenant:
 
-.. autoclass:: Tenant
+..  autoclass:: Tenant
 
-   **Class constants:**
+    **Class attributes**
 
-   **Class attributes**
+    ..  attribute:: name
 
+        The name of the Tenant represented by this object.
 
-   **Class methodes:**
+    **Class methods**
 
-   none yet (.. automethod:: mark)
+    ..  automethod:: info
+
+    ..  automethod:: close
+
 
 
 
