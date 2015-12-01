@@ -1,6 +1,10 @@
 Release History
 ===============
 
+**0.9.3.10 2015-12-01**
+
+*   Added support for local Swift Authorization (w/o Keystone)
+
 **0.9.3-9 2015-11-08**
 
 *   Documentation fixes

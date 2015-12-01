@@ -213,6 +213,9 @@ class DummyAuthorization(BaseAuthorization):
     Dummy authorization for the :term:`Default Namespace <Default Namespace>`.
     """
     def __init__(self):
+        """
+        :params:    None
+        """
         super().__init__()
         self.logger = logging.getLogger(__name__ + '.DummyAuthorization')
         self.headers = {'HCPSDK_DUMMY': 'DUMMY'}
@@ -247,6 +250,33 @@ class NativeAuthorization(BaseAuthorization):
         token = b64encode(user.encode()).decode() + ":" + md5(password.encode()).hexdigest()
         return {"Authorization": 'HCP {}'.format(token),
                 "Cookie": "hcp-ns-auth={0}".format(token)}
+
+
+class LocalSwiftAuthorization(BaseAuthorization):
+    """
+    Authorization for local :term:`HSwift <HSwift>` access to
+    HCP (w/o Keystone).
+    """
+    def __init__(self, user, password):
+        """
+        :param user:        the data access user
+        :param password:    his password
+        """
+        super().__init__()
+        self.logger = logging.getLogger(__name__ + '.LocalSwiftAuthorization')
+        self.headers = self._createauthorization(user, password)
+        self.logger.debug('Local HSwift: X-Auth-Token: {}'.format(self.headers['X-Auth-Token']))
+
+    def _createauthorization(self, user, password):
+        """
+        Build the authorization headers by calculation from user and password.
+
+        :param user:        the name of a local HCP user
+        :param password:    his password
+        :return:            a dict holding the necessary headers
+        """
+        token = b64encode(user.encode()).decode() + ":" + md5(password.encode()).hexdigest()
+        return {"X-Auth-Token": "HCP {}".format(token)}
 
 
 class Target(object):

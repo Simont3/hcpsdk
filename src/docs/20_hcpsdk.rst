@@ -69,6 +69,10 @@ Constants
 
       HCP's http/REST dialect for access to HCPs authenticated :term:`namespaces <Namespace>`.
 
+   .. attribute:: I_HSWIFT
+
+      HCP's http dialect for access to HCPs :term:`HSwift <HSwift>` gateway.
+
    .. attribute:: I_DUMMY
 
       HCP's http dialect for access to HCPs :term:`Default Namespace <Default Namespace>`.
@@ -97,6 +101,11 @@ Classes
 
 .. autoclass:: NativeAuthorization
    :members:
+
+.. autoclass:: LocalSwiftAuthorization
+   :members:
+
+   .. versionadded:: 0.9.3.10
 
 .. autoclass:: DummyAuthorization
    :members:
