@@ -92,3 +92,40 @@ but for reliability:
     7)  As a last resort, make sure the application can survive some time of
         not being able to connect to HCP by caching content locally to a
         certain degree (this is not covered by this SDK).
+
+
+Using the proper URL
+--------------------
+
+**hcpsdk** tries to be as open as possible - that's why it doesn't pretend URLs
+prefixed for the various gateways HCP offers. The same is true for *headers*
+that are required for various request (espacially for HSwift and MAPI).
+It's up to you to use the correct URL for the gateway used, as well as to add
+*headers* where required. You might want to consult the HCP manuals for the
+details.
+
+For convenience, here are the mainly used URLs:
+
+*  **native http(s)/REST to an authenticated Namespace:**
+
+   | ``FQDN: namespace.tenant.hcp.dom.com``
+   | ``URL:  /rest/<your>/<folders>/object``
+
+*  **native http(s) to the default Namespace:**
+
+   | ``FQDN: default.default.hcp.dom.com``
+   | ``URL:  /fcfs_data/<your>/<folders>/object``
+   | *or, if metadata access is needed:*
+   | ``URL:  /fcfs_metadata/<your>/<folders>/object/metafile``
+
+*  **HSwift http(s)/REST to an authenticated Namespace:**
+
+   | ``FQDN: api.hcp.dom.com``
+   | ``URL:  /swift/v1/<tenant>/<namespace>/<your>/<folders>/object``
+
+*  **http(s)/REST to MAPI:**
+
+   | ``FQDN: admin.hcp.dom.com`` (when using a system level user)
+   | -or-
+   | ``FQDN: <tenant>.hcp.dom.com`` (when using a tenant level user)
+   | ``URL:  /mapi/<endpoint>``
