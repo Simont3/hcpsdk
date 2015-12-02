@@ -223,20 +223,22 @@ class NativeAuthorization(BaseAuthorization):
     """
     Authorization for native http/REST access to HCP.
     """
-    def __init__(self, user, password):
+    def __init__(self, user, password, aduser=False):
         """
         :param user:        the data access user
         :param password:    his password
+        :param aduser:      whether the user is an Active Directory user
+                            (added in version 0.9.4)
         """
         super().__init__()
         self.logger = logging.getLogger(__name__ + '.NativeAuthorization')
-        self.headers = self._createauthorization(user, password)
+        self.headers = self._createauthorization(user, password, aduser)
         self.logger.debug('*I_NATIVE* authorization initialized for user: {}'
                           .format(user))
         self.logger.debug('pre version 6:     Cookie: {}'.format(self.headers['Cookie']))
         self.logger.debug('version 6+: Authorization: {}'.format(self.headers['Authorization']))
 
-    def _createauthorization(self, user, password):
+    def _createauthorization(self, user, password, aduser):
         """
         Build the authorization headers by calculation from user and password.
 
@@ -245,9 +247,11 @@ class NativeAuthorization(BaseAuthorization):
         :return:            a dict holding the necessary headers
         """
         token = b64encode(user.encode()).decode() + ":" + md5(password.encode()).hexdigest()
-        return {"Authorization": 'HCP {}'.format(token),
-                "Cookie": "hcp-ns-auth={0}".format(token)}
-
+        if not aduser:
+            return {"Authorization": 'HCP {}'.format(token),
+                    "Cookie": "hcp-ns-auth={0}".format(token)}
+        else:
+            return {"Authorization": 'AD {}'.format(token)}
 
 class Target(object):
     """

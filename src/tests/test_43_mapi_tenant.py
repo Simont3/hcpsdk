@@ -51,15 +51,10 @@ class TestHcpsdk_43_1_Mapi_Tenant(unittest.TestCase):
         print('test_1_10_tenant_list:')
 
         tenants = hcpsdk.mapi.listtenants(self.hcptarget, debuglevel=0)
+        self.assertTrue(type(tenants) == list)
+
         for i in tenants:
+            self.assertTrue(type(i) == hcpsdk.mapi.Tenant)
             pprint(i.info())
             i.close()
-
-        # l = self.tn.request()
-        #
-        # print()
-        # print(type(l))
-        # pprint(json.load(l), indent=4)
-        #
-        # self.assertTrue(type(l) == StringIO)
 

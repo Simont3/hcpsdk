@@ -6,6 +6,9 @@ Release History
 *   Added:
 
     *   added *hcpsdk.mapi.chargeback*
+    *   added *hcpsdk.mapi.tenant* (with limited functionality)
+    *   added support for Active Directory users to
+        *hcpsdk.NativeAuthorization()*
     *   added trademarks to documentation
 
 **0.9.3-6 2015-10-20**
