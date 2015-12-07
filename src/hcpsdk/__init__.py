@@ -750,6 +750,7 @@ class Connection(object):
                 except Exception as e:
                     self.logger.exception('Exception not catched in hcpsdk.__init__: {}'.format(str(e)))
                 else:
+                    self.__service_time2 = time.time() - s_t
                     self.logger.log(logging.DEBUG, '{} Request for {} - after getResponse(): service_time2 = {:0.17f}'
                                     .format(method, url, self.__service_time2))
 

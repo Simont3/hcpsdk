@@ -1,6 +1,12 @@
 Release History
 ===============
 
+**0.9.3.11 2015-12-06**
+
+*   Changed:
+
+    * fixed a bug that lead *Connection.service_time2* to be too low
+
 **0.9.3.10 2015-12-01**
 
 *   Added:
