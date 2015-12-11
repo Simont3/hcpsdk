@@ -52,7 +52,7 @@ def listtenants(target, debuglevel=0):
     :raises:            *hcpsdk.HcpsdkPortError* in case *target* is
                         initialized with a port different that *P_MAPI*
     """
-    logger = logging.getLogger(__name__ + '.listtenants')
+    logger = logging.getLogger(__name__)
     logger.debug('getting a list of Tenants')
     hcpsdk.checkport(target, hcpsdk.P_MAPI)
     tenantslist = []
@@ -63,7 +63,8 @@ def listtenants(target, debuglevel=0):
         raise hcpsdk.HcpsdkError(str(e))
 
     try:
-        con.GET('/mapi/tenants', headers={'Accept': 'application/json'})
+        con.GET('/mapi/tenants', headers={'Accept': 'application/json'},
+                params={'verbose': 'true'})
     except Exception as e:
         logger.debug('getting a list of Tenants failed: {}'.format(e))
         raise TenantError('get Tenant list failed: {}'.format(e))
@@ -73,14 +74,15 @@ def listtenants(target, debuglevel=0):
                 tenantslist.append(Tenant(target, t, debuglevel=debuglevel))
             logger.debug('got a list of {} Tenants'.format(len(tenantslist)))
         else:
+            con.close()
             logger.debug('getting a list of Tenants failed: {}-{}'
                          .format(con.response_status, con.response_reason))
             raise TenantError('unable to list Tenants ({} - {})'
                               .format(con.response_status,
                                       con.response_reason))
 
-        con.close()
-        return tenantslist
+    con.close()
+    return tenantslist
 
 
 

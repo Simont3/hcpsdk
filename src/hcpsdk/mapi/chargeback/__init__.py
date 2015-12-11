@@ -101,13 +101,13 @@ class Chargeback(object):
             raise ValueError('end not of type(datetime.datetime)')
         else:
             self.end = end or datetime.now()
-        if granularity not in ChargeBack.CBG_ALL:
+        if granularity not in Chargeback.CBG_ALL:
             raise ValueError('granularity not in {}'
-                             .format(ChargeBack.CBG_ALL))
+                             .format(Chargeback.CBG_ALL))
         else:
             self.granularity = granularity
-        if fmt not in ChargeBack.CBM_ALL:
-            raise ValueError('fmt not in {}'.format(ChargeBack.CBM_ALL))
+        if fmt not in Chargeback.CBM_ALL:
+            raise ValueError('fmt not in {}'.format(Chargeback.CBM_ALL))
         else:
             self.fmt = fmt
 
