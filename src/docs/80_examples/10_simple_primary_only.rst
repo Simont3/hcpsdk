@@ -4,9 +4,9 @@ Simple object I/O without replica
 Code sample
 -----------
 
-This :download:`code sample <code/simple_primary_only.py>` shows basic usage of the SDK - ingest an object, retrieve
-its metadata, read and delete it. It also shows how to retrieve request timers
-and how to enable debug logging.
+This :download:`code sample <code/simple_primary_only.py>` shows basic usage of
+the SDK - ingest an object, retrieve its metadata, read and delete it. It also
+shows how to retrieve request timers and how to enable debug logging.
 
 First, we import the needed packages and setup a few constants with the
 parameters needed to access HCP. We also make sure that this program only

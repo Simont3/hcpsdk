@@ -11,6 +11,30 @@ Release History
         *hcpsdk.NativeAuthorization()*
     *   added trademarks to documentation
 
+**0.9.3.11 2015-12-06**
+
+*   Changed:
+
+    * fixed a bug that lead *Connection.service_time2* to be too low
+
+**0.9.3.10 2015-12-01**
+
+*   Added:
+
+    * support for local Swift Authorization (w/o Keystone)
+    * an article about the proper use of URLs
+
+**0.9.3-9 2015-11-08**
+
+*   Documentation fixes
+
+**0.9.3-7 2015-11-08**
+
+*   Changed:
+
+    *   fixed return value of *mapi.log.download()*
+    *   made output of *mapilogshell.py* more precise
+
 **0.9.3-6 2015-10-20**
 
 **0.9.3-5 2015-10-20**

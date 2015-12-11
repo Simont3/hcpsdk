@@ -6,9 +6,7 @@ from Python3. It handles name resolution, multiple sessions spread across all
 available HCP nodes, persistent connections and recovery from failing
 connections.
 
-It's that easy:
-
-::
+It's that easy::
 
     >>> import hcpsdk
 
@@ -36,52 +34,59 @@ Features
 --------
 
 - Handles HCP as a target object
+- Replica-aware (replica can be part of a target object)
+- Various strategies on how to use a replica
 - Connection objects, while tied to a target object, allow
-  access to HCP through HCPs native http/REST dialect
+  access to HCP through the various http/REST dialects
+  (native, HS3, HSwift)
 - Higher level modules provide easy access to namespace
   statistics and some MAPI functionality, along with
   the ability to create unique object names / paths
 
-Dependencies
-------------
-
-**hcpsdk** depends on `dnspython3 <http://www.dnspython.org>`_, which is used
-for non-cached name resolution when bypassing the system's resolver.
-
-
 Documentation
 -------------
 
-To be found at `readthedocs.org <http://hcpsdk.readthedocs.org>`_
+Hosted at [readthedocs.org](http://hcpsdk.readthedocs.org)
+
+
+Dependencies
+------------
+
+**hcpsdk** depends on [dnspython3](http://www.dnspython.org), which is used for
+non-cached name resolution when bypassing the system's resolver.
+
 
 Installation
 ------------
 
-Install hcpsdk by running:
+Install hcpsdk by running::
 
-    ``pip install hcpsdk``
+    $ pip install hcpsdk
 
-    -or-
+-or-
 
-    * get the source from `GitHub <https://github.com/simont3/hcpsdk/archive/master.zip>`_
-    * unzip the archive
-    * run ``python setup.py install``
+get the source from
+  [GitHub](https://github.com/Simont3/hcpsdk/archive/master.zip), unzip the
+  archive and run::
+    
+    $ python setup.py install
 
-    -or-
+-or-
 
-    * Fork at `Github <https://github.com/simont3/hcpsdk>`_
+fork at [Github](https://github.com/Simont3/hcpsdk)
 
 Contribute
 ----------
 
-- Issue Tracker: `<https://github.com/simont3/hcpsdk/issues>`_
-- Source Code: `<https://github.com/simont3/hcpsdk>`_
+* [Issue Tracker](https://github.com/simont3/hcpsdk/issues)
+* [Source Code](https://github.com/Simont3/hcpsdk)
 
 Support
 -------
 
-If you find any bugs, please let me know via the Issue Tracker;
-if you have comments or suggestions, send an email to `<sw@snomis.de>`_
+If you find any bugs, please let us know via the Issue Tracker;
+if you have comments or suggestions, send an email to
+[sw@snomis.de](mailto:sw@snomis.de)
 
 License
 -------

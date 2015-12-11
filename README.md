@@ -52,12 +52,8 @@ Hosted at [readthedocs.org](http://hcpsdk.readthedocs.org)
 Dependencies
 ------------
 
-**hcpsdk** depends on these packages:
-
-* [dnspython3](http://www.dnspython.org) -  Used for non-cached name
-        resolution when bypassing the system's resolver.
-* [sphinx](http://sphinx-doc.org) -  Used for local documentation
-        builds from source code and \*.rst files.
+**hcpsdk** depends on [dnspython3](http://www.dnspython.org), which is used for
+non-cached name resolution when bypassing the system's resolver.
 
 Installation
 ------------
@@ -69,7 +65,8 @@ Install hcpsdk by running:
 -or-
 
 get the source from
-  [GitHub](https://github.com/Simont3/hcpsdk/archive/master.zip), unzip the archive and run:
+  [GitHub](https://github.com/Simont3/hcpsdk/archive/master.zip), unzip the
+  archive and run:
     
     $ python setup.py install
 
