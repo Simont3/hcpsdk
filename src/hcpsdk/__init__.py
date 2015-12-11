@@ -55,8 +55,10 @@ from . import pathbuilder
 
 
 __all__ = ['Target', 'Connection', 'BaseAuthorization', 'DummyAuthorization',
-           'NativeAuthorization', 'HcpsdkError', 'HcpsdkCantConnectError',
-           'HcpsdkTimeoutError', 'HcpsdkCertificateError', 'HcpsdkReplicaInitError']
+           'NativeAuthorization', 'NativeADAuthorization',
+           'LocalSwiftAuthorization', 'HcpsdkError',
+           'HcpsdkCantConnectError', 'HcpsdkTimeoutError',
+           'HcpsdkCertificateError', 'HcpsdkReplicaInitError']
 
 logging.getLogger('hcpsdk').addHandler(logging.NullHandler())
 
@@ -213,9 +215,6 @@ class DummyAuthorization(BaseAuthorization):
     Dummy authorization for the :term:`Default Namespace <Default Namespace>`.
     """
     def __init__(self):
-        """
-        :params:    None
-        """
         super().__init__()
         self.logger = logging.getLogger(__name__ + '.DummyAuthorization')
         self.headers = {'HCPSDK_DUMMY': 'DUMMY'}
@@ -226,22 +225,20 @@ class NativeAuthorization(BaseAuthorization):
     """
     Authorization for native http/REST access to HCP.
     """
-    def __init__(self, user, password, aduser=False):
+    def __init__(self, user, password):
         """
         :param user:        the data access user
         :param password:    his password
-        :param aduser:      whether the user is an Active Directory user
-                            (added in version 0.9.4)
         """
         super().__init__()
         self.logger = logging.getLogger(__name__ + '.NativeAuthorization')
-        self.headers = self._createauthorization(user, password, aduser)
+        self.headers = self._createauthorization(user, password)
         self.logger.debug('*I_NATIVE* authorization initialized for user: {}'
                           .format(user))
         self.logger.debug('pre version 6:     Cookie: {}'.format(self.headers['Cookie']))
         self.logger.debug('version 6+: Authorization: {}'.format(self.headers['Authorization']))
 
-    def _createauthorization(self, user, password, aduser):
+    def _createauthorization(self, user, password):
         """
         Build the authorization headers by calculation from user and password.
 
@@ -250,11 +247,39 @@ class NativeAuthorization(BaseAuthorization):
         :return:            a dict holding the necessary headers
         """
         token = b64encode(user.encode()).decode() + ":" + md5(password.encode()).hexdigest()
-        if not aduser:
-            return {"Authorization": 'HCP {}'.format(token),
-                    "Cookie": "hcp-ns-auth={0}".format(token)}
-        else:
-            return {"Authorization": 'AD {}'.format(token)}
+        return {"Authorization": 'HCP {}'.format(token),
+                "Cookie": "hcp-ns-auth={0}".format(token)}
+
+class NativeADAuthorization(BaseAuthorization):
+    """
+    Authorization for native http/REST access to HCP using an Active Directory
+    user.
+
+    Supported with HCP 7.2.0 and later. The user needs to be a member of the
+    Active Directory domain in which HCP is joined.
+    """
+    def __init__(self, user, password):
+        """
+        :param user:        an Active Directory user
+        :param password:    his password
+        """
+        super().__init__()
+        self.logger = logging.getLogger(__name__ + '.NativeADAuthorization')
+        self.headers = self._createauthorization(user, password)
+        self.logger.debug('*I_NATIVE* authorization initialized for user: {}'
+                          .format(user))
+        self.logger.debug('version 7.2+: Authorization: {}'.format(self.headers['Authorization']))
+
+    def _createauthorization(self, user, password):
+        """
+        Build the authorization headers by calculation from user and password.
+
+        :param user:        the name of a local HCP user
+        :param password:    his password
+        :return:            a dict holding the necessary headers
+        """
+        token = b64encode(user.encode()).decode() + ":" + md5(password.encode()).hexdigest()
+        return {"Authorization": 'AD {}'.format(token)}
 
 class LocalSwiftAuthorization(BaseAuthorization):
     """

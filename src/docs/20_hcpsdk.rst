@@ -77,30 +77,17 @@ Constants
 
       HCP's http dialect for access to HCPs :term:`Default Namespace <Default Namespace>`.
 
-**Replica strategy modes**
-
-   .. attribute:: RS_READ_ALLOWED
-
-      Allow to read from replica (always)
-
-   .. attribute:: RS_READ_ON_FAILOVER
-
-      Automatically read from replica when failed over
-
-   .. attribute:: RS_WRITE_ALLOWED
-
-      Allow write to replica (always, **A/A links only**)
-
-   .. attribute:: RS_WRITE_ON_FAILOVER
-
-      Allow write to replica when failed over
-
 
 Classes
 ^^^^^^^
 
 .. autoclass:: NativeAuthorization
    :members:
+
+.. autoclass:: NativeADAuthorization
+   :members:
+
+   .. versionadded:: 0.9.4.0
 
 .. autoclass:: LocalSwiftAuthorization
    :members:
