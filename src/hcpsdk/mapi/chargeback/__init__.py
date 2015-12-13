@@ -59,7 +59,7 @@ class Chargeback(object):
     CBM_XML = 'application/xml'
     CBM_ALL = [CBM_CSV, CBM_JSON, CBM_XML]
 
-    def __init__(self, target, debuglevel=9):
+    def __init__(self, target, debuglevel=0):
         '''
         :param target:      an hcpsdk.Target object
         :param debuglevel:  0..9 (used in *http.client*)
@@ -137,6 +137,8 @@ class Chargeback(object):
                 ret.seek(0)
                 return ret
             else:
+                # session cleanup!
+                self.con.read()
                 raise ChargebackError('{} - {} ({})'
                                       .format(self.con.response_status,
                                               self.con.response_reason,
