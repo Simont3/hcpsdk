@@ -80,7 +80,8 @@ class Chargeback(object):
     def request(self, tenant=None, start=None, end=None,
                 granularity=CBG_TOTAL, fmt=CBM_JSON):
         '''
-        Request a chargeback report for
+        Request a chargeback report
+
         :param tenant:      the *Tenant* to collect from
         :param start:       starttime (a datetime object)
         :param end:         endtime (a datetime object)
