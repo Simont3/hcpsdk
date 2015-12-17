@@ -122,28 +122,6 @@ class Tenant(object):
 
         :param cache:   a bool indicating if cached information shall be used
         :return:        a dict holding the Tenants settings
-
-        ::
-
-            {'administrationAllowed': True,
-             'authenticationTypes': {'authenticationType': ['LOCAL', 'EXTERNAL']},
-             'complianceConfigurationEnabled': True,
-             'dataNetwork': '[hcp_system]',
-             'hardQuota': '200.00 GB',
-             'managementNetwork': '[hcp_system]',
-             'maxNamespacesPerUser': 100,
-             'name': 'm',
-             'namespaceQuota': 'None',
-             'replicationConfigurationEnabled': True,
-             'searchConfigurationEnabled': True,
-             'servicePlanSelectionEnabled': True,
-             'snmpLoggingEnabled': False,
-             'softQuota': 85,
-             'syslogLoggingEnabled': False,
-             'systemVisibleDescription': 'Der üblicherweise als erstes erzeugte Tenant...',
-             'tags': {'tag': []},
-             'tenantVisibleDescription': '',
-             'versioningConfigurationEnabled': True}
         """
 
         if not self._settings or not cache:

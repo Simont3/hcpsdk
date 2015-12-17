@@ -13,19 +13,25 @@ Glossary
         for more details.
 
     Tenant
-        A Tenant within HCP is an administrative entity that allows to configure and
-        manage a set of :term:`namespaces <Namespace>` within a configurable storage quota, along with the
-        user account required to access data.
+        A Tenant within HCP is an administrative entity that allows to
+        configure and manage a set of :term:`namespaces <Namespace>` within a
+        configurable storage quota, along with the user account required to
+        access data.
+
+    Default Tenant
+        The legacy Tenant, containing the :term:`Default Namespace`, only.
+        Seldomly used in our days, deprecated.
+        (*default.hcp.domain.com*)
 
     Namespace
-        A Namespace is a addressable data store, separated from other namespaces, having
-        an individual filesystem-like structure, several access protocols along with a
-        set of other configurables.
+        A Namespace is a addressable data store, separated from other
+        namespaces, having an individual filesystem-like structure, several
+        access protocols along with a set of other configurables.
 
     Default Namespace
-        The legacy Namespace, a relict from the time before HCP version 3. Doesn't support
-        user authentication. Seldomly used in our days, deprecated.
-        (*default.default.hcp.domain.com* or *www.hcp.domain.com*)
+        The legacy Namespace, a relict from the time before HCP version 3.
+        Doesn't support user authentication. Seldomly used in our days,
+        deprecated. (*default.default.hcp.domain.com* or *www.hcp.domain.com*)
 
     Data Access Account
         A local user within a :term:`Tenant`

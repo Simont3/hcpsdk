@@ -61,8 +61,14 @@ class Chargeback(object):
 
     def __init__(self, target, timeout=600, debuglevel=0):
         '''
-        :param target:      an hcpsdk.Target object
-        :param timeout:     the connection timeout
+        :param target:      an hcpsdk.Target object pointing to an HCP FQDN
+                            starting with **admin.** for access from a system
+                            level account or **<tenant>.** for a tenant level
+                            account
+        :param timeout:     the connection timeout; relatively high per
+                            default, as generating the report can take longer
+                            than **hcpsdk**\ s default of 30 seconds on a busy
+                            system
         :param debuglevel:  0..9 (used in *http.client*)
         '''
         self.logger = logging.getLogger(__name__ + '.Chargeback')
@@ -80,7 +86,7 @@ class Chargeback(object):
     def request(self, tenant=None, start=None, end=None,
                 granularity=CBG_TOTAL, fmt=CBM_JSON):
         '''
-        Request a chargeback report
+        Request a chargeback report for a Tenant.
 
         :param tenant:      the *Tenant* to collect from
         :param start:       starttime (a datetime object)
@@ -148,6 +154,6 @@ class Chargeback(object):
 
     def close(self):
         '''
-        Close the underlying *hcpsdk.Connection* object
+        Close the underlying *hcpsdk.Connection* object.
         '''
         self.con.close()
