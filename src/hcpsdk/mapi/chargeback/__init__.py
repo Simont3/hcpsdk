@@ -59,20 +59,20 @@ class Chargeback(object):
     CBM_XML = 'application/xml'
     CBM_ALL = [CBM_CSV, CBM_JSON, CBM_XML]
 
-    def __init__(self, target, debuglevel=0):
+    def __init__(self, target, timeout=600, debuglevel=0):
         '''
         :param target:      an hcpsdk.Target object
+        :param timeout:     the connection timeout
         :param debuglevel:  0..9 (used in *http.client*)
         '''
         self.logger = logging.getLogger(__name__ + '.Chargeback')
         hcpsdk.checkport(target, hcpsdk.P_MAPI)
-        self.target = target
-        self.debuglevel = debuglevel
         self.connect_time = 0.0
         self.service_time = 0.0
 
         try:
-            self.con = hcpsdk.Connection(self.target, debuglevel=self.debuglevel)
+            self.con = hcpsdk.Connection(target, timeout=timeout,
+                                         debuglevel=debuglevel)
         except Exception as e:
             raise hcpsdk.HcpsdkError(str(e))
 

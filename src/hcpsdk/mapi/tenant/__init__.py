@@ -42,11 +42,12 @@ class TenantError(Exception):
         self.args = (reason,)
 
 
-def listtenants(target, debuglevel=0):
+def listtenants(target, timeout=60, debuglevel=0):
     """
     Get a list of available Tenants
 
     :param target:      an hcpsdk.Target object
+    :param timeout:     the connection timeout in seconds
     :param debuglevel:  0..9 (used in *http.client*)
     :returns:           a list() of *Tenant()* objects
     :raises:            *hcpsdk.HcpsdkPortError* in case *target* is
@@ -58,7 +59,7 @@ def listtenants(target, debuglevel=0):
     tenantslist = []
 
     try:
-        con = hcpsdk.Connection(target, debuglevel=debuglevel)
+        con = hcpsdk.Connection(target, timeout=timeout, debuglevel=debuglevel)
     except Exception as e:
         raise hcpsdk.HcpsdkError(str(e))
 
@@ -94,16 +95,18 @@ class Tenant(object):
     # TODO: this object is simply a container for a single tenants settings
     #       remove all the other stuff...
 
-    def __init__(self, target, name, debuglevel=0):
+    def __init__(self, target, name, timeout=60, debuglevel=0):
         """
         :param target:      an hcpsdk.Target object
         :param name:        the Tenants name
+        :param timeout:     the connection timeout in seconds
         :param debuglevel:  0..9 (used in *http.client*)
         """
         self.logger = logging.getLogger(__name__ + '.Tenant')
         self.target = target
         try:
-            self.con = hcpsdk.Connection(self.target, debuglevel=debuglevel)
+            self.con = hcpsdk.Connection(self.target, timeout=timeout,
+                                         debuglevel=debuglevel)
         except Exception as e:
             raise hcpsdk.HcpsdkError(str(e))
 
