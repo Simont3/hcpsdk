@@ -1,6 +1,10 @@
 Release History
 ===============
 
+**0.9.4-1 2015-12-18**
+
+*   Fixed doctring of *hcpsdk.mapi.replication.setreplicationlinkstate()*
+
 **0.9.4-0 2015-12-17**
 
 *   Added:

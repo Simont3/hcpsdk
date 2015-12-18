@@ -188,7 +188,7 @@ class Replication(object):
 
     def setreplicationlinkstate(self, linkname, action, linktype=None):
         """
-        Failover and  failback a replication link.
+        Alter the state of a replication link.
 
         :param linkname:    name of the link to change the state
         :param linktype:    one of ``[R_ACTIVE_ACTIVE, R_OUTBOUND, R_INBOUND]``;
