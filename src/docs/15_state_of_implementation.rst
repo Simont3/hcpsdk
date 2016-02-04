@@ -4,8 +4,8 @@ State of Implementation
 **Release** |release|
 
 *   Handle HCP as a *Target* object, responsible for IP address resolution
-    (by-passing the local :term:`DNS` cache, per default) and assigning IP addresses
-    out of an internally cached pool to *Connection* objects.
+    (by-passing the local :term:`DNS` cache, per default) and assigning IP
+    addresses out of an internally cached pool to *Connection* objects.
     As of today, it handles the native http/:term:`reST` interface. Support for
     :term:`HS3` and :term:`HSwift` is planned.
 
@@ -17,9 +17,10 @@ State of Implementation
     is not to verify certificates.
 
 *   Provide *Connection* objects related to *Target* objects, responsible
-    for traffic handling, service time measurement as well as handling of errors
-    and timeouts. Connections are persistent for a configurable idle time, and
-    are automatically re-connected on next use, if they timed out on idle.
+    for traffic handling, service time measurement as well as handling of
+    errors and timeouts. Connections are persistent for a configurable idle
+    time, and are automatically re-connected on next use, if they timed out on
+    idle.
 
 *   Easy access to :term:`namespace <Namespace>` information and statistics.
 
@@ -27,12 +28,21 @@ State of Implementation
     combination to be used to store an object into HCP, keeping the number of
     needed folders low.
 
-*   Provide convenience methods for the :term:`Management API (MAPI) <MAPI>`. This
-    is a bit limited today, but will be extended primarily on the authors needs.
-    Available today:
+*   Provide convenience methods for the :term:`Management API (MAPI) <MAPI>`.
+    This is a bit limited today, but will be extended primarily on the authors
+    needs. Available today:
+
+    *   Chargeback report download (requires at least HCP 5.0)
+
+        ..  versionadded:: 0.9.4
 
     *   Log file download (requires at least HCP 7.2)
 
         ..  versionadded:: 0.9.3
 
-    *   Replication link information, link failover/failback (requires at leat HCP 7.0)
+    *   Replication link information, link failover/failback
+        (requires at leat HCP 7.0)
+
+    *   Tenant management (mostly listing Tenants, yet)
+
+        ..  versionadded:: 0.9.4
