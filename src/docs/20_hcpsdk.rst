@@ -102,74 +102,10 @@ Classes
 .. autoclass:: Target
    :members:
 
-
-   **Read-only class attributes:**
-
-   .. attribute:: fqdn
-
-      The :term:`FQDN` for which the Target was initialized (string).
-
-   .. attribute:: port
-
-      The port used by the Target (int).
-
-   .. attribute:: ssl
-
-      Target initialized for SSL (bool).
-
-   .. attribute:: addresses
-
-      The IP addresses used by this Target (list).
-
-   .. attribute:: headers
-
-      The http headers prepared for this Target (dictionary).
-
-   .. attribute:: replica
-
-      The replica Target, if available (an *hcpsdk.Target* object or None).
-
-   **Class methods:**
-
 .. _hcpsdk_connection:
 
 .. autoclass:: Connection
    :members:
-
-   **Read-only class attributes:**
-
-   .. attribute:: address
-
-      The IP address used for this Connection.
-
-   .. attribute:: Response
-
-      Exposition of the http.client.Response object for the last Request.
-
-   .. attribute:: response_status
-
-      The HTTP status code of the last Request.
-
-   .. attribute:: response_reason
-
-      The corresponding HTTP status message.
-
-   .. attribute:: connect_time
-
-      The time the last connect took.
-
-   .. attribute:: service_time1
-
-      The time the last action on a Request took. This can be the initial part
-      of PUT/GET/etc. or a single (possibly incomplete) read from
-      a Response.
-
-   .. attribute:: service_time2
-
-      Duration of the complete Request up to now. Sum of all ``service_time1``
-      during handling a Request.
-
-   **Class methods:**
 
 
 Exceptions

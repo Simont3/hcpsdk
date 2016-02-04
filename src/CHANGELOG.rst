@@ -1,6 +1,14 @@
 Release History
 ===============
 
+**0.9.4-2 2016-02-04**
+
+*   Re-worked the representation of *Target()'s* and *Connection()'s*
+    (mainly) read-only attributes; fixed documentation source accordingly
+*   Renamed attribute *Response* to *response* in *hcpsdk.Connection()*\.
+    *Response* is deprecated, but will stay available for backward
+    compatibility
+
 **0.9.4-1 2015-12-18**
 
 *   Fixed doctring of *hcpsdk.mapi.replication.setreplicationlinkstate()*

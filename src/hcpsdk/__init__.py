@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # The MIT License (MIT)
 #
-# Copyright (c) 2014-2015 Thorsten Simons (sw@snomis.de)
+# Copyright (c) 2014-2016 Thorsten Simons (sw@snomis.de)
 #
 # Permission is hereby granted, free of charge, to any person obtaining a copy of
 # this software and associated documentation files (the "Software"), to deal in
@@ -235,8 +235,10 @@ class NativeAuthorization(BaseAuthorization):
         self.headers = self._createauthorization(user, password)
         self.logger.debug('*I_NATIVE* authorization initialized for user: {}'
                           .format(user))
-        self.logger.debug('pre version 6:     Cookie: {}'.format(self.headers['Cookie']))
-        self.logger.debug('version 6+: Authorization: {}'.format(self.headers['Authorization']))
+        self.logger.debug(
+            'pre version 6:     Cookie: {}'.format(self.headers['Cookie']))
+        self.logger.debug('version 6+: Authorization: {}'.format(
+            self.headers['Authorization']))
 
     def _createauthorization(self, user, password):
         """
@@ -246,7 +248,8 @@ class NativeAuthorization(BaseAuthorization):
         :param password:    his password
         :return:            a dict holding the necessary headers
         """
-        token = b64encode(user.encode()).decode() + ":" + md5(password.encode()).hexdigest()
+        token = b64encode(user.encode()).decode() + ":" + md5(
+            password.encode()).hexdigest()
         return {"Authorization": 'HCP {}'.format(token),
                 "Cookie": "hcp-ns-auth={0}".format(token)}
 
@@ -268,7 +271,8 @@ class NativeADAuthorization(BaseAuthorization):
         self.headers = self._createauthorization(user, password)
         self.logger.debug('*I_NATIVE* authorization initialized for user: {}'
                           .format(user))
-        self.logger.debug('version 7.2+: Authorization: {}'.format(self.headers['Authorization']))
+        self.logger.debug('version 7.2+: Authorization: {}'.format(
+            self.headers['Authorization']))
 
     def _createauthorization(self, user, password):
         """
@@ -278,7 +282,8 @@ class NativeADAuthorization(BaseAuthorization):
         :param password:    his password
         :return:            a dict holding the necessary headers
         """
-        token = b64encode(user.encode()).decode() + ":" + md5(password.encode()).hexdigest()
+        token = b64encode(user.encode()).decode() + ":" + md5(
+            password.encode()).hexdigest()
         return {"Authorization": 'AD {}'.format(token)}
 
 class LocalSwiftAuthorization(BaseAuthorization):
@@ -294,7 +299,8 @@ class LocalSwiftAuthorization(BaseAuthorization):
         super().__init__()
         self.logger = logging.getLogger(__name__ + '.LocalSwiftAuthorization')
         self.headers = self._createauthorization(user, password)
-        self.logger.debug('Local HSwift: X-Auth-Token: {}'.format(self.headers['X-Auth-Token']))
+        self.logger.debug('Local HSwift: X-Auth-Token: {}'.format(
+            self.headers['X-Auth-Token']))
 
     def _createauthorization(self, user, password):
         """
@@ -304,7 +310,8 @@ class LocalSwiftAuthorization(BaseAuthorization):
         :param password:    his password
         :return:            a dict holding the necessary headers
         """
-        token = b64encode(user.encode()).decode() + ":" + md5(password.encode()).hexdigest()
+        token = b64encode(user.encode()).decode() + ":" + md5(
+            password.encode()).hexdigest()
         return {"X-Auth-Token": "HCP {}".format(token)}
 
 
@@ -315,8 +322,9 @@ class Target(object):
     *Authorization* object for the required authorization token.
     """
 
-    def __init__(self, fqdn, authorization, port=443, dnscache=False, sslcontext=SSL_NOVERIFY,
-                 interface=I_NATIVE, replica_fqdn=None, replica_strategy=None):
+    def __init__(self, fqdn, authorization, port=443, dnscache=False,
+                 sslcontext=SSL_NOVERIFY, interface=I_NATIVE,
+                 replica_fqdn=None, replica_strategy=None):
         """
         :param fqdn:                ([namespace.]tenant.hcp.loc)
         :param authorization:       an instance of one of BaseAuthorization's subclasses
@@ -341,13 +349,14 @@ class Target(object):
         self.__port = port
         self.__ssl = self.__port in SSL_PORTS
 
-        self.interface = interface
-        self.replica = None  # placeholder for a replica's *Target* object
-        self.replica_strategy = replica_strategy
+        self.__interface = interface
+        self.__replica = None  # placeholder for a replica's *Target* object
+        self.__replica_strategy = replica_strategy
 
         # instantiate an IP address circler for this Target
         try:
-            self.ipaddrqry = ips.Circle(self.__fqdn, port=self.__port, dnscache=self.__dnscache)
+            self.ipaddrqry = ips.Circle(self.__fqdn, port=self.__port,
+                                        dnscache=self.__dnscache)
         except ips.IpsError as e:
             self.logger.debug(e, exc_info=True)
             raise ips.IpsError(e)
@@ -361,8 +370,8 @@ class Target(object):
         # If we have *replica_fqdn*, try to init its *Target* object
         if replica_fqdn:
             # try:
-            #     self.replica = Target(replica_fqdn, user, password,
-            #                           self.__port, interface=self.interface)
+            #     self.__replica = Target(replica_fqdn, user, password,
+            #                           self.__port, interface=self.__interface)
             # except HcpsdkError as e:
             #     raise HcpsdkReplicaInitError(e)
             raise HcpsdkReplicaInitError('Error: not yet implemented')
@@ -376,36 +385,60 @@ class Target(object):
         # noinspection PyProtectedMember
         return self.ipaddrqry._addr()
 
-    # Attributes:
-    def __getattr__(self, item):
-        """
-        Used to make .url, .ssl and .address read-only attributes
-        """
-        if item == 'fqdn':
-            return self.__fqdn
-        elif item == 'port':
-            return self.__port
-        elif item == 'ssl':
-            return self.__ssl
-        elif item == 'sslcontext':
-            return self.__sslcontext
-        elif item == 'addresses':
-            # noinspection PyProtectedMember
-            return self.ipaddrqry._addresses
-        elif item == 'headers':
-            tmp = self.__headers.copy()
-            tmp.update(self.__authorization._getheaders())
-            return tmp
-        elif item == 'replica':
-            return self.replica
-        else:
-            raise AttributeError
+    # properties for the read-only attributes
+    def __getfqdn(self):
+        return self.__fqdn
+    fqdn = property(__getfqdn, None, None,
+                    'The FQDN for which this object was initialized (r/o)')
+
+    def __getinterface(self):
+        return self.__interface
+    interface = property(__getinterface, None, None,
+                         'The HCP interface used (r/o)')
+
+    def __getport(self):
+        return self.__port
+    port = property(__getport, None, None,
+                    'The target port in use (r/o)')
+
+    def __getssl(self):
+        return self.__ssl
+    ssl = property(__getssl, None, None,
+                    'Indicates if SSL is used (r/o)')
+
+    def __getsslcontext(self):
+        return self.__sslcontext
+    sslcontext = property(__getsslcontext, None, None,
+                    'The assigned SSL context (r/o)')
+
+    def __getaddresses(self):
+        return self.ipaddrqry._addresses
+    addresses = property(__getaddresses, None, None,
+                    'The list of resolved IP addresses for this target (r/o)')
+
+    def __getheaders(self):
+        tmp = self.__headers.copy()
+        tmp.update(self.__authorization._getheaders())
+        return tmp
+    headers = property(__getheaders, None, None,
+                    'The calculated authorization headers (r/o)')
+
+    def __getreplica(self):
+        return self.__replica
+    replica = property(__getreplica, None, None,
+                    'The target object for the HCP replica, if set (r/o)')
+
+    def __getreplica_strategy(self):
+        return self.__replica_strategy
+    replica_strategy = property(__getreplica_strategy, None, None,
+                    'The replica strategy selected (r/o)')
 
     def __repr__(self):
         return "<{} class at {}>".format(Target.__name__, id(self))
 
     def __str__(self):
-        return "<{} class initialized for {}>".format(Target.__name__, self.__fqdn)
+        return "<{} class initialized for {}>".format(Target.__name__,
+                                                      self.__fqdn)
 
 
 class Connection(object):
@@ -415,7 +448,8 @@ class Connection(object):
     """
 
     # noinspection PyShadowingNames
-    def __init__(self, target, timeout=30, idletime=30, retries=0, debuglevel=0):
+    def __init__(self, target, timeout=30, idletime=30, retries=0,
+                 debuglevel=0):
         """
         :param target:      an initialized Target object
         :param timeout:     the timeout for this Connection (secs)
@@ -455,10 +489,14 @@ class Connection(object):
         self.idletimer = None  # used to hold a threading.Timer() object
 
         self.logger.log(logging.DEBUG,
-                        'Connection object initialized: IP {} ({}) - timeout: {} - idletime: {} - retries: {}'
-                        .format(self.__address, self.__target.fqdn, self.__timeout, self.__idletime, self.__retries))
+                        'Connection object initialized: IP {} ({}) - timeout: '
+                        '{} - idletime: {} - retries: {}'
+                        .format(self.__address, self.__target.fqdn,
+                                self.__timeout, self.__idletime,
+                                self.__retries))
         if self.__sslcontext:
-            self.logger.log(logging.DEBUG, 'SSLcontext = {}'.format(self.__sslcontext))
+            self.logger.log(logging.DEBUG,
+                            'SSLcontext = {}'.format(self.__sslcontext))
 
     def _set_idletimer(self):
         """
@@ -489,7 +527,8 @@ class Connection(object):
         if self.idletimer:
             self.idletimer.cancel()
             self.close()
-            self.logger.log(logging.DEBUG, 'idletimer timed out: {}'.format(self.idletimer))
+            self.logger.log(logging.DEBUG,
+                            'idletimer timed out: {}'.format(self.idletimer))
             self.idletimer = None
 
     def _connect(self):
@@ -500,16 +539,21 @@ class Connection(object):
 
         if self.__target.ssl:
             c_t = time.time()
-            con = http.client.HTTPSConnection(self.__address, port=self.__target.port,
-                                              timeout=self.__timeout, context=self.__sslcontext)
+            con = http.client.HTTPSConnection(self.__address,
+                                              port=self.__target.port,
+                                              timeout=self.__timeout,
+                                              context=self.__sslcontext)
             self.__connect_time = time.time() - c_t
         else:
             c_t = time.time()
-            con = http.client.HTTPConnection(self.__address, port=self.__target.port,
+            con = http.client.HTTPConnection(self.__address,
+                                             port=self.__target.port,
                                              timeout=self.__timeout)
             self.__connect_time = time.time() - c_t
-        self.logger.log(logging.DEBUG, 'Connection open: IP {} ({}) - connect_time: {:0.17f}'
-                        .format(self.__address, self.__target.fqdn, self.__connect_time))
+        self.logger.log(logging.DEBUG,
+                        'Connection open: IP {} ({}) - connect_time: {:0.17f}'
+                        .format(self.__address, self.__target.fqdn,
+                                self.__connect_time))
 
         if self.__debuglevel:
             con.set_debuglevel(self.__debuglevel)
@@ -583,30 +627,26 @@ class Connection(object):
                 s_t = time.time()
                 self.__con.request(method, url, body=body, headers=headers)
             except ips.IpsError as e:
-                """
-                This is a trigger for the case that *hcpsdk.ips* isn't able to
-                resolve IP addresses - we simple forward it, as we can't resolve.
-                """
+                # This is a trigger for the case that *hcpsdk.ips* isn't able
+                # to resolve IP addresses - we simple forward it, as we can't
+                # resolve.
                 self._fail = None
                 raise
             except ConnectionRefusedError as e:
-                '''
-                This is a trigger for the case that we were able to get an
-                IP address, but a connection to it was actively refused.
-                '''
+                # This is a trigger for the case that we were able to get an
+                # IP address, but a connection to it was actively refused.
                 self.close()
                 raise HcpsdkError('Unable to connect ({})'
                                   .format(str(e)))
             except (http.client.NotConnected, AttributeError) as e:
-                """
-                This is a trigger for the case the Connection is not open
-                (not yet opened or has been closed by being not used for some
-                time). So, we open up a new Connection and start over by calling
-                our self again...
-                """
+                # This is a trigger for the case the Connection is not open
+                # (not yet opened or has been closed by being not used for some
+                # time). So, we open up a new Connection and start over by
+                # calling our self again...
                 self._fail = None
                 if not initialretry:
-                    self.logger.log(logging.DEBUG, 'Connection needs to be opened')
+                    self.logger.log(logging.DEBUG,
+                                    'Connection needs to be opened')
                     initialretry = True
                     continue
                 else:
@@ -614,114 +654,123 @@ class Connection(object):
                     raise HcpsdkError('Can\'t connect, retry failed ({})'
                                       .format(str(e)))
             except ConnectionAbortedError as e:
-                """
-                This is a trigger for the case that HCP aborts a connection for
-                whatever reason. It also serves to catch WinError 10053 on Windows,
-                which stands for a close caused by the OS.
-                We close the connection, force the target to refresh its address list
-                and retry with a new connection.
-                """
+                # This is a trigger for the case that HCP aborts a connection
+                # for whatever reason. It also serves to catch WinError 10053
+                # on Windows, which stands for a close caused by the OS. We
+                # close the connection, force the target to refresh its address
+                # list and retry with a new connection.
                 self._fail = None
-                self.logger.debug('ConnectionAbortedError: {} Request for {} failed ({})'
-                                  .format(method, url, e))
+                self.logger.debug(
+                    'ConnectionAbortedError: {} Request for {} failed ({})'
+                    .format(method, url, e))
                 if retries < self.__retries:
                     retries += 1
                     retryonfailure = True
-                    self.logger.log(logging.DEBUG, 'ConnectionAbortedError - retry # {}'.format(retries))
+                    self.logger.log(logging.DEBUG,
+                                    'ConnectionAbortedError - retry # {}'
+                                    .format(retries))
                     continue
                 else:
-                    self.logger.log(logging.DEBUG, 'ConnectionAbortedError ({} retries), giving up'
-                                    .format(retries))
+                    self.logger.log(logging.DEBUG,
+                                    'ConnectionAbortedError ({} retries), '
+                                    'giving up'.format(retries))
                     self.close()
-                    raise HcpsdkTimeoutError('ConnectionAbortedError (giving up after {} retries) - {}'.format(retries, url))
+                    raise HcpsdkTimeoutError(
+                        'ConnectionAbortedError (giving up after {} retries) '
+                        '- {}'.format(retries, url))
             except http.client.CannotSendRequest as e:
-                """
-                If this gets raised, the underlying connection seems to be in a state where
-                it can't handle a new request, yet.
-                We'll try it with the same approach as with the ConnectionAbortedError...
-                """
+                # If this gets raised, the underlying connection seems to be in
+                # a state where it can't handle a new request, yet. We'll try
+                # it with the same approach as with the ConnectionAbortedError
                 self._fail = None
-                self.logger.log(logging.DEBUG, 'CannotSendRequest: {} Request for {} failed ({})'
-                                .format(method, url, e))
+                self.logger.log(logging.DEBUG,
+                                'CannotSendRequest: {} Request for {} failed '
+                                '({})'.format(method, url, e))
                 if retries < self.__retries:
                     retries += 1
                     initialretry = True
-                    self.logger.log(logging.DEBUG, 'CannotSendRequest - retry # {}'.format(retries))
+                    self.logger.log(logging.DEBUG,
+                                    'CannotSendRequest - retry # {}'.format(
+                                        retries))
                     continue
                 else:
-                    self.logger.log(logging.DEBUG, 'CannotSendRequest ({} retries), giving up'
+                    self.logger.log(logging.DEBUG,
+                                    'CannotSendRequest ({} retries), giving up'
                                     .format(retries))
                     self.close()
-                    raise HcpsdkTimeoutError('CannotSendRequest (giving up after {} retries) - {}'.format(retries, url))
+                    raise HcpsdkTimeoutError(
+                        'CannotSendRequest (giving up after {} retries) - {}'
+                            .format(retries, url))
             except http.client.ResponseNotReady as e:
-                """
-                If this gets raised, the underlying connection seems to be in a state where
-                it can't handle a new request, yet.
-                We'll try it with the same approach as with the ConnectionAbortedError...
-                """
+                # If this gets raised, the underlying connection seems to be in
+                # a state where it can't handle a new request, yet. We'll try it
+                # with the same approach as with the ConnectionAbortedError...
                 self._fail = None
-                self.logger.debug('http.client.ResponseNotReady: {} Request for {} failed ({})'
-                                  .format(method, url, e))
+                self.logger.debug(
+                    'http.client.ResponseNotReady: {} Request for {} failed '
+                    '({})'.format(method, url, e))
                 if retries < self.__retries:
                     retries += 1
                     retryonfailure = True
-                    self.logger.log(logging.DEBUG, 'http.client.ResponseNotReady - retry # {}'.format(retries))
+                    self.logger.log(logging.DEBUG,
+                                    'http.client.ResponseNotReady - retry # {}'
+                                    .format(retries))
                     continue
                 else:
-                    self.logger.log(logging.DEBUG, 'http.client.ResponseNotReady ({} retries), giving up'
-                                    .format(retries))
+                    self.logger.log(logging.DEBUG,
+                                    'http.client.ResponseNotReady ({} retries)'
+                                    ', giving up'.format(retries))
                     self.close()
-                    raise HcpsdkTimeoutError('http.client.ResponseNotReady (giving up after {} retries) - {}'
-                                             .format(retries, url))
+                    raise HcpsdkTimeoutError(
+                        'http.client.ResponseNotReady (giving up after {} '
+                        'retries) - {}'.format(retries, url))
 
             except ssl.SSLError as e:
-                """
-                This is a blocking issue - will *not* retry and will close the
-                underlying connection.
-                """
+                # This is a blocking issue - will *not* retry and will close
+                # the underlying connection.
                 self._fail = None
-                self.logger.log(logging.DEBUG, 'ssl.SSLError: {}'.format(str(e)))
+                self.logger.log(logging.DEBUG, 'ssl.SSLError: {}'
+                                .format(str(e)))
                 self.close()
                 raise HcpsdkCertificateError(str(e))
             except (TimeoutError, socket.timeout, BrokenPipeError) as e:
-                """
-                We will retry in this case (if retries have been asked for). If we fail
-                we close the underlying connection.
-                """
+                # We will retry in this case (if retries have been asked for).
+                # If we fail we close the underlying connection.
                 self._fail = None
                 self.logger.debug('TimeoutError: {} Request for {} failed ({})'
                                   .format(method, url, e))
                 if retries < self.__retries:
                     retries += 1
                     retryonfailure = True
-                    self.logger.log(logging.DEBUG, 'TimeoutError - retry # {}'.format(retries))
+                    self.logger.log(logging.DEBUG, 'TimeoutError - retry # {}'
+                                    .format(retries))
                     continue
                 else:
-                    self.logger.log(logging.DEBUG, 'TimeoutError ({} retries), giving up'
+                    self.logger.log(logging.DEBUG, 'TimeoutError ({} retries),'
+                                                   ' giving up'
                                     .format(retries))
                     self.close()
-                    raise HcpsdkTimeoutError('Timeout ({} retries) - {}'.format(retries, url))
+                    raise HcpsdkTimeoutError('Timeout ({} retries) - {}'
+                                             .format(retries, url))
             except http.client.HTTPException as e:
-                """
-                Again, there might be no recovery from this, so we close the underlying
-                connection and give up.
-                """
+                # Again, there might be no recovery from this, so we close the
+                # underlying connection and give up.
                 self._fail = None
                 self.logger.exception('unexpected HTTPException')
                 self.close()
                 raise HcpsdkError(str(e))
             except Exception as e:
-                """
-                Again, there might be no recovery from this, so we close the underlying
-                connection and give up.
-                """
+                # Again, there might be no recovery from this, so we close the
+                # underlying connection and give up.
                 self._fail = None
                 self.logger.exception('unexpected Exception')
                 self.close()
                 raise HcpsdkError(str(e))
             else:
                 self.__service_time1 = self.__service_time2 = time.time() - s_t
-                self.logger.log(logging.DEBUG, '{} Request for {} - service_time1&2 = {:0.17f}'
+                self.logger.log(logging.DEBUG,
+                                '{} Request for {} - service_time1&2 = '
+                                '{:0.17f}'
                                 .format(method, url, self.__service_time1))
 
                 try:
@@ -729,14 +778,18 @@ class Connection(object):
                 except (TimeoutError, socket.timeout, BrokenPipeError) as e:
                     if retries < self.__retries:
                         retries += 1
-                        self.logger.log(logging.DEBUG, 'TimeoutError while getting response - retry # {}'
-                                        .format(retries))
+                        self.logger.log(logging.DEBUG,
+                                        'TimeoutError while getting response '
+                                        '- retry # {}'.format(retries))
                         continue
                     else:
-                        self.logger.log(logging.DEBUG, 'TimeoutError while getting response ({} retries), giving up'
+                        self.logger.log(logging.DEBUG,
+                                        'TimeoutError while getting response '
+                                        '({} retries), giving up'
                                         .format(retries))
                         self.close()
-                        raise HcpsdkTimeoutError('Timeout ({} retries) - {}'.format(retries, url))
+                        raise HcpsdkTimeoutError(
+                            'Timeout ({} retries) - {}'.format(retries, url))
                 except (OSError, http.client.BadStatusLine) as e:
                     # BadStatusLine most likely means that HCP has closed the connection.
                     # Same for OSError 9
@@ -747,40 +800,54 @@ class Connection(object):
                         retries += 1
                         retryonfailure = True
                         self.logger.log(logging.DEBUG,
-                                        'HCP most likely closed the connection ({}) - retry # {}'
+                                        'HCP most likely closed the connection'
+                                        ' ({}) - retry # {}'
                                         .format(str(e), retries))
                         continue
                     else:
                         self.logger.log(logging.DEBUG,
-                                        'HCP most likely closed the connection ({} - {} retries, giving up)'
+                                        'HCP most likely closed the connection'
+                                        ' ({} - {} retries, giving up)'
                                         .format(str(e), retries))
-                        raise HcpsdkTimeoutError('HCP most likely closed the connection ({} - {} retries) - {}'
-                                                 .format(str(e), retries, url))
+                        raise HcpsdkTimeoutError(
+                            'HCP most likely closed the connection ({} - {} '
+                            'retries) - {}'
+                            .format(str(e), retries, url))
                 except http.client.ResponseNotReady as e:
-                    """
-                    If this gets raised, the underlying connection seems to be in a state where
-                    it can't handle a new request, yet.
-                    We'll try it with the same approach as with the ConnectionAbortedError...
-                    """
+                    # If this gets raised, the underlying connection seems to
+                    # be in a state where it can't handle a new request, yet.
+                    # We'll try it with the same approach as with the
+                    # ConnectionAbortedError...
                     self._fail = None
-                    self.logger.debug('http.client.ResponseNotReady: {} getresponse() for {} failed ({})'
-                                      .format(method, url, e))
+                    self.logger.debug(
+                        'http.client.ResponseNotReady: {} getresponse() for '
+                        '{} failed ({})'.format(method, url, e))
                     if retries < self.__retries:
                         retries += 1
                         retryonfailure = True
-                        self.logger.log(logging.DEBUG, 'http.client.ResponseNotReady - retry # {}'.format(retries))
+                        self.logger.log(logging.DEBUG,
+                                        'http.client.ResponseNotReady - retry '
+                                        '# {}'.format(retries))
                         continue
                     else:
-                        self.logger.log(logging.DEBUG, 'http.client.ResponseNotReady ({} retries), giving up'
+                        self.logger.log(logging.DEBUG,
+                                        'http.client.ResponseNotReady ({} '
+                                        'retries), giving up'
                                         .format(retries))
                         self.close()
-                        raise HcpsdkTimeoutError('http.client.ResponseNotReady (giving up after {} retries) - {}'
-                                                 .format(retries, url))
+                        raise HcpsdkTimeoutError(
+                            'http.client.ResponseNotReady (giving up after {}'
+                            ' retries) - {}'
+                            .format(retries, url))
                 except Exception as e:
-                    self.logger.exception('Exception not catched in hcpsdk.__init__: {}'.format(str(e)))
+                    self.logger.exception(
+                        'Exception not catched in hcpsdk.__init__: {}'.format(
+                            str(e)))
                 else:
                     self.__service_time2 = time.time() - s_t
-                    self.logger.log(logging.DEBUG, '{} Request for {} - after getResponse(): service_time2 = {:0.17f}'
+                    self.logger.log(logging.DEBUG,
+                                    '{} Request for {} - after getResponse(): '
+                                    'service_time2 = {:0.17f}'
                                     .format(method, url, self.__service_time2))
 
             self._set_idletimer()
@@ -788,14 +855,16 @@ class Connection(object):
 
     def getheader(self, *args, **kwargs):
         """
-        Used to get a single *Response* header. Wraps *http.client.Response.getheader()*.
-        Arguments are simply passed through.
+        Used to get a single *Response* header. Wraps
+        *http.client.Response.getheader()*. Arguments are simply passed
+        through.
         """
         return self._response.getheader(*args, **kwargs)
 
     def getheaders(self):
         """
-        Used to get a the *Response* headers. Wraps *http.client.Response.getheaders()*.
+        Used to get a the *Response* headers. Wraps
+        *http.client.Response.getheaders()*.
         """
         return self._response.getheaders()
 
@@ -814,8 +883,8 @@ class Connection(object):
     def GET(self, url, params=None, headers=None):
         """
         Convenience method for Request() - GET an object.
-        You need to fully *.read()* the requested content from the Connection before
-        it can be used for another Request.
+        You need to fully *.read()* the requested content from the Connection
+        before it can be used for another Request.
         For parameter description see *Request()*.
         """
         return self.request('GET', url, params=params, headers=headers)
@@ -827,7 +896,7 @@ class Connection(object):
         For parameter description see *Request()*.
         """
         r = self.request('HEAD', url, params=params, headers=headers)
-        r.read()  # clean up
+        r.read()
         return r
 
     def POST(self, url, body=None, params=None, headers=None):
@@ -836,8 +905,8 @@ class Connection(object):
         Does no clean-up, as a POST can have a response body!
         For parameter description see *Request()*.
         """
-        r = self.request('POST', url, body=body, params=params, headers=headers)
-        return r
+        return self.request('POST', url, body=body, params=params,
+                            headers=headers)
 
     def DELETE(self, url, params=None, headers=None):
         """
@@ -880,52 +949,29 @@ class Connection(object):
             self.__service_time2 += self.__service_time1
             readsize = len(buf)
             if readsize:
-                self.logger.log(logging.DEBUG, '(partial?) read {} bytes: service_time1/2 = {:0.17f}/{:0.17f} secs'
-                                .format(readsize, self.__service_time1, self.__service_time2))
+                self.logger.log(logging.DEBUG,
+                                '(partial?) read {} bytes: service_time1/2 = '
+                                '{:0.17f}/{:0.17f} secs'
+                                .format(readsize, self.__service_time1,
+                                        self.__service_time2))
             else:
-                self.logger.log(logging.DEBUG, 'final read: service_time1/2 = {:0.17f}/{:0.17f} secs'
-                                .format(self.__service_time1, self.__service_time2))
+                self.logger.log(logging.DEBUG,
+                                'final read: service_time1/2 = {:0.17f}/'
+                                '{:0.17f} secs'
+                                .format(self.__service_time1,
+                                        self.__service_time2))
             return buf
-
-    def __getattr__(self, item):
-        """
-        Used to make .address read-only attributes
-        """
-        if item == 'address':
-            return self.__address
-        if item == 'con':
-            return self.__con
-        if item == 'Response':
-            return self._response
-        if item == 'response_status':
-            return None or self._response.status
-        if item == 'response_reason':
-            return None or self._response.reason
-        if item == 'connect_time':
-            if self.__connect_time > 0.0:
-                return self.__connect_time
-            else:
-                return 0.00000000001
-        if item == 'service_time1':
-            if self.__service_time1 > 0.0:
-                return self.__service_time1
-            else:
-                return 0.00000000001
-        if item == 'service_time2':
-            if self.__service_time2 > 0.0:
-                return self.__service_time2
-            else:
-                return 0.00000000001
-        else:
-            raise AttributeError
 
     def close(self):
         """
-        Close the Connection. **It is essential to close the Connection**,
-        as open connections might keep the program from terminating for at
-        max *timeout* seconds, due to the fact that the timer used to keep
-        the Connection persistent runs in a separate thread, which will
-        be canceled on *close()*.
+        Close the Connection.
+
+        .. Warning::
+           **It is essential to close the Connection**, as open connections
+           might keep the program from terminating for at max *timeout*
+           seconds, due to the fact that the timer used to keep the Connection
+           persistent runs in a separate thread, which will be canceled on
+           *close()*.
         """
         # noinspection PyBroadException
         if self.__con:
@@ -933,20 +979,97 @@ class Connection(object):
                 self._cancel_idletimer()
                 self.__con.close()
                 self.__con = None
-                self.logger.log(logging.DEBUG, 'Connection object closed: IP {} ({})'
+                self.logger.log(logging.DEBUG,
+                                'Connection object closed: IP {} ({})'
                                 .format(self.__address, self.__target.fqdn))
             except Exception as e:
-                self.logger.exception('Connection object close failed: IP {} ({})'
+                self.logger.exception('Connection object close failed: '
+                                      'IP {} ({})'
                                 .format(self.__address, self.__target.fqdn))
 
+    # properties for externally visible attributes
+    def __getaddress(self):
+        return self.__address
+    address = property(__getaddress, None, None,
+                    'The IP address for which this object was initialized '
+                    '(r/o)')
+
+    def __getcon(self):
+        return self.__con
+    con = property(__getcon, None, None,
+                    'The internal connection object (r/o)')
+
+    def __getresponse(self):
+        return self._response
+    Response = property(__getresponse, None, None,
+                        '.. deprecated:: 0.9.4.2\n'
+                        '   Use **response** instead!')
+    response = property(__getresponse, None, None,
+                        'Exposition of the http.client.Response object for '
+                        'the last Request (r/o)\n\n'
+                        '.. versionadded:: 0.9.4.2')
+
+
+    def __getresponse_status(self):
+        return self._response.status
+    response_status = property(__getresponse_status, None, None,
+                               'The HTTP status code of the last Request '
+                               '(r/o)')
+
+    def __getresponse_reason(self):
+        return self._response.reason
+    response_reason = property(__getresponse_reason, None, None,
+                               'The corresponding HTTP status message (r/o)')
+
+    def __getconnect_time(self):
+        if self.__connect_time > 0.0:
+            return self.__connect_time
+        else:
+            return 0.00000000001
+    connect_time = property(__getconnect_time, None, None,
+                            'The time in seconds the last connect took (r/o)')
+
+    def __getservice_time1(self):
+        if self.__service_time1 > 0.0:
+            return self.__service_time1
+        else:
+            return 0.00000000001
+    service_time1 = property(__getservice_time1, None, None,
+                             'The time in seconds the last action on a Request'
+                             ' took. This can be the initial part of PUT/GET/'
+                             'etc., or a single (possibly incomplete) read '
+                             'from a Response (r/o)')
+
+    def __getservice_time2(self):
+        if self.__service_time2 > 0.0:
+            return self.__service_time2
+        else:
+            return 0.00000000001
+    service_time2 = property(__getservice_time2, None, None,
+                             'Duration in secods of the complete Request up '
+                             'to now. Sum of all ``service_time1`` during '
+                             'handling a Request (r/o)')
+
+    def __getdebug_level(self):
+        return self.__debuglevel
+    def __setdebug_level(self, value):
+        if type(value) != int or value not in range(0,10):
+            raise ValueError('debug_level must be in range 0..9')
+        self.__debuglevel = value
+        if self.__con:
+            self.__con.set_debuglevel(self.__debuglevel)
+        self.logger.debug('debug_level set to {}'.format(self.__debuglevel))
+    debug_level = property(__getdebug_level, __setdebug_level,
+                           'The debug level used by underlying '
+                           '*http.client.HTTP(S)Connection* object (r/w)')
 
     def __repr__(self):
         return "<{} class at {}>".format(Connection.__name__, id(self))
 
     def __str__(self):
-        return ("<{} class initialized for fqdn {} @ {}>".format(Connection.__name__,
-                                                                 self.__target.fqdn,
-                                                                 self.__address))
+        return ("<{} class initialized for fqdn {} @ {}>"
+                .format(Connection.__name__, self.__target.fqdn,
+                        self.__address))
 
 
 # helper functions
