@@ -1002,7 +1002,7 @@ class Connection(object):
     def __getresponse(self):
         return self._response
     Response = property(__getresponse, None, None,
-                        '.. deprecated:: 0.9.4.2\n'
+                        '.. deprecated:: 0.9.4.2\n\n'
                         '   Use **response** instead!')
     response = property(__getresponse, None, None,
                         'Exposition of the http.client.Response object for '
