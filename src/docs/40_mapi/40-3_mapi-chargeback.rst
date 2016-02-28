@@ -18,9 +18,10 @@ This class allows to request chargback reports from HCP.
 
 
 Classes
-^^^^^^^
+-------
 
-..  _hcpsdk_mapi_chargeback:
+Chargeback
+^^^^^^^^^^
 
 ..  autoclass:: Chargeback
 
@@ -47,12 +48,12 @@ Classes
 
 
 Exceptions
-^^^^^^^^^^
+----------
 
 .. autoexception:: ChargebackError
 
 Sample Code
-^^^^^^^^^^^
+-----------
 
 Note that the last record in this example shows the *Tenants* overall values,
 while the the record before shows statistics for a single *Namespace*.

@@ -49,6 +49,7 @@ except ImportError as e:
     print('ImportError: {} - install dnspython3'.format(e),
           file=sys.stderr)
 
+from . import httpclient
 from . import namespace
 from . import mapi
 from . import pathbuilder
@@ -449,20 +450,43 @@ class Connection(object):
 
     # noinspection PyShadowingNames
     def __init__(self, target, timeout=30, idletime=30, retries=0,
-                 debuglevel=0):
+                 debuglevel=0, sock_keepalive=False,
+                 tcp_keepalive=60, tcp_keepintvl=60, tcp_keepcnt=3):
         """
-        :param target:      an initialized Target object
-        :param timeout:     the timeout for this Connection (secs)
-        :param idletime:    the time the Connection shall stay persistence when idle (secs)
-        :param retries:     the number of retries until giving up on a Request
-        :param debuglevel:  0..9 -see-> `http.client.HTTPconnection <https://docs.python.org/3/library/http.client.html?highlight=http.client#http.client.HTTPConnection.set_debuglevel>`_
+        :param target:          an initialized Target object
+        :param timeout:         the timeout for this Connection (secs)
+        :param idletime:        the time the Connection shall stay persistence
+                                when idle (secs)
+        :param retries:         the number of retries until giving up on a
+                                Request
+        :param debuglevel:      0..9 -see->
+                                `http.client.HTTPconnection <https://docs.python.org/3/library/http.client.html?highlight=http.client#http.client.HTTPConnection.set_debuglevel>`_
+        :param sock_keepalive:  enable TCP keepalive, if True
+        :param tcp_keepalive:   idle time used when SO_KEEPALIVE is enable
+        :param tcp_keepintvl:   interval between keepalives
+        :param tcp_keepcnt:     number of keepalives before close
 
         *Connection()* retries *request()s* if:
-            a)  the underlying connection has been closed by HCP before *idletime* has passed
-                (the request will be retried using the existing connection context) or
-            b)  a timeout emerges during an active request, in which case the connection
-                is closed, *Target()* is urged to refresh its cache of IP addresses, a fresh
-                IP address is acquired from the cache and the connection is setup from scratch.
+            a)  the underlying connection has been closed by HCP before
+                *idletime* has passed (the request will be retried using the
+                existing connection context) or
+            b)  a timeout emerges during an active request, in which case the
+                connection is closed, *Target()* is urged to refresh its cache
+                of IP addresses, a fresh IP address is acquired from the cache
+                and the connection is setup from scratch.
+
+        You should rarely need this, but if you have a device in the data path
+        that limits the time an idle connection can be open, this might be of
+        help:
+
+            Setting *sock_keepalive* to *True* enables TCP keep-alive for
+            this connection. *tcp_keepalive* defines the idle time before a
+            keep-alive packet is first sent, *tcp_keepintvl* is the time between
+            keep-alive packets and *tcp_keepcnt* is the number of keep-alive
+            packets to be sent before failing the connection in case the remote
+            end doesn't answer.  See ``man tcp`` for the details.
+
+            ..  versionadded:: 0.9.4.3
         """
         self.logger = logging.getLogger(__name__ + '.Connection')
 
@@ -477,6 +501,10 @@ class Connection(object):
         self.__idletime = float(idletime)  # the time the Connection shall stay open since last usage (secs)
         self.__debuglevel = debuglevel  # 0..9 -see-> http.client.HTTP[S]connetion
         self.__retries = retries  # the number of retries until giving up on a Request
+        self.sock_keepalive = sock_keepalive
+        self.tcp_keepalive = tcp_keepalive
+        self.tcp_keepintvl = tcp_keepintvl
+        self.tcp_keepcnt = tcp_keepcnt
 
         self.__sslcontext = self.__target.sslcontext
         self.__con = None  # http.client.HTTP[S]Connection object
@@ -539,16 +567,24 @@ class Connection(object):
 
         if self.__target.ssl:
             c_t = time.time()
-            con = http.client.HTTPSConnection(self.__address,
-                                              port=self.__target.port,
-                                              timeout=self.__timeout,
-                                              context=self.__sslcontext)
+            con = httpclient.HTTPSConnection(self.__address,
+                                             port=self.__target.port,
+                                             timeout=self.__timeout,
+                                             context=self.__sslcontext,
+                                             sock_keepalive=self.sock_keepalive,
+                                             tcp_keepalive=self.tcp_keepalive,
+                                             tcp_keepintvl=self.tcp_keepintvl,
+                                             tcp_keepcnt=self.tcp_keepcnt)
             self.__connect_time = time.time() - c_t
         else:
             c_t = time.time()
-            con = http.client.HTTPConnection(self.__address,
-                                             port=self.__target.port,
-                                             timeout=self.__timeout)
+            con = httpclient.HTTPConnection(self.__address,
+                                            port=self.__target.port,
+                                            timeout=self.__timeout,
+                                            sock_keepalive=self.sock_keepalive,
+                                            tcp_keepalive=self.tcp_keepalive,
+                                            tcp_keepintvl=self.tcp_keepintvl,
+                                            tcp_keepcnt=self.tcp_keepcnt)
             self.__connect_time = time.time() - c_t
         self.logger.log(logging.DEBUG,
                         'Connection open: IP {} ({}) - connect_time: {:0.17f}'
@@ -584,7 +620,7 @@ class Connection(object):
         :param headers: a dictionary holding additional key/value pairs to add to the
                         auto-prepared header
         :return:        the original *Response* object received from
-                        *http.client.HTTP[s]Connection.requests()*.
+                        *http.client.HTTP[S]Connection.requests()*.
         :raises:        one of the *hcpsdk.Hcpsdk[..]Error*\ s or
                         *hcpsdk.ips.IpsError* in case an IP address cache refresh failed
         """

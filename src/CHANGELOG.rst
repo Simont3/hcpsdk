@@ -1,6 +1,11 @@
 Release History
 ===============
 
+**0.9.4-3 2016-02-28**
+
+*   Added the posibility to enable TCP keep-alive for *hcpsdk.Connection*\ s
+*   Documentation slightly reformatted
+
 **0.9.4-2 2016-02-04**
 
 *   Re-worked the representation of *Target()'s* and *Connection()'s*

@@ -1,143 +1,146 @@
 MAPI - Replication management
 =============================
 
-.. automodule:: hcpsdk.mapi
-   :synopsis: Access to selected Management API (:term:`MAPI`) functionality.
+..  automodule:: hcpsdk.mapi
+    :synopsis: Access to selected Management API (:term:`MAPI`) functionality.
 
 This class allows to query HCP for replication links, their settings and
 state. It also allows to trigger a replication link failover anf failback.
 
-.. Note::
+..  Note::
 
-  To be able to use this class, HCP needs to run at least
-  **version 7.0**.
+    To be able to use this class, HCP needs to run at least
+    **version 7.0**.
 
 
 Classes
-^^^^^^^
+-------
 
-.. _hcpsdk_mapi_replication:
+..  _hcpsdk_mapi_replication:
 
-.. autoclass:: Replication
+Replication
+^^^^^^^^^^^
 
-   **Class constants:**
+..  autoclass:: Replication
 
-   Link types:
+    **Class constants:**
 
-       .. attribute:: R_ACTIVE_ACTIVE
+    Link types:
 
-          Active/Active link
+        ..  attribute:: R_ACTIVE_ACTIVE
 
-       .. attribute:: R_OUTBOUND
+            Active/Active link
 
-          Outbound link (active/passive)
+        ..  attribute:: R_OUTBOUND
 
-       .. attribute:: R_INBOUND
+            Outbound link (active/passive)
 
-          Inbound link (active/passive)
+        ..  attribute:: R_INBOUND
 
-   Link activities:
+            Inbound link (active/passive)
 
-       .. attribute:: R_SUSPEND
+    Link activities:
 
-          Suspend a link (all link types)
+        ..  attribute:: R_SUSPEND
 
-       .. attribute:: R_RESUME
+            Suspend a link (all link types)
 
-          Resume a suspended link (all link types)
+        ..  attribute:: R_RESUME
 
-       .. attribute:: R_RESTORE
+            Resume a suspended link (all link types)
 
-          Restore a link (all link types)
+        ..  attribute:: R_RESTORE
 
-       .. attribute:: R_FAILOVER
+            Restore a link (all link types)
 
-          Initiate a failover (all link types)
+        ..  attribute:: R_FAILOVER
 
-       .. attribute:: R_FAILBACK
+            Initiate a failover (all link types)
 
-          Initiate a failback (ACTIVE/ACTIVE links only)
+        ..  attribute:: R_FAILBACK
 
-       .. attribute:: R_BEGINRECOVERY
+            Initiate a failback (ACTIVE/ACTIVE links only)
 
-          Begin recovery (INBOUND links only)
+        ..  attribute:: R_BEGINRECOVERY
 
-       .. attribute:: R_COMPLETERECOVERY
+            Begin recovery (INBOUND links only)
 
-          Complete recovery (INBOUND links only)
+        ..  attribute:: R_COMPLETERECOVERY
 
-   **Class methodes:**
+            Complete recovery (INBOUND links only)
 
-   .. automethod:: getreplicationsettings
+    **Class methodes:**
 
-      .. attribute:: returned dictionary (example):
+    ..  automethod:: getreplicationsettings
 
-         ::
+        ..  attribute:: returned dictionary (example):
 
-            {'allowTenantsToMonitorNamespaces': 'true',
-             'enableDNSFailover': 'true',
-             'enableDomainAndCertificateSynchronization': 'true',
-             'network': '[hcp_system]'}
+            ::
 
-   .. automethod:: getlinklist
+                {'allowTenantsToMonitorNamespaces': 'true',
+                 'enableDNSFailover': 'true',
+                 'enableDomainAndCertificateSynchronization': 'true',
+                 'network': '[hcp_system]'}
 
-      .. attribute:: returned list (example):
+    ..  automethod:: getlinklist
 
-         ::
+        ..  attribute:: returned list (example):
 
-            ['hcp1-a-a-hcp2']
+            ::
 
-   .. automethod:: getlinkdetails
+                ['hcp1-a-a-hcp2']
 
-      .. attribute:: the returned dictionary (example):
+    ..  automethod:: getlinkdetails
 
-         ::
+        ..  attribute:: the returned dictionary (example):
 
-            {'compression': 'false',
-             'Connection': {'localHost': '192.168.0.52, 192.168.0.53, 192.168.0.54, '
-                                         '192.168.0.55',
-                            'localPort': '5748',
-                            'remoteHost': '192.168.0.56, 192.168.0.57, 192.168.0.58, '
-                                          '192.168.0.59',
-                            'remotePort': '5748'},
-             'description': 'active/active link between HCP1 and HCP2',
-             'encryption': 'false',
-             'failoverSettings': {'local': {'autoFailover': 'false',
-                                            'autoFailoverMinutes': '120'},
-                                  'remote': {'autoFailover': 'false',
-                                             'autoFailoverMinutes': '120'}},
-             'id': 'b9c488db-f641-486e-a8b4-56810faf23cd',
-             'name': 'hcp1-a-a-hcp2',
-             'priority': 'OLDEST_FIRST',
-             'statistics': {'bytesPending': '0',
-                            'bytesPendingRemote': '0',
-                            'bytesPerSecond': '0.0',
-                            'bytesReplicated': '0',
-                            'errors': '0',
-                            'errorsPerSecond': '0.0',
-                            'objectsPending': '0',
-                            'objectsPendingRemote': '0',
-                            'objectsReplicated': '0',
-                            'operationsPerSecond': '0.0',
-                            'upToDateAsOfMillis': '1419975449113',
-                            'upToDateAsOfString': '2014-12-30T22:37:29+0100'},
-             'status': 'GOOD',
-             'statusMessage': 'Synchronizing data',
-             'suspended': 'false',
-             'type': 'ACTIVE_ACTIVE'}
+            ::
+
+                {'compression': 'false',
+                 'Connection': {'localHost': '192.168.0.52, 192.168.0.53, 192.168.0.54, '
+                                             '192.168.0.55',
+                                'localPort': '5748',
+                                'remoteHost': '192.168.0.56, 192.168.0.57, 192.168.0.58, '
+                                              '192.168.0.59',
+                                'remotePort': '5748'},
+                 'description': 'active/active link between HCP1 and HCP2',
+                 'encryption': 'false',
+                 'failoverSettings': {'local': {'autoFailover': 'false',
+                                                'autoFailoverMinutes': '120'},
+                                      'remote': {'autoFailover': 'false',
+                                                 'autoFailoverMinutes': '120'}},
+                 'id': 'b9c488db-f641-486e-a8b4-56810faf23cd',
+                 'name': 'hcp1-a-a-hcp2',
+                 'priority': 'OLDEST_FIRST',
+                 'statistics': {'bytesPending': '0',
+                                'bytesPendingRemote': '0',
+                                'bytesPerSecond': '0.0',
+                                'bytesReplicated': '0',
+                                'errors': '0',
+                                'errorsPerSecond': '0.0',
+                                'objectsPending': '0',
+                                'objectsPendingRemote': '0',
+                                'objectsReplicated': '0',
+                                'operationsPerSecond': '0.0',
+                                'upToDateAsOfMillis': '1419975449113',
+                                'upToDateAsOfString': '2014-12-30T22:37:29+0100'},
+                 'status': 'GOOD',
+                 'statusMessage': 'Synchronizing data',
+                 'suspended': 'false',
+                 'type': 'ACTIVE_ACTIVE'}
 
 
-   .. automethod:: setreplicationlinkstate
+    ..  automethod:: setreplicationlinkstate
 
 
 Exceptions
-^^^^^^^^^^
+----------
 
-.. autoexception:: ReplicationSettingsError
+..  autoexception:: ReplicationSettingsError
 
 
 Example
-^^^^^^^
+-------
 
 ::
 

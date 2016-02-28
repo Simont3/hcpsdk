@@ -1,6 +1,9 @@
 :mod:`hcpsdk.pathbuilder` --- unique object names
 =================================================
 
+.. automodule:: hcpsdk.pathbuilder
+   :synopsis: Unique creation of path and object name.
+
 Due to its internals, bulk ingest activity into HCP delivers best
 possible performance if multiple parallel writes are directed to
 different folders take place.
@@ -42,15 +45,17 @@ Benefits are:
 Classes
 -------
 
-.. _hcpsdk_pathbuilder_pathbuilder:
+..  _hcpsdk_pathbuilder_pathbuilder:
 
-.. automodule:: hcpsdk.pathbuilder
-   :synopsis: Create an unique object name path
-   :members:
+PathBuilder
+^^^^^^^^^^^
+
+..  autoclass:: PathBuilder
+    :members:
 
 
 Exceptions
 ----------
 
-.. autoexception:: PathBuilderError
+..  autoexception:: PathBuilderError
 

@@ -49,7 +49,7 @@ class IpsError(Exception):
 # noinspection PyTypeChecker
 class Circle(object):
     """
-    Resolve an FQDN (through **query()**), cache the acquired IP addresses and
+    Resolve an FQDN (using **query()**), cache the acquired IP addresses and
     yield them round-robin.
     """
     __EMPTY_ADDRLIST = []
@@ -61,6 +61,7 @@ class Circle(object):
         :param dnscache:    if True, use the system resolver (which **might** do
                             local caching), else use an internal resolver,
                             bypassing any cache available
+        :returns:           an *hcpsdk.ips.Response* object
         """
         self.logger = logging.getLogger(__name__ + '.Circle')
         self.__authority = fqdn

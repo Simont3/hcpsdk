@@ -33,17 +33,23 @@ Setup is easy (:ref:`see example below <hcpsdk_example>`):
         Don't forget to close *Connection* objects when finished with them!
 
 
-Helper Functions
-^^^^^^^^^^^^^^^^
+Functions
+---------
+
+version
+^^^^^^^
 
 .. py:method:: version()
 
    Return the full version of the HCPsdk (|release|).
 
+checkport
+^^^^^^^^^
+
 .. autofunction:: checkport
 
 Constants
-^^^^^^^^^
+---------
 
 **Ports**
 
@@ -79,37 +85,55 @@ Constants
 
 
 Classes
-^^^^^^^
+-------
+
+NativeAuthorization
+^^^^^^^^^^^^^^^^^^^
 
 .. autoclass:: NativeAuthorization
    :members:
+
+NativeADAuthorization
+^^^^^^^^^^^^^^^^^^^^^
 
 .. autoclass:: NativeADAuthorization
    :members:
 
    .. versionadded:: 0.9.4.0
 
+LocalSwiftAuthorization
+^^^^^^^^^^^^^^^^^^^^^^^
+
 .. autoclass:: LocalSwiftAuthorization
    :members:
 
    .. versionadded:: 0.9.3.10
+
+DummyAuthorization
+^^^^^^^^^^^^^^^^^^
 
 .. autoclass:: DummyAuthorization
    :members:
 
 .. _hcpsdk_target:
 
+Target
+^^^^^^
+
 .. autoclass:: Target
    :members:
 
 .. _hcpsdk_connection:
+
+Connection
+^^^^^^^^^^
 
 .. autoclass:: Connection
    :members:
 
 
 Exceptions
-^^^^^^^^^^
+----------
 
 .. autoexception:: HcpsdkError
 
@@ -127,7 +151,7 @@ Exceptions
 .. _hcpsdk_example:
 
 Example
-^^^^^^^
+-------
 
 ::
 

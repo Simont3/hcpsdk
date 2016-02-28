@@ -6,15 +6,15 @@ Platform (HCP) from Python3. It's intended to be an exemplary implementation
 of an optimal medium-level connector to HCP.
 
 ..  toctree::
-    :maxdepth: 2
+    :maxdepth: 4
     :caption: Table of Contents
 
     05_preface
     15_state_of_implementation
     17_installation
     18_threadsafety
-    20_hcpsdk
     22_https
+    20_hcpsdk
     25_ips
     30_namespace
     35_pathbuilder

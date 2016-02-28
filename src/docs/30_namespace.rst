@@ -1,133 +1,107 @@
 :mod:`hcpsdk.namespace` --- namespace information
 =================================================
 
-.. automodule:: hcpsdk.namespace
-   :synopsis: Namespace information
+..  automodule:: hcpsdk.namespace
+    :synopsis: Namespace information
 
 **hcpsdk.namespace** provides access to the actual Namespace's parameters and
 statistics. The **hcpsdk.Target** object must have been instantiated with a
 :term:`Namespace` :term:`FQDN`.
 
-.. Warning::
+..  Warning::
 
     Using this class with HCP prior to version 6 will deliver partial or no
-    results when **hcpsdk.Target** is configured for the :term:`Default Namespace`.
+    results when **hcpsdk.Target** is configured for the
+    :term:`Default Namespace`.
 
 Classes
-^^^^^^^
+-------
 
-.. _hcpsdk_namespace_info:
+..  _hcpsdk_namespace_info:
 
-.. autoclass:: Info
+Info
+^^^^
 
-   .. automethod:: nsstatistics
+..  autoclass:: Info
 
-      .. attribute:: returned dictionary (example):
+    ..  automethod:: nsstatistics
 
-         ::
+        ..  attribute:: returned dictionary (example):
 
-            {'customMetadataObjectBytes': 13542405,
-             'customMetadataObjectCount': 380107,
-             'namespaceName': 'n1',
-             'objectCount': 402403,
-             'shredObjectBytes': 0,
-             'shredObjectCount': 0,
-             'softQuotaPercent': 85,
-             'totalCapacityBytes': 53687091200,
-             'usedCapacityBytes': 13792362496}
+            ::
 
-   .. automethod:: listaccessiblens
+                {'customMetadataObjectBytes': 13542405,
+                 'customMetadataObjectCount': 380107,
+                 'namespaceName': 'n1',
+                 'objectCount': 402403,
+                 'shredObjectBytes': 0,
+                 'shredObjectCount': 0,
+                 'softQuotaPercent': 85,
+                 'totalCapacityBytes': 53687091200,
+                 'usedCapacityBytes': 13792362496}
 
-      .. attribute:: returned dictionary (example):
+    ..  automethod:: listaccessiblens
 
-         ::
+        ..  attribute:: returned dictionary (example):
 
-            {'n2': {'defaultIndexValue': True,
-                    'defaultRetentionValue': 0,
-                    'defaultShredValue': False,
-                    'description': ['replicated', 'search', 'versioning'],
-                    'dpl': 2,
-                    'hashScheme': 'SHA-256',
-                    'name': 'n2',
-                    'nameIDNA': 'n2',
-                    'retentionMode': 'enterprise',
-                    'searchEnabled': True,
-                    'versioningEnabled': True},
-             'n1': {'defaultIndexValue': True,
-                    'defaultRetentionValue': 0,
-                    'defaultShredValue': False,
-                    'description': ['replicated', 'search', 'no versioning'],
-                    'dpl': 2,
-                    'hashScheme': 'SHA-256',
-                    'name': 'n1',
-                    'nameIDNA': 'n1',
-                    'retentionMode': 'enterprise',
-                    'searchEnabled': True,
-                    'versioningEnabled': False}}
+            ::
 
-
-   .. automethod:: listretentionclasses
-
-      .. attribute:: returned dictionary (example):
-
-         ::
-
-            {'initial_unspecified': {'autoDelete': False,
-                                     'description': 'Retention Class with '
-                                                    'an initial unspecifie'
-                                                    'd value.',
-                                     'name': 'initial_unspecified',
-                                     'value': -2},
-             'deletion_prohibited': {'autoDelete': False,
-                                     'description': 'Class which prohibits'
-                                                    ' deletion.',
-                                     'name': 'deletion_prohibited',
-                                     'value': -1},
-             'TAX_DATA': {'autoDelete': True,
-                          'description': 'Class for tax data - actually 10'
-                                         ' years.',
-                          'name': 'TAX_DATA',
-                          'value': 'A+10y'}}
+                {'n2': {'defaultIndexValue': True,
+                        'defaultRetentionValue': 0,
+                        'defaultShredValue': False,
+                        'description': ['replicated', 'search', 'versioning'],
+                        'dpl': 2,
+                        'hashScheme': 'SHA-256',
+                        'name': 'n2',
+                        'nameIDNA': 'n2',
+                        'retentionMode': 'enterprise',
+                        'searchEnabled': True,
+                       'versioningEnabled': True},
+                 'n1': {'defaultIndexValue': True,
+                        'defaultRetentionValue': 0,
+                       'defaultShredValue': False,
+                       'description': ['replicated', 'search', 'no versioning'],
+                       'dpl': 2,
+                        'hashScheme': 'SHA-256',
+                        'name': 'n1',
+                        'nameIDNA': 'n1',
+                        'retentionMode': 'enterprise',
+                        'searchEnabled': True,
+                        'versioningEnabled': False}}
 
 
+   ..   automethod:: listretentionclasses
 
-   .. automethod:: listpermissions
+        ..  attribute:: returned dictionary (example):
 
-      .. attribute:: returned dictionary (example):
+            ::
 
-         ::
+                {'initial_unspecified': {'autoDelete': False,
+                                         'description': 'Retention Class with '
+                                                        'an initial unspecifie'
+                                                        'd value.',
+                                         'name': 'initial_unspecified',
+                                         'value': -2},
+                 'deletion_prohibited': {'autoDelete': False,
+                                         'description': 'Class which prohibits'
+                                                        ' deletion.',
+                                         'name': 'deletion_prohibited',
+                                         'value': -1},
+                 'TAX_DATA': {'autoDelete': True,
+                              'description': 'Class for tax data - actually 10'
+                                             ' years.',
+                              'name': 'TAX_DATA',
+                              'value': 'A+10y'}}
 
-            {'namespacePermissions': {'browse': True,
-                                      'changeOwner': True,
-                                      'delete': True,
-                                      'privileged': True,
-                                      'purge': True,
-                                      'read': True,
-                                      'readAcl': True,
-                                      'search': True,
-                                      'write': True,
-                                      'writeAcl': True},
-             'namespaceEffectivePermissions': {'browse': True,
-                                               'changeOwner': True,
-                                               'delete': True,
-                                               'privileged': True,
-                                               'purge': True,
-                                               'read': True,
-                                               'readAcl': True,
-                                               'search': True,
-                                               'write': True,
-                                               'writeAcl': True},
-             'userPermissions': {'browse': True,
-                                 'changeOwner': True,
-                                 'delete': True,
-                                 'privileged': True,
-                                 'purge': True,
-                                 'read': True,
-                                 'readAcl': True,
-                                 'search': True,
-                                 'write': True,
-                                 'writeAcl': True},
-             'userEffectivePermissions': {'browse': True,
+
+
+    ..  automethod:: listpermissions
+
+        ..  attribute:: returned dictionary (example):
+
+            ::
+
+                {'namespacePermissions': {'browse': True,
                                           'changeOwner': True,
                                           'delete': True,
                                           'privileged': True,
@@ -136,11 +110,42 @@ Classes
                                           'readAcl': True,
                                           'search': True,
                                           'write': True,
-                                          'writeAcl': True}}
+                                          'writeAcl': True},
+                 'namespaceEffectivePermissions': {'browse': True,
+                                                   'changeOwner': True,
+                                                   'delete': True,
+                                                   'privileged': True,
+                                                   'purge': True,
+                                                   'read': True,
+                                                   'readAcl': True,
+                                                   'search': True,
+                                                   'write': True,
+                                                   'writeAcl': True},
+                 'userPermissions': {'browse': True,
+                                     'changeOwner': True,
+                                     'delete': True,
+                                     'privileged': True,
+                                     'purge': True,
+                                     'read': True,
+                                     'readAcl': True,
+                                     'search': True,
+                                     'write': True,
+                                     'writeAcl': True},
+                 'userEffectivePermissions': {'browse': True,
+                                              'changeOwner': True,
+                                              'delete': True,
+                                              'privileged': True,
+                                              'purge': True,
+                                              'read': True,
+                                              'readAcl': True,
+                                              'search': True,
+                                              'write': True,
+                                              'writeAcl': True}}
 
 
 Example
-^^^^^^^
+-------
+
 ::
 
     >>> import hcpsdk.namespace
@@ -159,5 +164,3 @@ Example
      'totalCapacityBytes': 53687091200,
      'usedCapacityBytes': 0}
     >>>
-
-

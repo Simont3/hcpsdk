@@ -11,16 +11,21 @@ This class allows to work with the *Tenant* resources in HCP.
 | HCP needs to have MAPI enabled at the system-level.
 
 
-Methods
-^^^^^^^
+Functions
+---------
+
+listtenants
+^^^^^^^^^^^
+
 ..  autofunction:: listtenants
 
 
 
 Classes
-^^^^^^^
+-------
 
-..  _hcpsdk_mapi_tenant:
+Tenant
+^^^^^^
 
 ..  autoclass:: Tenant
 
@@ -37,12 +42,12 @@ Classes
     ..  automethod:: close
 
 Exceptions
-^^^^^^^^^^
+----------
 
 .. autoexception:: TenantError
 
 Sample Code
-^^^^^^^^^^^
+-----------
 
 
 
