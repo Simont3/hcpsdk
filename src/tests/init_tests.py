@@ -29,7 +29,7 @@ import hcpsdk
 P_HCP       = 'hcp73.archivas.com'
 P_ADMIN     = 'admin.' + P_HCP
 P_TENANT    = 'm.' + P_HCP
-P_NS_GOOD   = 'n1.' + P_TENANT
+P_NS_GOOD   = 'n9.' + P_TENANT
 P_NS_BAD    = "this_wont_work.at-all"
 P_PORT      = 80
 P_SSLPORT   = 443
@@ -47,10 +47,10 @@ P_ADMAUTH      = hcpsdk.NativeAuthorization(P_ADMUSER, P_ADMPWD)
 
 
 # replica HCP
-R_HCP       = 'hcp2.snomis.local'
+R_HCP       = 'hcp72.archivas.com'
 R_ADMIN     = 'admin' + R_HCP
 R_TENANT    = 'm.' + R_HCP
-R_NS_GOOD   = 'n1.' + R_TENANT
+R_NS_GOOD   = 'n.' + R_TENANT
 R_NS_BAD    = "this_wont_work.at-all"
 R_PORT      = P_PORT
 R_ADMINPORT = P_ADMINPORT
@@ -67,10 +67,10 @@ R_ADMAUTH      = hcpsdk.NativeAuthorization(R_ADMUSER, R_ADMPWD)
 
 
 # primary HCP for mapi.Logs() tests
-L_HCP       = 'hcp72.archivas.com'
+L_HCP       = 'hcp73.archivas.com'
 L_ADMIN     = 'admin.' + L_HCP
 L_TENANT    = 'm.' + L_HCP
-L_NS_GOOD   = 'n1.' + L_TENANT
+L_NS_GOOD   = 'n9.' + L_TENANT
 L_NS_BAD    = "this_wont_work.at-all"
 L_PORT      = 80
 L_SSLPORT   = 443

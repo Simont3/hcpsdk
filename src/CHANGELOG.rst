@@ -1,6 +1,11 @@
 Release History
 ===============
 
+**0.9.4-4 2016-12-06**
+
+*   Changed the pre-requisite from dnspython3 to dnspython >= 1.15.0.
+    (dnspython 1.15.0 supports Python 2 and 3)
+
 **0.9.4-3 2016-02-28**
 
 *   Added the posibility to enable TCP keep-alive for *hcpsdk.Connection*\ s

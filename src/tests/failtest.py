@@ -5,7 +5,7 @@ import pprint
 import http.client
 import hcpsdk
 
-T_NAMESPACE = 'n1.m.hcp1.snomis.local'
+T_NAMESPACE = 'n1.m.hcp73.archivas.com'
 T_DAAC      = 'n'
 T_DAAC_PWD  = 'n01'
 T_PORT      = 443

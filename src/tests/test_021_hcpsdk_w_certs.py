@@ -27,8 +27,6 @@ import hcpsdk
 print(hcpsdk.version())
 import unittest
 import ssl
-import socket
-import http.client
 from pprint import pprint
 
 import init_tests as it

@@ -69,7 +69,7 @@ class TestHcpsdk_30_1_NamespaceInfo_NS_GOOD(unittest.TestCase):
 
     def test_1_30_good_listThisNSonly(self):
         print('test_1_30_good_listThisNSonly')
-        r = self.nso.listaccessiblens(all=True)
+        r = self.nso.listaccessiblens(all=False)
         pprint(r)
         self.assertTrue(type(r) == OrderedDict)
         self.assertTrue(len(r) == 1)

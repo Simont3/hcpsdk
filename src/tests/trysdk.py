@@ -5,7 +5,7 @@ import hcpsdk
 
 print("--> Init <hcptarget> object")
 try:
-    hcptarget = hcpsdk.target("n1.m.hcp2.snomis.local",
+    hcptarget = hcpsdk.target("n1.m.hcp73.archivas.com",
                               "n", "n01", port=443)
     print("   URL:", hcptarget.fqdn)
     print("  PORT:", hcptarget.port)

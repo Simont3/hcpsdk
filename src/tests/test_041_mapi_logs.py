@@ -40,6 +40,13 @@ class TestHcpsdk_41_1_Mapi_Logs(unittest.TestCase):
         self.logs.close()
         del self.hcptarget
 
+    def test_1_05_logs_cancel(self):
+        """
+        Test if we get a dict from status()
+        """
+        print('test_1_05_logs_cancel:')
+        self.assertTrue(self.logs.cancel() == True)
+
     def test_1_10_logs_prepare(self):
         """
         Test various good/bad parameters
@@ -53,8 +60,7 @@ class TestHcpsdk_41_1_Mapi_Logs(unittest.TestCase):
         print('\tno date parameters: pass')
 
         l = self.logs.prepare(startdate=date.today() - timedelta(days=10),
-                              enddate=date.today() - timedelta(days=1),
-                              snodes=['s01','s02','s03'])
+                              enddate=date.today() - timedelta(days=1))
         pprint(l, indent=4)
         self.assertTrue(l[1] - l[0] == timedelta(days=9))
         print('\tpast 10 days: pass')
@@ -106,6 +112,5 @@ class TestHcpsdk_41_1_Mapi_Logs(unittest.TestCase):
         """
         print('test_1_40_logs_cancel:')
         self.logs.prepare(startdate=date.today() - timedelta(days=10),
-                              enddate=date.today() - timedelta(days=1),
-                              snodes=['s01','s02','s03'])
+                              enddate=date.today() - timedelta(days=1))
         self.assertTrue(self.logs.cancel() == True)

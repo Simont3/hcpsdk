@@ -46,7 +46,7 @@ from .version import _Version
 try:
     from . import ips
 except ImportError as e:
-    print('ImportError: {} - install dnspython3'.format(e),
+    print('ImportError: {} - install dnspython >= 1.15.0'.format(e),
           file=sys.stderr)
 
 from . import httpclient

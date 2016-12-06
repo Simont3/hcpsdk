@@ -4,7 +4,8 @@ import hcpsdk
 if __name__ == '__main__':
 
     #try:
-    t = hcpsdk.target('n1.m.hcp1.snomis.local', 'n', 'n01', replica_fqdn='n1.m.hcp9.snomis.local')
+    t = hcpsdk.target('n1.m.hcp73.archivas.com', 'n', 'n01',
+                      replica_fqdn='n1.m.hcp72.archivas.com')
     #except hcpsdk.HcpsdkReplicaInitError as e:
     #    sys.exit(e)
 

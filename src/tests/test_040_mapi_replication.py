@@ -53,7 +53,6 @@ class TestHcpsdk_40_1_Mapi_Replication(unittest.TestCase):
         r = self.mapi.getreplicationsettings()
         pprint(r)
         self.assertTrue(type(r) == dict)
-        self.assertTrue(len(r) == 4)
 
     def test_1_20_good_getLinkList(self):
         """
