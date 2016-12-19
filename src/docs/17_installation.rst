@@ -6,7 +6,7 @@ Dependencies
 
 **hcpsdk** depends on these packages:
 
-    *   `dnspython3 <http://www.dnspython.org>`_ -  Used for non-cached name
+    *   `dnspython <http://www.dnspython.org>`_ -  Used for non-cached name
         resolution when bypassing the system's resolver.
 
     *   `sphinx <http://sphinx-doc.org>`_ -  Used to build this documentation

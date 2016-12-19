@@ -42,7 +42,7 @@ from threading import Timer
 from .version import _Version
 
 # If we install using pip, we run into an error if we don't have
-# dnspython3 installed; that's why we accept the ImportError here.
+# dnspython installed; that's why we accept the ImportError here.
 try:
     from . import ips
 except ImportError as e:

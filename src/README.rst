@@ -52,7 +52,7 @@ Hosted at [readthedocs.org](http://hcpsdk.readthedocs.org)
 Dependencies
 ------------
 
-**hcpsdk** depends on [dnspython3](http://www.dnspython.org), which is used for
+**hcpsdk** depends on [dnspython](http://www.dnspython.org), which is used for
 non-cached name resolution when bypassing the system's resolver.
 
 

@@ -45,7 +45,7 @@ Features
 Dependencies
 ------------
 
-**hcpsdk** depends on `dnspython3 <http://www.dnspython.org>`_, which is used
+**hcpsdk** depends on `dnspython <http://www.dnspython.org>`_, which is used
 for non-cached name resolution when bypassing the system's resolver.
 
 

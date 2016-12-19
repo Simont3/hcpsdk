@@ -1,6 +1,10 @@
 Release History
 ===============
 
+**0.9.4-5 2016-12-19**
+
+*   Fixed a bug in setup.py that caused dnspython3 still be called in
+
 **0.9.4-4 2016-12-06**
 
 *   Changed the pre-requisite from dnspython3 to dnspython >= 1.15.0.
