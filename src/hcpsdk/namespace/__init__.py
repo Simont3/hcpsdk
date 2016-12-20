@@ -32,13 +32,14 @@ logging.getLogger('hcpsdk.namespace').addHandler(logging.NullHandler())
 
 class Info(object):
     """
-    Class to access namespaces metadata information
+    Class to access namespaces metadata information.
     """
 
     def __init__(self, target, debuglevel=0):
         """
         :param target:      an **hcpsdk.Target** object
         :param debuglevel:  0..9 (propagated to *http.client*)
+
         """
         self.logger = logging.getLogger(__name__ + '.Info')
         self.target = target
@@ -48,7 +49,7 @@ class Info(object):
 
     def nsstatistics(self):
         """
-        Query for namespace statistic information
+        Query for namespace statistic information.
 
         :return:  a dict holding the stats
         :raises: hcpsdk.HcpsdkError()

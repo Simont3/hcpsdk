@@ -40,6 +40,7 @@ Info
                  'totalCapacityBytes': 53687091200,
                  'usedCapacityBytes': 13792362496}
 
+
     ..  automethod:: listaccessiblens
 
         ..  attribute:: returned dictionary (example):
@@ -94,8 +95,7 @@ Info
                               'value': 'A+10y'}}
 
 
-
-    ..  automethod:: listpermissions
+   ..  automethod:: listpermissions
 
         ..  attribute:: returned dictionary (example):
 
