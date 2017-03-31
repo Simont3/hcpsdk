@@ -1,6 +1,11 @@
 Release History
 ===============
 
+**0.9.4-6 2017-03-31**
+
+*   Fixed a bug in NativeADAuthorization that caused 403 errors
+    (thanks to Kevin L)
+
 **0.9.4-5 2016-12-19**
 
 *   Fixed a bug in setup.py that caused dnspython3 still be called in

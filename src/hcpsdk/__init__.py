@@ -270,8 +270,6 @@ class NativeADAuthorization(BaseAuthorization):
         super().__init__()
         self.logger = logging.getLogger(__name__ + '.NativeADAuthorization')
         self.headers = self._createauthorization(user, password)
-        self.logger.debug('*I_NATIVE* authorization initialized for user: {}'
-                          .format(user))
         self.logger.debug('version 7.2+: Authorization: {}'.format(
             self.headers['Authorization']))
 
@@ -283,9 +281,7 @@ class NativeADAuthorization(BaseAuthorization):
         :param password:    his password
         :return:            a dict holding the necessary headers
         """
-        token = b64encode(user.encode()).decode() + ":" + md5(
-            password.encode()).hexdigest()
-        return {"Authorization": 'AD {}'.format(token)}
+        return {"Authorization": 'AD {}:{}'.format(user, password)}
 
 class LocalSwiftAuthorization(BaseAuthorization):
     """
