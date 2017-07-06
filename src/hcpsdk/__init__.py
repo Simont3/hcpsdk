@@ -626,8 +626,17 @@ class Connection(object):
         else:
             headers.update(self.__target.headers)
 
-        # make sure that the URL and params are proper encoded
-        url = quote(url, safe='/')
+        # if url needs url-encoding, do so...
+        try:
+            # --> if url can be encoded to ascii and it doesn't contain
+            #     blanks we can go with it.
+            url.encode("ascii")
+            if ' ' in url:
+                raise
+        except Exception:
+            # in this case, we need to urlencode it...
+            url = quote(url)
+
         if params:
             url = url + '?' + urlencode(params)
         self.logger.log(logging.DEBUG, 'URL = {}'.format(url))

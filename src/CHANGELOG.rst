@@ -1,6 +1,10 @@
 Release History
 ===============
 
+**0.9.4-7 2017-07-05**
+
+*   Fixed a bug where already url-encoded URLs were url-encoded, again
+
 **0.9.4-6 2017-03-31**
 
 *   Fixed a bug in NativeADAuthorization that caused 403 errors
