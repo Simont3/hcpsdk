@@ -1,7 +1,7 @@
 Release History
 ===============
 
-**0.9.4-7 2017-07-05**
+**0.9.4-7 2017-07-07**
 
 *   Fixed a bug where already url-encoded URLs were url-encoded, again
 

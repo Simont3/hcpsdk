@@ -602,7 +602,9 @@ class Connection(object):
         **Beside of *method*, all arguments are valid for the convenience methods, too.**
 
         :param method:  any valid http method (GET,HEAD,PUT,POST,DELETE)
-        :param url:     the url to access w/o the server part (i.e: /rest/path/object)
+        :param url:     the url to access w/o the server part (i.e: /rest/path/object);
+                        url quoting will be done if necessary, but existing quoting
+                        will not be touched
         :param body:    the payload to send (see *http.client* documentation
                         for details)
         :param params:  a dictionary with parameters to be added to the Request:
