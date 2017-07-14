@@ -64,5 +64,6 @@ target/
 .settings/
 src/dist
 src/docs/_build
+.venv/
 
 

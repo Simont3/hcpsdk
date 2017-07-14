@@ -633,11 +633,15 @@ class Connection(object):
             # --> if url can be encoded to ascii and it doesn't contain
             #     blanks we can go with it.
             url.encode("ascii")
-            if ' ' in url:
+            if ' ' in url or '+' in url:
                 raise
         except Exception:
             # in this case, we need to urlencode it...
+            self.logger.log(logging.DEBUG, 'url ({}) does need quoting'.format(url))
             url = quote(url)
+            self.logger.log(logging.DEBUG, 'quote(url) = {}'.format(url))
+        else:
+            self.logger.log(logging.DEBUG, 'url ({}) doesn\'t need quoting'.format(url))
 
         if params:
             url = url + '?' + urlencode(params)
