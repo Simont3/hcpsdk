@@ -1,6 +1,19 @@
 Release History
 ===============
 
+**0.9.4-8 2017-07-14**
+
+*   Fixed a bug where URLs containing '+' also have to be url-encoded
+
+**0.9.4-7 2017-07-07**
+
+*   Fixed a bug where already url-encoded URLs were url-encoded, again
+
+**0.9.4-6 2017-03-31**
+
+*   Fixed a bug in NativeADAuthorization that caused 403 errors
+    (thanks to Kevin L)
+
 **0.9.4-5 2016-12-19**
 
 *   Fixed a bug in setup.py that caused dnspython3 still be called in

@@ -286,8 +286,6 @@ class NativeADAuthorization(BaseAuthorization):
         super().__init__()
         self.logger = logging.getLogger(__name__ + '.NativeADAuthorization')
         self.headers = self._createauthorization(user, password)
-        self.logger.debug('*I_NATIVE* authorization initialized for user: {}'
-                          .format(user))
         self.logger.debug('version 7.2+: Authorization: {}'.format(
             self.headers['Authorization']))
 
@@ -299,9 +297,7 @@ class NativeADAuthorization(BaseAuthorization):
         :param password:    his password
         :return:            a dict holding the necessary headers
         """
-        token = b64encode(user.encode()).decode() + ":" + md5(
-            password.encode()).hexdigest()
-        return {"Authorization": 'AD {}'.format(token)}
+        return {"Authorization": 'AD {}:{}'.format(user, password)}
 
 
     def __repr__(self):
@@ -644,7 +640,9 @@ class Connection(object):
         **Beside of *method*, all arguments are valid for the convenience methods, too.**
 
         :param method:  any valid http method (GET,HEAD,PUT,POST,DELETE)
-        :param url:     the url to access w/o the server part (i.e: /rest/path/object)
+        :param url:     the url to access w/o the server part (i.e: /rest/path/object);
+                        url quoting will be done if necessary, but existing quoting
+                        will not be touched
         :param body:    the payload to send (see *http.client* documentation
                         for details)
         :param params:  a dictionary with parameters to be added to the Request:
@@ -668,8 +666,21 @@ class Connection(object):
         else:
             headers.update(self.__target.headers)
 
-        # make sure that the URL and params are proper encoded
-        url = quote(url, safe='/')
+        # if url needs url-encoding, do so...
+        try:
+            # --> if url can be encoded to ascii and it doesn't contain
+            #     blanks we can go with it.
+            url.encode("ascii")
+            if ' ' in url or '+' in url:
+                raise
+        except Exception:
+            # in this case, we need to urlencode it...
+            self.logger.log(logging.DEBUG, 'url ({}) does need quoting'.format(url))
+            url = quote(url)
+            self.logger.log(logging.DEBUG, 'quote(url) = {}'.format(url))
+        else:
+            self.logger.log(logging.DEBUG, 'url ({}) doesn\'t need quoting'.format(url))
+
         if params:
             url = url + '?' + urlencode(params)
         self.logger.log(logging.DEBUG, 'URL = {}'.format(url))
