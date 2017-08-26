@@ -1,6 +1,10 @@
 Release History
 ===============
 
+**0.9.4-9 2017-08-26**
+
+*   Better __repr__ and __str__ for hcpsdk.__init__.py
+
 **0.9.4-8 2017-07-14**
 
 *   Fixed a bug where URLs containing '+' also have to be url-encoded
