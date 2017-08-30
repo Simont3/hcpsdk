@@ -221,6 +221,12 @@ class DummyAuthorization(BaseAuthorization):
         self.headers = {'HCPSDK_DUMMY': 'DUMMY'}
         self.logger.debug('*I_DUMMY* dummy authorization initialized')
 
+    def __repr__(self):
+        return ('{}()'.format(__class__.__name__))
+
+    def __str__(self):
+        return ('{}'.format(__class__.__name__))
+
 
 class NativeAuthorization(BaseAuthorization):
     """
@@ -233,6 +239,7 @@ class NativeAuthorization(BaseAuthorization):
         """
         super().__init__()
         self.logger = logging.getLogger(__name__ + '.NativeAuthorization')
+        self.user = user
         self.headers = self._createauthorization(user, password)
         self.logger.debug('*I_NATIVE* authorization initialized for user: {}'
                           .format(user))
@@ -253,6 +260,15 @@ class NativeAuthorization(BaseAuthorization):
             password.encode()).hexdigest()
         return {"Authorization": 'HCP {}'.format(token),
                 "Cookie": "hcp-ns-auth={0}".format(token)}
+
+    def __repr__(self):
+        return ('{}({}, {})'
+                .format(__class__.__name__, self.user, 6*'*'))
+
+    def __str__(self):
+        return ('{} for user {}, password {})'
+                .format(__class__.__name__, self.user, 6*'*'))
+
 
 class NativeADAuthorization(BaseAuthorization):
     """
@@ -283,6 +299,16 @@ class NativeADAuthorization(BaseAuthorization):
         """
         return {"Authorization": 'AD {}:{}'.format(user, password)}
 
+
+    def __repr__(self):
+        return ('{}({}, {})'
+                .format(__class__.__name__, self.user, 6 * '*'))
+
+    def __str__(self):
+        return ('{} for user {}, password {})'
+                .format(__class__.__name__, self.user, 6*'*'))
+
+
 class LocalSwiftAuthorization(BaseAuthorization):
     """
     Authorization for local :term:`HSwift <HSwift>` access to
@@ -310,6 +336,14 @@ class LocalSwiftAuthorization(BaseAuthorization):
         token = b64encode(user.encode()).decode() + ":" + md5(
             password.encode()).hexdigest()
         return {"X-Auth-Token": "HCP {}".format(token)}
+
+    def __repr__(self):
+        return ('{}({}, {})'
+                .format(__class__.__name__, self.user, 6*'*'))
+
+    def __str__(self):
+        return ('{} for user {}, password {})'
+                .format(__class__.__name__, self.user, 6*'*'))
 
 
 class Target(object):
@@ -431,11 +465,15 @@ class Target(object):
                     'The replica strategy selected (r/o)')
 
     def __repr__(self):
-        return "<{} class at {}>".format(Target.__name__, id(self))
+        return('{}({}, {}, port={}, dnscache={}, sslcontext={}, interface={}, '
+               'replica_fqdn={}, replica_strategy={})'
+               .format(__class__.__name__, self.__fqdn, repr(self.__authorization), self.__port,
+                       self.__dnscache, repr(self.sslcontext),
+                       self.__interface, self.__replica,
+                       self.__replica_strategy))
 
     def __str__(self):
-        return "<{} class initialized for {}>".format(Target.__name__,
-                                                      self.__fqdn)
+        return "{} initialized for {}".format(__class__.__name__, self.__fqdn)
 
 
 class Connection(object):
@@ -1111,11 +1149,17 @@ class Connection(object):
                            '*http.client.HTTP(S)Connection* object (r/w)')
 
     def __repr__(self):
-        return "<{} class at {}>".format(Connection.__name__, id(self))
+        return('{}({}, timeout={}, idletime={}, retries={}, '
+               'debuglevel={}, sock_keepalive={}, tcp_keepalive={}, '
+               'tcp_keepintvl={}, tcp_keepcnt={})'
+               .format(__class__.__name__, repr(self.__target), self.__timeout, self.__idletime,
+                       self.__retries, self.__debuglevel, self.sock_keepalive,
+                       self.tcp_keepalive, self.tcp_keepintvl,
+                       self.tcp_keepcnt))
 
     def __str__(self):
-        return ("<{} class initialized for fqdn {} @ {}>"
-                .format(Connection.__name__, self.__target.fqdn,
+        return ("{} initialized for fqdn {} @ {}"
+                .format(__class__.__name__, self.__target.fqdn,
                         self.__address))
 
 
