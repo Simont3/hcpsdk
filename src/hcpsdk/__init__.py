@@ -65,6 +65,7 @@ logging.getLogger('hcpsdk').addHandler(logging.NullHandler())
 
 version = _Version()
 
+RFC3986_reserved_chars = ':?#[]@!$&\'()*+,;='
 
 class HcpsdkError(Exception):
     """
@@ -669,11 +670,11 @@ class Connection(object):
         # if url needs url-encoding, do so...
         try:
             # --> if url can be encoded to ascii and it doesn't contain
-            #     blanks we can go with it.
+            #     forbidden characters, we can go with it.
             url.encode("ascii")
-            if ' ' in url or '+' in url:
-                raise
-        except Exception:
+            if any([x in url for x in RFC3986_reserved_chars]):
+                raise HcpsdkError('')
+        except HcpsdkError:
             # in this case, we need to urlencode it...
             self.logger.log(logging.DEBUG, 'url ({}) does need quoting'.format(url))
             url = quote(url)

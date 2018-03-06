@@ -1,6 +1,11 @@
 Release History
 ===============
 
+**0.9.4-10 2018-03-06**
+
+*   fixed a bug in hcpsdk.Connection.request() where some characters were not
+    properly encoded
+
 **0.9.4-9 2017-08-26**
 
 *   Better __repr__ and __str__ for hcpsdk.__init__.py

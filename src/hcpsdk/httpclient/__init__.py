@@ -93,8 +93,7 @@ class HTTPConnection(_HTTPConnection):
             self.sock.setsockopt(socket.SOL_TCP, TCP_KEEPINTVL, self.tcp_keepintvl)
             self.sock.setsockopt(socket.SOL_TCP, TCP_KEEPCNT, self.tcp_keepcnt)
 
-            # self.logger.debug('enabled TCP keep-alive (TCP_KEEPALIVE = {}, '
-            print('enabled TCP keep-alive (TCP_KEEPALIVE = {}, '
+            self.logger.debug('enabled TCP keep-alive (TCP_KEEPALIVE = {}, '
                               'TCP_KEEPINTVL = {}, TCP_KEEPCNT = {})'
                               .format(self.sock.getsockopt(socket.SOL_TCP,
                                                            TCP_KEEPALIVE),
@@ -174,8 +173,7 @@ else:
                 self.sock.setsockopt(socket.SOL_TCP, TCP_KEEPINTVL, self.tcp_keepintvl)
                 self.sock.setsockopt(socket.SOL_TCP, TCP_KEEPCNT, self.tcp_keepcnt)
 
-                # self.logger.debug('enabled TCP keep-alive (TCP_KEEPALIVE = {}, '
-                print('enabled TCP keep-alive (TCP_KEEPALIVE = {}, '
+                self.logger.debug('enabled TCP keep-alive (TCP_KEEPALIVE = {}, '
                                   'TCP_KEEPINTVL = {}, TCP_KEEPCNT = {})'
                                   .format(self.sock.getsockopt(socket.SOL_TCP,
                                                                TCP_KEEPALIVE),
