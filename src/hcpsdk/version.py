@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # The MIT License (MIT)
 #
-# Copyright (c) 2014-2017 Thorsten Simons (sw@snomis.de)
+# Copyright (c) 2014-2018 Thorsten Simons (sw@snomis.de)
 #
 # Permission is hereby granted, free of charge, to any person obtaining a copy of
 # this software and associated documentation files (the "Software"), to deal in
@@ -25,10 +25,10 @@ class _Version(object):
     """
     Defines version and build for the HCPsdk.
     """
-    release = 0
-    major = 9
-    minor = 4
-    build = 9
+    release = 1
+    major = 0
+    minor = 0
+    build = 1
 
     fullversion = '{}.{}.{}-{}'.format(release, major, minor, build)
 

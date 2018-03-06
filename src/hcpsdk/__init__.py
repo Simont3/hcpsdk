@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # The MIT License (MIT)
 #
-# Copyright (c) 2014-2017 Thorsten Simons (sw@snomis.de)
+# Copyright (c) 2014-2018 Thorsten Simons (sw@snomis.de)
 #
 # Permission is hereby granted, free of charge, to any person obtaining a copy of
 # this software and associated documentation files (the "Software"), to deal in
@@ -672,7 +672,7 @@ class Connection(object):
             #     blanks we can go with it.
             url.encode("ascii")
             if ' ' in url or '+' in url:
-                raise
+                raise HcpsdkError('invalid character(s) in url (" ", "+")')
         except Exception:
             # in this case, we need to urlencode it...
             self.logger.log(logging.DEBUG, 'url ({}) does need quoting'.format(url))
