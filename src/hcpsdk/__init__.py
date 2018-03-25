@@ -50,6 +50,7 @@ except ImportError as e:
           file=sys.stderr)
 
 from . import httpclient
+from .httpclient import mpu
 from . import namespace
 from . import mapi
 from . import pathbuilder
@@ -128,6 +129,17 @@ class HcpsdkReplicaInitError(HcpsdkError):
 class HcpsdkPortError(HcpsdkError):
     """
     Raised if the Target is initialized with an invalid port.
+    """
+    def __init__(self, reason):
+        """
+        :param reason:  an error description
+        """
+        self.args = (reason,)
+
+
+class HcpsdkMultiPartUploadError(HcpsdkError):
+    """
+    Raised if a MultiPartUpload failed.
     """
     def __init__(self, reason):
         """
@@ -964,6 +976,23 @@ class Connection(object):
         r.read()  # clean up
         return r
 
+    # noinspection PyUnusedLocal,PyPep8Naming
+    def MPUT(self, url, body=None, psz=5, workers=20):
+        """
+        MultiPartUpload -
+
+        :param url:         the url to access w/o the server part (i.e:
+                            /rest/path/object); url quoting will be done if
+                            necessary, but existing quoting will not be touched
+        :param body:        the file (!!!) to upload - at this time, just files
+                            on disk are supported
+        :param psz:         part size in megabytes
+        :param workers:     no. of parallel uploads
+        """
+        print(self.target, self.__retries, flush=True)
+        upl = mpu.MultipartUploader(self.target, retries=self.__retries)
+        upl.PUT(url, body=body, psz=psz, workers=workers)
+
     # noinspection PyPep8Naming
     def GET(self, url, params=None, headers=None):
         """
@@ -1078,6 +1107,11 @@ class Connection(object):
     address = property(__getaddress, None, None,
                     'The IP address for which this object was initialized '
                     '(r/o)')
+
+    def __gettarget(self):
+        return self.__target
+    target = property(__gettarget, None, None,
+                    'The Target object used by this Connection.')
 
     def __getcon(self):
         return self.__con

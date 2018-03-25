@@ -21,14 +21,17 @@
 # CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 import logging
+from time import time
 from pathlib import Path, PurePosixPath
 from concurrent.futures import ThreadPoolExecutor, as_completed
-from lxml import etree, objectify
+from lxml import objectify
 
 from io import BufferedReader, DEFAULT_BUFFER_SIZE
 from hashlib import md5
 
 import hcpsdk
+
+logging.getLogger('hcpsdk.httpclient.mpu').addHandler(logging.NullHandler())
 
 
 class MultipartUploader:
@@ -43,7 +46,7 @@ class MultipartUploader:
         :param retries:     the number of retries until giving up on a
                             Request
         '''
-        self.logger = logging.getLogger(__name__ + '.MultipartUpload')
+        self.log = logging.getLogger(__name__ + '.MultipartUploader')
         self.target = target
         self.hash = hash
         self.retries = retries
@@ -55,14 +58,13 @@ class MultipartUploader:
         :param url:     the url to request w/o the server part
                         (i.e: /path/object); url quoting will be done if
                         necessary, but existing quoting will not be touched
-        :param body:    the payload to send (this needs to be a file or
-                        file-like object, strings are not supported)
+        :param body:    the payload to send (this needs to be a file)
         :param workers: no. of worker threads to use
         :param psz:     upload part size in MB (min. 1, max. 5000)
         '''
-        path = PurePosixPath('/hs3' + str(url))
-        body = Path(str(body))  # convert to pathlib.Path
-        self.size = body.stat().st_size  # the size of the file to upload
+        url = PurePosixPath(str(url).replace('/rest', '/hs3', 1))
+        file = Path(str(body))  # convert to pathlib.Path
+        self.size = file.stat().st_size  # the size of the file to upload
         psz *= 1024**2  # the part size in bytes
         _parts = int(self.size/psz)  # the number of parts
 
@@ -78,7 +80,7 @@ class MultipartUploader:
         with ThreadPoolExecutor(max_workers=workers) as executor:
             # Start the load operations and mark each future with its URL
             parts = {
-            executor.submit(self._uploadpart, upid, file, path, _p[0] + 1,
+            executor.submit(self._uploadpart, upid, file, url, _p[0] + 1,
                             _p[1], psz): _p[0] + 1 for _p in
             enumerate(range(0, self.size, psz))}
 
@@ -102,17 +104,17 @@ class MultipartUploader:
 
         # Complete MPU
         if not _failed:
-            etag = self.__mpu_complete(con, file, path, upid, partetags)
+            etag = self.__mpu_complete(con, file, url, upid, partetags)
 
         con.close()
 
-    def _uploadpart(self, upid, file, path, partno, sbyte, size):
+    def _uploadpart(self, upid, file, url, partno, sbyte, size):
         '''
         Upload part *partno* of size *size* from *file*.
 
         :param upid:    the upload Id
         :param file:    a pathlib.Path object of the file to upload
-        :param path:    a pathlib.PurePosixPath objet with the target path
+        :param url:    a pathlib.PurePosixPath objet with the target url
         :param partno:  the parts no.
         :param sbyte:   the start byte for this part
         :param size:    a parts size
@@ -124,12 +126,12 @@ class MultipartUploader:
         phdl = PartialReader(file, sbyte, size, hash=self.hash)
 
         try:
-            con.PUT(str(path / file), body=phdl,
+            con.PUT(str(url / file), body=phdl,
                     params={'uploadId': upid, 'partNumber': partno},
                     headers={'Expect': '100-continue',
                              'Content-Length': size})
         except Exception as e:
-            self.log.error('PUT({}) raised\n{}'.format(str(path / file), e))
+            self.log.error('PUT({}) raised\n{}'.format(str(url / file), e))
             con.close()
             raise
         else:
@@ -168,6 +170,9 @@ class MultipartUploader:
             if con.response_status != 200:
                 self.log.error('POST {} failed with {}'
                                .format(url, con.response_status))
+                raise hcpsdk.HcpsdkMultiPartUploadError(
+                    'MPUinit for {} failed - {}-{}'
+                        .format(url, con.response_status, con.response_reason))
             else:
                 # ToDo: rebuild with etree ?
                 root = objectify.fromstring(con.read())
@@ -175,7 +180,7 @@ class MultipartUploader:
 
         return upid
 
-    def __mpu_complete(self, con, file, path, upid, partetags):
+    def __mpu_complete(self, con, file, url, upid, partetags):
         '''
         Complete a MultiPartUpload.
 
@@ -201,9 +206,9 @@ class MultipartUploader:
         # ic(body)
 
         try:
-            con.POST(str(path / file), body=body, params={'uploadId': upid})
+            con.POST(str(url / file), body=body, params={'uploadId': upid})
         except Exception as e:
-            self.log.error('POST {} failed: \n{}'.format(str(path / file), e))
+            self.log.error('POST {} failed: \n{}'.format(str(url / file), e))
             raise
         else:
             if con.response_status == 200:
@@ -218,9 +223,7 @@ class MultipartUploader:
 
     def __mpu_abort(self):
         '''
-        Begin a MultiPartUpload.
-
-        :return:
+        Abort a MultiPartUpload.
         '''
 
 
