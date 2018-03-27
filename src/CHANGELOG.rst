@@ -6,6 +6,10 @@ Release History
 *   fixed a bug in hcpsdk.Connection.request() where some characters were not
     properly encoded
 
+**1.0.0-1 2018-03-06**
+
+*   started implementation of MPU
+
 **0.9.4-9 2017-08-26**
 
 *   Better __repr__ and __str__ for hcpsdk.__init__.py

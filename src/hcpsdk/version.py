@@ -25,10 +25,10 @@ class _Version(object):
     """
     Defines version and build for the HCPsdk.
     """
-    release = 0
-    major = 9
-    minor = 4
-    build = 10
+    release = 1
+    major = 0
+    minor = 0
+    build = 1
 
     fullversion = '{}.{}.{}-{}'.format(release, major, minor, build)
 
