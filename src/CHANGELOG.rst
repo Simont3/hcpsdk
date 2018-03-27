@@ -1,14 +1,14 @@
 Release History
 ===============
 
+**1.0.0-1 2018-03-26**
+
+*   started implementation of MPU
+
 **0.9.4-10 2018-03-06**
 
 *   fixed a bug in hcpsdk.Connection.request() where some characters were not
     properly encoded
-
-**1.0.0-1 2018-03-06**
-
-*   started implementation of MPU
 
 **0.9.4-9 2017-08-26**
 
