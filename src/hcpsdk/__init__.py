@@ -65,7 +65,7 @@ logging.getLogger('hcpsdk').addHandler(logging.NullHandler())
 
 version = _Version()
 
-RFC3986_reserved_chars = ':?#[]@!$&\'()*+,;='
+RFC3986_reserved_chars = ' :?#[]@!$&\'()*+,;='
 
 class HcpsdkError(Exception):
     """
