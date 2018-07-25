@@ -1,6 +1,12 @@
 Release History
 ===============
 
+**0.9.4-12 2018-07-25**
+
+*   fixed a bug which caused GETs to fail with
+    *hcpsdk.HcpsdkError: faulty read: 'NoneType' object has no attribute 'read'*
+    caused by idletimer cutting off the connection while transferring data
+
 **0.9.4-11 2018-03-27**
 
 *   fixed a bug in hcpsdk.Connection.request() which caused blanks not to be

@@ -936,7 +936,6 @@ class Connection(object):
                                     'service_time2 = {:0.17f}'
                                     .format(method, url, self.__service_time2))
 
-            self._set_idletimer()
             return self._response
 
     def getheader(self, *args, **kwargs):
@@ -963,6 +962,7 @@ class Connection(object):
         """
         r = self.request('PUT', url, body, params, headers)
         r.read()  # clean up
+        self._set_idletimer()
         return r
 
     # noinspection PyPep8Naming
@@ -982,7 +982,8 @@ class Connection(object):
         For parameter description see *Request()*.
         """
         r = self.request('HEAD', url, params=params, headers=headers)
-        r.read()
+        r.read()  # clean up
+        self._set_idletimer()
         return r
 
     def POST(self, url, body=None, params=None, headers=None):
@@ -1002,6 +1003,7 @@ class Connection(object):
         """
         r = self.request('DELETE', url, params=params, headers=headers)
         r.read()  # clean up
+        self._set_idletimer()
         return r
 
     def read(self, amt=None):
@@ -1041,6 +1043,7 @@ class Connection(object):
                                 .format(readsize, self.__service_time1,
                                         self.__service_time2))
             else:
+                self._set_idletimer()
                 self.logger.log(logging.DEBUG,
                                 'final read: service_time1/2 = {:0.17f}/'
                                 '{:0.17f} secs'
