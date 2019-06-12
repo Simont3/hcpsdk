@@ -452,7 +452,10 @@ class Target(object):
                     'The assigned SSL context (r/o)')
 
     def __getaddresses(self):
-        return self.ipaddrqry._addresses
+        if self.__address is None:
+            return self.ipaddrqry._addresses
+        else:
+            return [self.__address]
     addresses = property(__getaddresses, None, None,
                     'The list of resolved IP addresses for this target (r/o)')
 
