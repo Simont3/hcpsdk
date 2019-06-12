@@ -356,7 +356,7 @@ class Target(object):
 
     def __init__(self, fqdn, authorization, port=443, dnscache=False,
                  sslcontext=SSL_NOVERIFY, interface=I_NATIVE,
-                 replica_fqdn=None, replica_strategy=None):
+                 replica_fqdn=None, replica_strategy=None, address=None):
         """
         :param fqdn:                ([namespace.]tenant.hcp.loc)
         :param authorization:       an instance of one of BaseAuthorization's subclasses
@@ -369,6 +369,9 @@ class Target(object):
         :param interface:           the HCP interface to use (I_NATIVE)
         :param replica_fqdn:        the replica HCP's FQDN
         :param replica_strategy:    OR'ed combination of the RS_* modes
+        :param address:             IP address to be used to connect to the HCP and do not 
+				    resolve the FQDN. Helpful if the FQDN cannot be resolved 
+				    in the DNS.
         :raises:                    *ips.IpsError* if DNS query fails, *HcpsdkError* in all
                                     other fault cases
         """
@@ -384,16 +387,18 @@ class Target(object):
         self.__interface = interface
         self.__replica = None  # placeholder for a replica's *Target* object
         self.__replica_strategy = replica_strategy
+        self.__address = address
 
-        # instantiate an IP address circler for this Target
-        try:
-            self.ipaddrqry = ips.Circle(self.__fqdn, port=self.__port,
-                                        dnscache=self.__dnscache)
-        except ips.IpsError as e:
-            self.logger.debug(e, exc_info=True)
-            raise ips.IpsError(e)
-        except Exception as e:
-            raise HcpsdkError(e)
+        if self.__address is None:
+            # instantiate an IP address circler for this Target
+            try:
+                self.ipaddrqry = ips.Circle(self.__fqdn, port=self.__port,
+            				dnscache=self.__dnscache)
+            except ips.IpsError as e:
+                self.logger.debug(e, exc_info=True)
+                raise ips.IpsError(e)
+            except Exception as e:
+                raise HcpsdkError(e)
 
         # noinspection PyProtectedMember
         self.logger.debug('Target initialized: {}:{} - SSL = {}'
@@ -415,7 +420,10 @@ class Target(object):
         :return:    an IP address (as string)
         """
         # noinspection PyProtectedMember
-        return self.ipaddrqry._addr()
+        if self.__address is None:
+            return self.ipaddrqry._addr()
+        else:
+            return self.__address
 
     # properties for the read-only attributes
     def __getfqdn(self):
@@ -444,7 +452,10 @@ class Target(object):
                     'The assigned SSL context (r/o)')
 
     def __getaddresses(self):
-        return self.ipaddrqry._addresses
+        if self.__address is None:
+            return self.ipaddrqry._addresses
+        else:
+            return [self.__address]
     addresses = property(__getaddresses, None, None,
                     'The list of resolved IP addresses for this target (r/o)')
 
@@ -464,6 +475,11 @@ class Target(object):
         return self.__replica_strategy
     replica_strategy = property(__getreplica_strategy, None, None,
                     'The replica strategy selected (r/o)')
+
+    def __getaddress(self):
+        return self.__address
+    address = property(__getaddress, None, None,
+                    'The provided IP address for this target (r/o)')
 
     def __repr__(self):
         return('{}({}, {}, port={}, dnscache={}, sslcontext={}, interface={}, '
