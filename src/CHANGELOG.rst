@@ -1,6 +1,10 @@
 Release History
 ===============
 
+**0.9.5-1 2023-06-29**
+
+*   fixed a bug that caused HTTPS connections to fail
+
 **0.9.4-12 2018-07-25**
 
 *   fixed a bug which caused GETs to fail with

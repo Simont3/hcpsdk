@@ -28,7 +28,10 @@ from hashlib import md5
 # the previous behaviour, we switch it off.
 import ssl
 try:
-    SSL_NOVERIFY = ssl._create_unverified_context()
+    SSL_NOVERIFY = ssl.create_default_context()
+    SSL_NOVERIFY.verify_mode = ssl.CERT_REQUIRED
+    SSL_NOVERIFY.check_hostname = False
+    SSL_NOVERIFY.set_ciphers('DEFAULT')
 except (AttributeError, NameError):
     SSL_NOVERIFY = None
 import socket
