@@ -55,7 +55,7 @@ master_doc = 'index'
 # General information about the project.
 project = 'HCPsdk'
 # noinspection PyShadowingBuiltins
-copyright = '2014-2016, Thorsten Simons'
+copyright = '2014-2023, Thorsten Simons'
 
 # The version info for the project you're documenting, acts as replacement for
 # |version| and |release|, also used in various other places throughout the

@@ -61,24 +61,6 @@ Install hcpsdk by running:
 
     ``pip install hcpsdk``
 
-    -or-
-
-    * get the source from `GitHub <https://github.com/simont3/hcpsdk/archive/master.zip>`_
-    * unzip the archive
-    * run ``python setup.py install``
-
-    -or-
-
-    * Fork at `Github <https://github.com/simont3/hcpsdk>`_
-
-Contribute
-----------
-
-- Issue Tracker: `<https://github.com/simont3/hcpsdk/issues>`_
-- Source Code: `<https://github.com/simont3/hcpsdk>`_
-
-Support
--------
 
 If you find any bugs, please let me know via the Issue Tracker;
 if you have comments or suggestions, send an email to `<sw@snomis.de>`_
@@ -88,7 +70,7 @@ License
 
 The MIT License (MIT)
 
-Copyright (c) 2014-2015 Thorsten Simons (sw@snomis.de)
+Copyright (c) 2014-2023 Thorsten Simons (sw@snomis.eu)
 
 Permission is hereby granted, free of charge, to any person obtaining a copy of
 this software and associated documentation files (the "Software"), to deal in
